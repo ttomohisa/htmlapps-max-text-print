@@ -1,0 +1,1040 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#16624F">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2316624F'/%3E%3Cpath d='M19 9h22l7 7v39H16V12a3 3 0 0 1 3-3Z' fill='none' stroke='white' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M41 9v8h7' fill='none' stroke='white' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M25 42l6-19h3l6 19m-13-6h11' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M21 23v-5h5M43 36v5h-5' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <title>Max Text Print</title>
+  <style id="printPageStyle">@page { size: A4 portrait; margin: 0; }</style>
+  <style>
+    :root{
+      --brand:#16624F;--brand-2:#0f4f40;--brand-soft:#eaf4f1;--ink:#17201d;--muted:#66736e;
+      --line:#dbe3df;--line-strong:#bcc9c4;--surface:#fff;--surface-2:#f6f8f7;--danger:#a82d2d;
+      --warning:#8a5a00;--shadow:0 12px 32px rgba(22,43,35,.10);--radius:18px;--radius-sm:12px;
+      --focus:0 0 0 3px rgba(22,98,79,.20);font-family:system-ui,-apple-system,"Segoe UI","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+    }
+    *{box-sizing:border-box}
+    [hidden]{display:none!important}
+    .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+    html,body{margin:0;min-height:100%;background:var(--surface-2);color:var(--ink)}
+    body{font-size:15px}
+    button,input,select,textarea{font:inherit;color:inherit}
+    button{cursor:pointer}
+    button:disabled{cursor:not-allowed;opacity:.45}
+    :focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+    .app{min-height:100vh}
+    .topbar{min-height:66px;background:var(--surface-2);border-bottom:1px solid color-mix(in srgb,var(--line) 82%,transparent);position:sticky;top:0;z-index:20}
+    .topbar-inner{width:min(1180px,100%);min-height:66px;margin:0 auto;padding:10px clamp(14px,2.8vw,30px);display:flex;align-items:center;gap:14px}
+    .brand{display:flex;align-items:center;gap:10px;min-width:0}
+    .brandmark{display:grid;place-items:center;width:38px;height:38px;flex:0 0 auto;border-radius:11px;background:var(--brand);color:#fff;box-shadow:0 1px 2px rgba(22,43,35,.08)}
+    .brandmark svg{width:23px;height:23px;display:block}
+    .brandcopy{min-width:0}
+    .brandname{margin:0;font-size:17px;font-weight:760;line-height:1.2;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .version-badge{display:inline-flex;align-items:center;margin-left:7px;padding:1px 6px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--surface-2);font-size:10px;font-weight:650;vertical-align:2px}
+    .brandtag{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .top-actions{margin-left:auto;display:flex;align-items:center;gap:12px}
+    .lang-button{min-width:0;padding:5px 1px;border:0;background:transparent;color:var(--muted);font-size:12px;font-weight:750;letter-spacing:.02em;cursor:pointer}
+    .lang-button:hover{color:var(--ink)}
+    .icon-button{display:inline-grid;place-items:center;width:38px;height:38px;padding:0;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);cursor:pointer}
+    .icon-button:hover{border-color:var(--line-strong);background:var(--surface-2)}
+    .icon-button svg{width:20px;height:20px;display:block}
+    .header-icon-button{width:auto;height:auto;padding:5px 1px;border:0;border-radius:0;background:transparent;color:var(--muted)}
+    .header-icon-button:hover{border-color:transparent;background:transparent;color:var(--ink)}
+    .page-intro{width:min(1180px,100%);margin:0 auto;padding:22px clamp(14px,2.8vw,30px) 0;display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+    .page-intro h1{margin:0;font-size:clamp(21px,3vw,26px);line-height:1.3;letter-spacing:-.025em}
+    .page-intro p{margin:5px 0 0;max-width:760px;color:var(--muted);font-size:13px;line-height:1.55}
+    .local-badge{display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;margin-top:3px;padding:7px 10px;border:1px solid color-mix(in srgb,var(--brand) 24%,var(--line));border-radius:999px;color:var(--brand);background:var(--brand-soft);font-size:12px;font-weight:700;white-space:nowrap}
+    .local-badge svg{width:15px;height:15px;display:block}
+    .shell{max-width:1180px;margin:0 auto;padding:18px clamp(14px,2.8vw,30px) 22px;display:grid;grid-template-columns:minmax(340px,470px) minmax(520px,1fr);gap:18px;align-items:start}
+    .left-stack{display:grid;gap:16px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 1px 0 rgba(20,40,33,.02)}
+    .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 18px 0}
+    .step-title{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:760}
+    .step-badge{width:28px;height:28px;border-radius:9px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:13px}
+    .card-sub{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.55}
+    .card-body{padding:16px 18px 18px}
+    .editor{width:100%;min-height:170px;resize:vertical;border:1px solid var(--line-strong);border-radius:14px;padding:15px 16px;line-height:1.55;background:#fff}
+    .editor:focus{outline:none;border-color:var(--brand);box-shadow:var(--focus)}
+    .editor::placeholder{color:#9aa5a1}
+    .editor-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
+    .editor-meta{font-size:12px;color:var(--muted)}
+    .tool-buttons{display:flex;gap:8px}
+    .quiet-button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 10px;font-size:12px;font-weight:650}
+    .quiet-button.danger{color:var(--danger)}
+    .setting-group{padding:14px 0;border-top:1px solid var(--line)}
+    .setting-group:first-child{border-top:0;padding-top:0}
+    .setting-group:last-child{padding-bottom:0}
+    .setting-label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:720;font-size:13px;margin-bottom:9px}
+    .setting-help{font-size:11px;color:var(--muted);font-weight:500}
+    .segmented{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:7px}
+    .segmented button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 8px;font-size:13px;font-weight:680}
+    .segmented button[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .field label{display:block;font-size:12px;font-weight:680;margin-bottom:6px}
+    .field select,.field input[type="number"]{width:100%;height:40px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:0 10px}
+    .field select:focus,.field input[type="number"]:focus{outline:none;border-color:var(--brand);box-shadow:var(--focus)}
+    .custom-margin{display:flex;align-items:center;gap:7px;margin-top:9px}
+    .custom-margin input{width:86px!important}
+    .unit{font-size:12px;color:var(--muted)}
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:40px}
+    .switch{position:relative;width:46px;height:26px;flex:none}
+    .switch input{position:absolute;opacity:0}
+    .switch span{position:absolute;inset:0;border-radius:999px;background:#c9d2ce;transition:.15s}
+    .switch span:after{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.18);transition:.15s}
+    .switch input:checked+span{background:var(--brand)}
+    .switch input:checked+span:after{transform:translateX(20px)}
+    .color-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .color-control{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:7px 9px}
+    .color-control input{width:30px;height:28px;border:0;padding:0;background:none}
+    .color-control span{font-size:12px}
+    details.advanced{border-top:1px solid var(--line);margin-top:14px;padding-top:13px}
+    details.advanced summary{cursor:pointer;font-weight:700;font-size:13px;color:#33413c}
+    .advanced-body{padding-top:10px;display:grid;gap:12px}
+    .advanced-reset-row{display:flex;justify-content:flex-end;margin-bottom:-2px}
+    .advanced-reset{border:0;background:transparent;color:var(--muted);padding:2px 0;font-size:11px;font-weight:600;cursor:pointer}
+    .advanced-reset:hover{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+    .settings-reset{flex:0 0 auto;align-self:flex-start;min-height:32px;padding:6px 2px;margin-top:-2px}
+    .font-note{margin-top:6px;color:var(--muted);font-size:10.5px;line-height:1.45}
+    .range-row{display:grid;grid-template-columns:1fr 72px;gap:10px;align-items:center}
+    .range-row input[type="range"]{width:100%;accent-color:var(--brand)}
+    .range-value{font-size:12px;text-align:right;color:var(--muted)}
+    .warning-box{display:none;margin-top:12px;border:1px solid #e6cf9e;background:#fff8e7;color:#6e4a08;border-radius:11px;padding:10px 11px;font-size:12px;line-height:1.55}
+    .warning-box.show{display:block}
+    .page-split-block{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+    .page-split-segmented{grid-auto-flow:unset;grid-template-columns:repeat(4,minmax(0,1fr))}
+    .page-split-note{margin-top:7px;color:var(--muted);font-size:11px;line-height:1.5}
+    .preview-card{position:sticky;top:90px;overflow:hidden}
+    .preview-toolbar{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);background:#fff}
+    .preview-heading{font-weight:760}
+    .fit-chip{margin-left:2px;display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:6px 9px;font-size:12px;color:#46524e}
+    .fit-chip strong{color:var(--ink)}
+    .preview-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
+    .primary-button{border:0;background:var(--brand);color:#fff;border-radius:11px;padding:10px 15px;font-weight:760;display:inline-flex;align-items:center;gap:8px;min-height:42px}
+    .primary-button:hover:not(:disabled){background:var(--brand-2)}
+    .secondary-button{border:1px solid var(--line);background:#fff;border-radius:11px;padding:9px 12px;font-weight:680}
+    .page-nav-bar{display:flex;align-items:center;gap:8px;min-height:48px;padding:6px 12px;border-bottom:1px solid var(--line);background:#fff}
+    .page-nav-bar[hidden]{display:none!important}
+    .page-nav-button{display:grid;place-items:center;width:36px;height:36px;padding:0;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+    .page-nav-button:hover:not(:disabled){background:var(--surface-2);border-color:var(--line-strong)}
+    .page-nav-button svg{width:18px;height:18px}
+    .page-nav-status{min-width:72px;text-align:center;font-size:13px;font-weight:760;color:var(--ink);font-variant-numeric:tabular-nums}
+    .page-print-summary{margin-left:auto;color:var(--muted);font-size:11px;white-space:nowrap}
+    .paper-stage{height:calc(100vh - 172px);min-height:580px;background:#e9eeec;position:relative;overflow:hidden}
+    .paper{display:none;position:absolute;left:50%;top:24px;transform-origin:top center;background:#fff;box-shadow:var(--shadow);overflow:hidden;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+    .paper.is-preview-active{display:block}
+    .paper-content{position:absolute;display:flex;overflow:hidden}
+    .paper-text{width:100%;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;text-rendering:optimizeLegibility}
+    .empty-preview{position:absolute;inset:0;display:grid;place-items:center;color:#9aa5a1;font-size:14px;pointer-events:none;text-align:center;padding:20px}
+    .preview-footer{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--line);background:#fff;font-size:12px;color:var(--muted)}
+    .preview-status{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .print-hint{display:flex;align-items:center;gap:5px}
+    .print-hint svg{flex:none}
+    #measureBox{position:fixed;left:-10000px;top:-10000px;visibility:hidden;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;box-sizing:border-box}
+    .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#1e2825;color:#fff;border-radius:12px;padding:11px 12px 11px 14px;display:flex;align-items:center;gap:14px;z-index:80;box-shadow:0 12px 28px rgba(0,0,0,.18);transition:.18s}
+    .toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+    .toast button{border:0;background:transparent;color:#9de1cf;font-weight:760;padding:4px}
+    dialog{border:0;border-radius:18px;padding:0;max-width:min(620px,calc(100vw - 32px));width:100%;box-shadow:0 24px 70px rgba(0,0,0,.24)}
+    dialog::backdrop{background:rgba(21,31,28,.44)}
+    .dialog-head{display:flex;align-items:center;gap:12px;padding:18px 20px;border-bottom:1px solid var(--line)}
+    .dialog-head h2{font-size:17px;margin:0}
+    .dialog-head button{margin-left:auto}
+    .dialog-body{padding:18px 20px 20px;line-height:1.7;color:#394640;font-size:14px}
+    .dialog-body h3{font-size:14px;margin:18px 0 6px;color:var(--ink)}
+    .dialog-body h3:first-child{margin-top:0}
+    .dialog-body ul{padding-left:20px;margin:7px 0}
+    .dialog-foot{padding:0 20px 18px;display:flex;justify-content:flex-end}
+    .mobile-bottom{display:none}
+    .version-note{font-size:11px;color:var(--muted)}
+    @media (max-width: 980px){
+      .page-intro{align-items:stretch;flex-direction:column;gap:10px;padding-top:18px}
+      .local-badge{align-self:flex-start}
+      .shell{grid-template-columns:1fr;padding:14px 14px 92px}
+      .left-stack{display:contents}
+      .preview-card{position:static}
+      .paper-stage{height:62vh;min-height:430px}
+      .desktop-print{display:none!important}
+      .mobile-bottom{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));z-index:50;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 28px rgba(23,46,38,.18);padding:6px}
+      .mobile-bottom button{border:0;background:transparent;border-radius:11px;min-height:54px;padding:5px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;color:#68746f;font-weight:680}
+      .mobile-bottom button svg{width:20px;height:20px}
+      .mobile-bottom button[aria-current="page"]{background:var(--brand-soft);color:var(--brand)}
+      .mobile-bottom button.mobile-print{background:var(--brand);color:#fff}
+      [data-mobile-page]{display:none}
+      [data-mobile-page].mobile-active{display:block}
+      .preview-footer{padding-bottom:12px}
+      .page-nav-bar{padding-inline:10px}
+    }
+    @media (max-width: 560px){
+      .topbar-inner{min-height:58px;padding-block:8px}
+      .brandmark{width:34px;height:34px;border-radius:10px}
+      .brandmark svg{width:21px;height:21px}
+      .brandname{font-size:15px}
+      .brandtag{display:none}
+      .top-actions{gap:11px}
+      .page-intro{padding-top:16px;padding-bottom:0}
+      .page-intro h1{font-size:21px}
+      .card-head{padding:15px 14px 0}.card-body{padding:14px}
+      .grid-2,.color-pair{grid-template-columns:1fr}
+      .paper-stage{height:calc(100vh - 215px);min-height:400px}
+      .preview-toolbar{padding:10px 12px}
+      .fit-chip{margin-left:auto}
+      .preview-actions{display:none}
+      .preview-footer{align-items:flex-start;flex-direction:column}
+      .page-split-segmented{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .page-nav-bar{flex-wrap:wrap;justify-content:center;gap:6px}
+      .page-print-summary{width:100%;margin-left:0;text-align:center}
+      .segmented button{padding:9px 4px}
+      dialog{max-height:calc(100dvh - 20px);margin:auto 10px 10px;border-radius:18px 18px 12px 12px}
+      .dialog-body{overflow:auto;max-height:calc(100dvh - 155px)}
+    }
+    @media (prefers-reduced-motion: reduce){
+      *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+    }
+    @media print{
+      html,body{margin:0!important;padding:0!important;background:#fff!important;width:auto!important;height:auto!important;overflow:visible!important}
+      .topbar,.page-intro,.left-stack,.preview-toolbar,.page-nav-bar,.preview-footer,.mobile-bottom,.toast,dialog{display:none!important}
+      .shell{display:block!important;max-width:none!important;margin:0!important;padding:0!important}
+      .preview-card{display:block!important;position:static!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
+      .paper-stage{display:block!important;position:static!important;height:auto!important;min-height:0!important;background:#fff!important;overflow:visible!important}
+      .paper{display:block!important;position:relative!important;left:auto!important;top:auto!important;transform:none!important;box-shadow:none!important;margin:0!important;break-after:page;page-break-after:always}
+      .paper.is-last-print-page{break-after:auto;page-break-after:auto}
+      .empty-preview{display:none!important}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="brandmark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 9h22l7 7v39H16V12a3 3 0 0 1 3-3Z" stroke-width="4"/>
+              <path d="M41 9v8h7" stroke-width="4"/>
+              <path d="M25 42l6-19h3l6 19m-13-6h11" stroke-width="4.2"/>
+              <path d="M21 23v-5h5M43 36v5h-5" stroke-width="3"/>
+            </svg>
+          </div>
+          <div class="brandcopy">
+            <div class="brandname"><span id="brandName">Max Text Print</span><span class="version-badge" id="versionBadge">v1.0.0</span></div>
+            <div class="brandtag" data-i18n="brandMeta">最大文字サイズに自動調整 · A4印刷 · ページ分割対応</div>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button class="lang-button" id="languageButton" type="button" aria-label="Switch language">EN</button>
+          <button class="icon-button header-icon-button" id="helpButton" type="button" data-i18n-aria-label="help" title="Help">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.35 2.35 0 1 1 3.72 1.9c-.92.67-1.52 1.12-1.52 2.1"/><path d="M12 17h.01"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <section class="page-intro" aria-labelledby="heroTitle">
+      <div>
+        <h1 id="heroTitle" data-i18n="introTitle">A4に収まる最大サイズで文字を印刷</h1>
+        <p data-i18n="introLead">入力した文字を1枚または複数のA4に分け、各ページを収まる最大サイズへ自動調整して印刷します。</p>
+      </div>
+      <div class="local-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.8 8 7 10 4.2-2 7-5.4 7-10V6z"/><path d="m9 12 2 2 4-5"/></svg>
+        <span data-i18n="localOnly">完全ローカル処理</span>
+      </div>
+    </section>
+
+    <main class="shell">
+      <div class="left-stack">
+        <section class="card mobile-active" data-mobile-page="input" id="inputSection">
+          <div class="card-head">
+            <div>
+              <div class="step-title"><span class="step-badge">1</span><span data-i18n="textTitle">文字を入力</span></div>
+              <div class="card-sub" data-i18n="textSub">入力した文字を、選んだページ分割ごとに最大サイズへ自動調整します。</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <label for="editor" class="sr-only" data-i18n="textLabel">印刷する文字</label>
+            <textarea id="editor" class="editor" maxlength="12000" data-i18n-placeholder="placeholder" placeholder="例：本日休業"></textarea>
+            <div class="editor-tools">
+              <div class="editor-meta"><span id="charCount">0</span> <span data-i18n="chars">文字</span> · <span id="lineCount">0</span> <span data-i18n="lines">行</span></div>
+              <div class="tool-buttons">
+                <button type="button" class="quiet-button" id="sampleButton" data-i18n="sample">サンプル</button>
+                <button type="button" class="quiet-button danger" id="clearButton" data-i18n="clear">クリア</button>
+              </div>
+            </div>
+            <div class="page-split-block">
+              <div class="setting-label"><span data-i18n="pageSplit">ページ分割</span><span class="setting-help" id="pageCountSummary">0ページ</span></div>
+              <div class="segmented page-split-segmented" id="pageSplitGroup">
+                <button type="button" data-value="single" aria-pressed="true" data-i18n="splitSingle">1ページにまとめる</button>
+                <button type="button" data-value="blank" aria-pressed="false" data-i18n="splitBlank">空行ごと</button>
+                <button type="button" data-value="line" aria-pressed="false" data-i18n="splitLine">1行ごと</button>
+                <button type="button" data-value="char" aria-pressed="false" data-i18n="splitChar">1文字ごと</button>
+              </div>
+              <div class="page-split-note" data-i18n="pageSplitHelp">分割した各ページを、それぞれA4に収まる最大サイズへ調整します。</div>
+              <div class="warning-box" id="pageLimitWarning"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" data-mobile-page="settings" id="settingsSection">
+          <div class="card-head">
+            <div>
+              <div class="step-title"><span class="step-badge">2</span><span data-i18n="settingsTitle">印刷設定</span></div>
+              <div class="card-sub" data-i18n="settingsSub">通常はそのままでOK。向きや余白を変えると文字サイズも再計算します。</div>
+            </div>
+            <button type="button" class="advanced-reset settings-reset" id="resetSettingsButton" data-i18n="resetSettings">初期値に戻す</button>
+          </div>
+          <div class="card-body">
+            <div class="setting-group">
+              <div class="setting-label"><span data-i18n="orientation">用紙の向き</span><span class="setting-help" data-i18n="orientationHelp">自動は大きくなる方を選択</span></div>
+              <div class="segmented" id="orientationGroup">
+                <button type="button" data-value="auto" aria-pressed="true" data-i18n="auto">自動</button>
+                <button type="button" data-value="portrait" aria-pressed="false" data-i18n="portrait">縦</button>
+                <button type="button" data-value="landscape" aria-pressed="false" data-i18n="landscape">横</button>
+              </div>
+            </div>
+
+            <div class="setting-group">
+              <div class="setting-label"><span data-i18n="margin">余白</span><span class="setting-help" id="marginSummary">10 mm</span></div>
+              <div class="segmented" id="marginGroup">
+                <button type="button" data-value="10" aria-pressed="true" data-i18n="standard">標準</button>
+                <button type="button" data-value="5" aria-pressed="false" data-i18n="narrow">狭い</button>
+                <button type="button" data-value="0" aria-pressed="false" data-i18n="none">なし</button>
+                <button type="button" data-value="custom" aria-pressed="false" data-i18n="custom">指定</button>
+              </div>
+              <div class="custom-margin" id="customMarginRow" hidden>
+                <input type="number" id="customMargin" min="0" max="40" step="1" value="10" aria-label="Custom margin">
+                <span class="unit">mm</span>
+              </div>
+              <div class="warning-box" id="zeroMarginWarning" data-i18n="zeroMarginWarning">余白なしはプリンターによって用紙端が欠ける場合があります。</div>
+            </div>
+
+            <div class="setting-group">
+              <div class="grid-2">
+                <div class="field">
+                  <label for="fontFamily" data-i18n="font">書体</label>
+                  <select id="fontFamily">
+                    <option value="sans" data-i18n="sans">ゴシック</option>
+                    <option value="serif" data-i18n="serif">明朝</option>
+                    <option value="rounded" data-i18n="rounded">丸ゴシック系</option>
+                    <option value="mono" data-i18n="mono">等幅</option>
+                    <option value="meiryo" data-i18n="meiryo">メイリオ</option>
+                    <option value="yuGothic" data-i18n="yuGothic">游ゴシック</option>
+                    <option value="yuMincho" data-i18n="yuMincho">游明朝</option>
+                    <option value="bizGothic" data-i18n="bizGothic">BIZ UDPゴシック</option>
+                  </select>
+                  <div class="font-note" data-i18n="fontNote">端末にない書体は近い書体で表示されます。</div>
+                </div>
+                <div>
+                  <div class="toggle-row">
+                    <div>
+                      <div style="font-size:12px;font-weight:680" data-i18n="bold">太字</div>
+                      <div class="setting-help" data-i18n="boldHelp">張り紙ではON推奨</div>
+                    </div>
+                    <label class="switch"><input id="boldToggle" type="checkbox" checked aria-label="Bold"><span></span></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-group">
+              <div class="setting-label"><span data-i18n="align">配置</span></div>
+              <div class="grid-2">
+                <div class="field">
+                  <label for="textAlign" data-i18n="horizontal">左右</label>
+                  <select id="textAlign">
+                    <option value="left" data-i18n="left">左</option>
+                    <option value="center" selected data-i18n="center">中央</option>
+                    <option value="right" data-i18n="right">右</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="verticalAlign" data-i18n="vertical">上下</label>
+                  <select id="verticalAlign">
+                    <option value="start" data-i18n="top">上</option>
+                    <option value="center" selected data-i18n="middle">中央</option>
+                    <option value="end" data-i18n="bottom">下</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-group">
+              <div class="setting-label"><span data-i18n="colors">色</span></div>
+              <div class="color-pair">
+                <label class="color-control"><input type="color" id="textColor" value="#111111"><span data-i18n="textColor">文字</span></label>
+                <label class="color-control"><input type="color" id="backgroundColor" value="#ffffff"><span data-i18n="backgroundColor">背景</span></label>
+              </div>
+            </div>
+
+            <details class="advanced">
+              <summary data-i18n="advanced">詳細設定</summary>
+              <div class="advanced-body">
+                <div class="advanced-reset-row"><button type="button" class="advanced-reset" id="resetAdvancedButton" data-i18n="resetAdvanced">初期値に戻す</button></div>
+                <div>
+                  <div class="setting-label"><span data-i18n="lineHeight">行間</span><span class="range-value" id="lineHeightValue">1.05</span></div>
+                  <div class="range-row"><input type="range" id="lineHeight" min="0.85" max="1.5" step="0.01" value="1.05"><span class="range-value" data-i18n="relative">倍率</span></div>
+                </div>
+                <div>
+                  <div class="setting-label"><span data-i18n="letterSpacing">文字間隔</span><span class="range-value" id="letterSpacingValue">0.00 em</span></div>
+                  <div class="range-row"><input type="range" id="letterSpacing" min="-0.08" max="0.20" step="0.01" value="0"><span class="range-value">em</span></div>
+                </div>
+                <div class="field">
+                  <label for="outline" data-i18n="outline">縁取り</label>
+                  <select id="outline">
+                    <option value="0" data-i18n="outlineNone">なし</option>
+                    <option value="0.7" data-i18n="outlineThin">細い</option>
+                    <option value="1.4" data-i18n="outlineThick">太い</option>
+                  </select>
+                </div>
+              </div>
+            </details>
+          </div>
+        </section>
+      </div>
+
+      <section class="card preview-card" data-mobile-page="preview" id="previewSection">
+        <div class="preview-toolbar">
+          <div class="preview-heading" data-i18n="preview">A4プレビュー</div>
+          <div class="fit-chip"><span id="orientationChip">縦</span><strong id="fontSizeChip">— pt</strong></div>
+          <div class="preview-actions desktop-print">
+            <button class="primary-button" type="button" id="printButton">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 8V3h10v5"/><rect x="5" y="14" width="14" height="7" rx="1"/><path d="M5 17H3V9h18v8h-2"/><path d="M17 12h.01"/></svg>
+              <span data-i18n="print">印刷する</span>
+            </button>
+          </div>
+        </div>
+        <div class="page-nav-bar" id="pageNavBar" hidden>
+          <button class="page-nav-button" type="button" id="prevPageButton" data-i18n-aria-label="prevPage" aria-label="前のページ">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="page-nav-status" id="pageNavStatus">1 / 1</div>
+          <button class="page-nav-button" type="button" id="nextPageButton" data-i18n-aria-label="nextPage" aria-label="次のページ">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+          <div class="page-print-summary" id="pagePrintSummary"></div>
+        </div>
+        <div class="paper-stage" id="paperStage">
+          <div id="pagesContainer"></div>
+          <div class="empty-preview" id="emptyPreview" data-i18n="emptyPreview">文字を入力すると、ここにA4プレビューが表示されます。</div>
+        </div>
+        <div class="preview-footer">
+          <div class="preview-status" id="previewStatus" aria-live="polite" data-i18n="ready">文字を入力してください</div>
+          <div class="print-hint">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>
+            <span data-i18n="pdfHint">PDFは印刷画面から「PDFに保存」を選べます。</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="mobile-bottom" aria-label="Mobile navigation">
+      <button type="button" data-mobile-target="input" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span data-i18n="mobileText">文字</span>
+      </button>
+      <button type="button" data-mobile-target="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span data-i18n="mobileSettings">設定</span>
+      </button>
+      <button type="button" data-mobile-target="preview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v5h4"/></svg><span data-i18n="mobilePreview">確認</span>
+      </button>
+      <button type="button" class="mobile-print" id="mobilePrintButton" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 8V3h10v5"/><rect x="5" y="14" width="14" height="7" rx="1"/><path d="M5 17H3V9h18v8h-2"/></svg><span data-i18n="print">印刷する</span>
+      </button>
+    </nav>
+
+    <div id="measureBox" aria-hidden="true"></div>
+
+    <div class="toast" id="appToast" role="status" aria-live="polite">
+      <span id="appToastMessage"></span><button type="button" id="appToastAction" hidden></button>
+    </div>
+
+    <dialog id="helpDialog">
+      <div class="dialog-head">
+        <h2 data-i18n="helpTitle">使い方と注意事項</h2>
+        <button class="icon-button" id="closeHelpButton" type="button" data-i18n-aria-label="close">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <!-- APP:HELP:BEGIN -->
+        <div data-help-lang="ja">
+          <h3>基本操作</h3>
+          <ul>
+            <li>文字を入力すると、A4の安全領域に収まる最大文字サイズを自動計算します。</li>
+            <li>「ページ分割」で、すべてを1ページにまとめるほか、空行ごと・1行ごと・1文字ごとに分けて一括印刷できます。各ページは個別に最大サイズへ調整されます。</li>
+            <li>1ページにまとめる場合はEnterで入れた改行を維持し、長い行は用紙幅に合わせて自動で折り返します。</li>
+            <li>「自動」の用紙向きでは全ページを縦・横の両方で評価し、印刷物全体として文字を大きくできる方へ統一します。</li>
+            <li>書体は端末内のフォントから選べます。端末にない書体は近い書体へフォールバックします。</li>
+            <li>印刷設定は入力文字と同様にこのブラウザへ自動保存されます。「印刷設定」の「初期値に戻す」で設定全体を既定値へ戻せます。</li>
+            <li>詳細設定の「初期値に戻す」は、行間・文字間隔・縁取りだけを既定値へ戻します。どちらのリセットも直後のトーストから元に戻せます。</li>
+            <li>複数ページ時はプレビューの左右ボタンでページを確認できます。「印刷する」では分割した全ページをまとめて印刷します。</li>
+            <li>一度に作成できるのは200ページまでです。PDFが必要な場合は、印刷先で「PDFに保存」を選んでください。</li>
+          </ul>
+          <h3>印刷時の注意</h3>
+          <ul>
+            <li>印刷ダイアログの倍率や余白はブラウザ・OS・プリンター側の設定に影響されます。想定どおりでない場合は倍率100%を確認してください。</li>
+            <li>余白0 mmはプリンターの印刷不能領域により端が欠けることがあります。通常は10 mmを推奨します。</li>
+            <li>背景色を使う場合、ブラウザの「背景のグラフィック」等の設定を有効にする必要がある場合があります。</li>
+            <li>書体は端末に入っているフォントを使います。同じ文章でも端末が変わると最適文字サイズが少し変わる場合があります。</li>
+          </ul>
+          <h3>プライバシー</h3>
+          <p>入力文字と設定はこのブラウザ内だけで処理されます。外部サーバーへ送信しません。ブラウザでローカルストレージが利用できる場合、作業内容を同じブラウザ内へ自動保存します。</p>
+        </div>
+        <div data-help-lang="en" hidden>
+          <h3>Basics</h3>
+          <ul>
+            <li>As you type, the app calculates the largest font size that still fits inside the A4 safe area.</li>
+            <li>Page splitting can keep everything on one page or create pages by blank line, line, or character. Each page is fitted independently.</li>
+            <li>In single-page mode, manual line breaks are preserved and long lines wrap automatically.</li>
+            <li>Auto orientation evaluates all pages in both portrait and landscape and uses one orientation for the whole print job.</li>
+            <li>You can choose from local typefaces. If a selected typeface is unavailable, the browser uses a similar local fallback.</li>
+            <li>Print settings are autosaved in this browser. “Reset to defaults” in Print settings restores all print settings.</li>
+            <li>Reset to defaults in Advanced settings restores only line height, letter spacing, and outline. Both resets can be undone from the toast immediately afterward.</li>
+            <li>Use the previous/next buttons to inspect multi-page output. Print sends all generated pages to the browser/OS print dialog in one job.</li>
+            <li>Up to 200 pages can be generated at once. Choose a PDF destination in the print dialog when you need a PDF.</li>
+          </ul>
+          <h3>Printing notes</h3>
+          <ul>
+            <li>Scale and margin behavior can still be affected by browser, OS, and printer settings. If output differs, check that scale is 100%.</li>
+            <li>A 0 mm margin can be clipped by printers that cannot print to the physical edge. 10 mm is recommended for normal use.</li>
+            <li>Colored backgrounds may require enabling “Background graphics” or a similar option in the print dialog.</li>
+            <li>The app uses fonts installed on the current device. The fitted size can vary slightly on another device.</li>
+          </ul>
+          <h3>Privacy</h3>
+          <p>Text and settings are processed only in this browser and are not sent to an external server. When local storage is available, your work is autosaved in the same browser.</p>
+        </div>
+        <!-- APP:HELP:END -->
+      </div>
+      <div class="dialog-foot"><button class="secondary-button" type="button" id="helpOkButton" data-i18n="close">閉じる</button></div>
+    </dialog>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+      const APP_CONFIG = {"$schema":"./schemas/app-config.schema.json","name":"Max Text Print","nameJa":"Max Text Print","slug":"max-text-print","version":"1.0.0","description":"Fit text to the largest readable size on one or multiple A4 pages, then print directly from the browser.","descriptionJa":"入力した文字を1枚または複数のA4へ分割し、各ページを収まる最大サイズへ自動調整して、そのままブラウザから印刷するツール。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-max-text-print"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}};
+      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.2","generatedAtUtc":"2026-08-31T06:17:56.5804385Z","app":{"name":"Max Text Print","slug":"max-text-print","version":"1.0.0"},"dependencies":[]};
+      const EMBEDDED_ASSET_BUNDLE = {"schemaVersion":2,"dependencies":{}};
+
+      // Keep the generic embedded-asset surface expected by the template.
+      window.StandaloneAssets = Object.freeze({
+        async bytesAsync(name) {
+          const item = EMBEDDED_ASSET_BUNDLE.assets?.[name];
+          if (!item) throw new Error(`Unknown embedded asset: ${name}`);
+          const raw = atob(item.base64 || '');
+          return Uint8Array.from(raw, c => c.charCodeAt(0));
+        },
+        async blobUrlAsync(name, type='application/octet-stream') {
+          const bytes = await this.bytesAsync(name);
+          return URL.createObjectURL(new Blob([bytes], { type }));
+        }
+      });
+      // This app does not create a file itself. PDF naming belongs to the system print destination.
+      const outputFilename = null;
+
+      const $ = s => document.querySelector(s);
+      const $$ = s => [...document.querySelectorAll(s)];
+      const storageKey = 'max-text-print:v1';
+      const fontStacks = {
+        sans:'system-ui,-apple-system,"Segoe UI","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif',
+        serif:'"Yu Mincho","Hiragino Mincho ProN","Hiragino Mincho Pro","Times New Roman",serif',
+        rounded:'ui-rounded,"Hiragino Maru Gothic ProN","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif',
+        mono:'ui-monospace,"SFMono-Regular",Menlo,Monaco,Consolas,"Liberation Mono","BIZ UDGothic","MS Gothic",monospace',
+        meiryo:'Meiryo,"Yu Gothic UI","Yu Gothic",sans-serif',
+        yuGothic:'"Yu Gothic",YuGothic,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif',
+        yuMincho:'"Yu Mincho",YuMincho,"Hiragino Mincho ProN","Hiragino Mincho Pro",serif',
+        bizGothic:'"BIZ UDPGothic","BIZ UDGothic","Yu Gothic",Meiryo,sans-serif'
+      };
+      const sampleText = { ja:'本日休業', en:'CLOSED TODAY' };
+      const translations = {
+        ja:{
+          tagline:'A4に収まる最大サイズで、そのまま印刷',brandMeta:'最大文字サイズに自動調整 · A4印刷 · ページ分割対応',introTitle:'A4に収まる最大サイズで文字を印刷',introLead:'入力した文字を1枚または複数のA4に分け、各ページを収まる最大サイズへ自動調整して印刷します。',localOnly:'完全ローカル処理',help:'使い方と注意事項',close:'閉じる',
+          textTitle:'文字を入力',textSub:'入力した文字を、選んだページ分割ごとに最大サイズへ自動調整します。',textLabel:'印刷する文字',
+          placeholder:'例：本日休業',chars:'文字',lines:'行',sample:'サンプル',clear:'クリア',pageSplit:'ページ分割',splitSingle:'1ページにまとめる',splitBlank:'空行ごと',splitLine:'1行ごと',splitChar:'1文字ごと',pageSplitHelp:'分割した各ページを、それぞれA4に収まる最大サイズへ調整します。',pageCount:'{count}ページ',pageCountOne:'1ページ',pageLimitWarning:'{count}ページになります。一度に作成できるのは{max}ページまでです。分割を減らしてください。',prevPage:'前のページ',nextPage:'次のページ',printPagesSummary:'{count}ページをまとめて印刷します',settingsTitle:'印刷設定',
+          settingsSub:'通常はそのままでOK。向きや余白を変えると文字サイズも再計算します。',resetSettings:'初期値に戻す',settingsResetDone:'印刷設定を初期値に戻しました',orientation:'用紙の向き',
+          orientationHelp:'自動は大きくなる方を選択',auto:'自動',portrait:'縦',landscape:'横',margin:'余白',standard:'標準',
+          narrow:'狭い',none:'なし',custom:'指定',zeroMarginWarning:'余白なしはプリンターによって用紙端が欠ける場合があります。',
+          font:'書体',sans:'ゴシック',serif:'明朝',rounded:'丸ゴシック系',mono:'等幅',meiryo:'メイリオ',yuGothic:'游ゴシック',yuMincho:'游明朝',bizGothic:'BIZ UDPゴシック',fontNote:'端末にない書体は近い書体で表示されます。',bold:'太字',boldHelp:'張り紙ではON推奨',
+          align:'配置',horizontal:'左右',vertical:'上下',left:'左',center:'中央',right:'右',top:'上',middle:'中央',bottom:'下',
+          colors:'色',textColor:'文字',backgroundColor:'背景',advanced:'詳細設定',resetAdvanced:'初期値に戻す',advancedResetDone:'詳細設定を初期値に戻しました',lineHeight:'行間',relative:'倍率',letterSpacing:'文字間隔',
+          outline:'縁取り',outlineNone:'なし',outlineThin:'細い',outlineThick:'太い',preview:'A4プレビュー',print:'印刷する',
+          emptyPreview:'文字を入力すると、ここにA4プレビューが表示されます。',ready:'文字を入力してください',
+          pdfHint:'PDFは印刷画面から「PDFに保存」を選べます。',mobileText:'文字',mobileSettings:'設定',mobilePreview:'確認',
+          helpTitle:'使い方と注意事項',fit:'最大 {size} pt · {orientation} · 余白 {margin} mm',fitMulti:'{current}/{count}ページ · 最大 {size} pt · {orientation} · 余白 {margin} mm',portraitShort:'縦',landscapeShort:'横',
+          tooMuch:'収められないページがあります。文字数を減らすか設定を調整してください。',tooManyPages:'{count}ページになります。一度に作成できるのは{max}ページまでです。',maximized:'A4に収まる最大サイズへ自動調整済み',
+          cleared:'クリアしました',undo:'元に戻す',undone:'元に戻しました',sampleLoaded:'サンプルを入力しました',
+          printOpening:'印刷画面を開きます',printOpeningPages:'{count}ページの印刷画面を開きます',closeAria:'閉じる',backgroundNote:'背景色を印刷するには印刷設定の「背景のグラフィック」が必要な場合があります。'
+        },
+        en:{
+          tagline:'Fit the largest text on A4, then print',brandMeta:'Auto-fit text to max size · A4 printing · Page splitting',introTitle:'Print text at the largest size that fits A4',introLead:'Split text across one or more A4 pages, fit each page to the largest safe size, then print directly from the browser.',localOnly:'Fully local processing',help:'How to use & notes',close:'Close',
+          textTitle:'Enter text',textSub:'Text is split using your selected page mode, then each page is fitted to its largest safe size.',textLabel:'Text to print',
+          placeholder:'Example: CLOSED TODAY',chars:'chars',lines:'lines',sample:'Sample',clear:'Clear',pageSplit:'Page splitting',splitSingle:'Keep on one page',splitBlank:'Blank lines',splitLine:'Each line',splitChar:'Each character',pageSplitHelp:'Each generated page is independently fitted to the largest size that stays on A4.',pageCount:'{count} pages',pageCountOne:'1 page',pageLimitWarning:'This creates {count} pages. Up to {max} pages can be generated at once. Reduce the split.',prevPage:'Previous page',nextPage:'Next page',printPagesSummary:'Print all {count} pages',settingsTitle:'Print settings',
+          settingsSub:'The defaults usually work. Orientation and margins immediately recalculate the fitted size.',resetSettings:'Reset to defaults',settingsResetDone:'Print settings reset to defaults',orientation:'Orientation',
+          orientationHelp:'Auto chooses the larger result',auto:'Auto',portrait:'Portrait',landscape:'Landscape',margin:'Margin',standard:'Standard',
+          narrow:'Narrow',none:'None',custom:'Custom',zeroMarginWarning:'A 0 mm margin can be clipped by printers that cannot print to the physical edge.',
+          font:'Typeface',sans:'Sans serif',serif:'Serif',rounded:'Rounded-style',mono:'Monospace',meiryo:'Meiryo',yuGothic:'Yu Gothic',yuMincho:'Yu Mincho',bizGothic:'BIZ UDPGothic',fontNote:'If a typeface is not installed, the browser uses a similar local fallback.',bold:'Bold',boldHelp:'Recommended for signs',
+          align:'Alignment',horizontal:'Horizontal',vertical:'Vertical',left:'Left',center:'Center',right:'Right',top:'Top',middle:'Center',bottom:'Bottom',
+          colors:'Colors',textColor:'Text',backgroundColor:'Background',advanced:'Advanced settings',resetAdvanced:'Reset to defaults',advancedResetDone:'Advanced settings reset to defaults',lineHeight:'Line height',relative:'ratio',letterSpacing:'Letter spacing',
+          outline:'Outline',outlineNone:'None',outlineThin:'Thin',outlineThick:'Thick',preview:'A4 preview',print:'Print',
+          emptyPreview:'Enter text to see the A4 preview here.',ready:'Enter some text',pdfHint:'Need a PDF? Choose “Save as PDF” in the print dialog.',
+          mobileText:'Text',mobileSettings:'Settings',mobilePreview:'Preview',helpTitle:'How to use & notes',
+          fit:'Max {size} pt · {orientation} · {margin} mm margin',fitMulti:'Page {current}/{count} · Max {size} pt · {orientation} · {margin} mm margin',portraitShort:'Portrait',landscapeShort:'Landscape',
+          tooMuch:'At least one page cannot fit. Reduce the text or adjust the settings.',tooManyPages:'This creates {count} pages. Up to {max} pages can be generated at once.',maximized:'Automatically fitted to the largest A4-safe size',
+          cleared:'Cleared',undo:'Undo',undone:'Restored',sampleLoaded:'Sample added',printOpening:'Opening print dialog',printOpeningPages:'Opening print dialog for {count} pages',
+          closeAria:'Close',backgroundNote:'Colored backgrounds may require enabling “Background graphics” in the print dialog.'
+        }
+      };
+
+      const MAX_PAGES = 200;
+      const graphemeSegmenter = typeof Intl.Segmenter === 'function' ? new Intl.Segmenter(undefined,{granularity:'grapheme'}) : null;
+      const defaultState = {
+        text:'',language:'auto',pageSplit:'single',orientation:'auto',marginPreset:'10',customMargin:10,fontFamily:'sans',bold:true,
+        textAlign:'center',verticalAlign:'center',textColor:'#111111',backgroundColor:'#ffffff',lineHeight:1.05,
+        letterSpacing:0,outline:0
+      };
+      const printSettingKeys = Object.freeze([
+        'pageSplit','orientation','marginPreset','customMargin','fontFamily','bold','textAlign','verticalAlign',
+        'textColor','backgroundColor','lineHeight','letterSpacing','outline'
+      ]);
+      let state = {...defaultState};
+      let currentOrientation = 'portrait';
+      let currentPageIndex = 0;
+      let pageTexts = [];
+      let pageFits = [];
+      let overflowPreviewFit = null;
+      let fitValid = false;
+      let pageLimitExceeded = false;
+      let fitTimer = 0;
+      let toastTimer = 0;
+
+      const editor=$('#editor'), pagesContainer=$('#pagesContainer'), emptyPreview=$('#emptyPreview'),
+            measureBox=$('#measureBox'), paperStage=$('#paperStage'), printButton=$('#printButton'),
+            mobilePrintButton=$('#mobilePrintButton'), previewStatus=$('#previewStatus'),
+            prevPageButton=$('#prevPageButton'), nextPageButton=$('#nextPageButton');
+
+      function getLanguage(){
+        if(state.language==='ja'||state.language==='en') return state.language;
+        return (navigator.language||'').toLowerCase().startsWith('ja')?'ja':'en';
+      }
+      function t(key, vars={}){
+        const lang=getLanguage(); let text=translations[lang][key] ?? translations.en[key] ?? key;
+        for(const [k,v] of Object.entries(vars)) text=text.replaceAll(`{${k}}`,String(v));
+        return text;
+      }
+      function safeRead(){
+        try{
+          const raw=localStorage.getItem(storageKey); if(!raw) return;
+          const parsed=JSON.parse(raw); state={...defaultState,...parsed};
+          if(!['single','blank','line','char'].includes(state.pageSplit)) state.pageSplit='single';
+        }catch{}
+      }
+      function save(){
+        try{localStorage.setItem(storageKey,JSON.stringify(state));}catch{}
+      }
+      function setPressed(group,value){
+        $$(`#${group} button[data-value]`).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.value===String(value))));
+      }
+      function syncControlsFromState(){
+        editor.value=state.text||'';
+        setPressed('pageSplitGroup',state.pageSplit);
+        setPressed('orientationGroup',state.orientation);
+        setPressed('marginGroup',state.marginPreset);
+        $('#customMargin').value=state.customMargin;
+        $('#customMarginRow').hidden=state.marginPreset!=='custom';
+        $('#fontFamily').value=state.fontFamily;
+        $('#boldToggle').checked=!!state.bold;
+        $('#textAlign').value=state.textAlign;
+        $('#verticalAlign').value=state.verticalAlign;
+        $('#textColor').value=state.textColor;
+        $('#backgroundColor').value=state.backgroundColor;
+        $('#lineHeight').value=state.lineHeight;
+        $('#letterSpacing').value=state.letterSpacing;
+        $('#outline').value=String(state.outline);
+        updateSettingReadouts();
+        updateCounts();
+      }
+      function applyLanguage(){
+        const lang=getLanguage();
+        document.documentElement.lang=lang;
+        $$('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n)});
+        $$('[data-i18n-placeholder]').forEach(el=>{el.placeholder=t(el.dataset.i18nPlaceholder)});
+        $$('[data-i18n-aria-label]').forEach(el=>el.setAttribute('aria-label',t(el.dataset.i18nAriaLabel)));
+        $('#languageButton').textContent=lang==='ja'?'EN':'日本語';
+        $('#languageButton').setAttribute('aria-label',lang==='ja'?'Switch to English':'日本語に切り替え');
+        $$('[data-help-lang]').forEach(el=>el.hidden=el.dataset.helpLang!==lang);
+        document.title=APP_CONFIG.name;
+        $('#versionBadge').textContent=`v${APP_CONFIG.version}`;
+        updateSettingReadouts();
+        updatePaginationLabels();
+        updateFitLabels();
+      }
+      function graphemes(text){
+        if(!text) return [];
+        if(graphemeSegmenter) return [...graphemeSegmenter.segment(text)].map(item=>item.segment);
+        return Array.from(text);
+      }
+      function updateCounts(){
+        const chars=graphemes(state.text||'').length;
+        const lines=state.text?state.text.split(/\r?\n/).length:0;
+        $('#charCount').textContent=new Intl.NumberFormat(getLanguage()).format(chars);
+        $('#lineCount').textContent=new Intl.NumberFormat(getLanguage()).format(lines);
+        $('#sampleButton').disabled=!!state.text;
+        $('#clearButton').disabled=!state.text;
+      }
+      function splitIntoPages(text){
+        const normalized=(text||'').replace(/\r\n?/g,'\n');
+        if(!normalized.trim()) return [];
+        if(state.pageSplit==='blank'){
+          return normalized.split(/\n(?:[ \t]*\n)+/).map(part=>part.trim()).filter(Boolean);
+        }
+        if(state.pageSplit==='line'){
+          return normalized.split('\n').map(line=>line.trim()).filter(Boolean);
+        }
+        if(state.pageSplit==='char'){
+          // Grapheme segmentation keeps emoji, variation selectors, and combining marks together.
+          return graphemes(normalized).filter(segment=>segment.trim().length>0);
+        }
+        return [normalized];
+      }
+      function marginMm(){
+        if(state.marginPreset==='custom') return Math.max(0,Math.min(40,Number(state.customMargin)||0));
+        return Number(state.marginPreset)||0;
+      }
+      function pageDims(orientation){
+        return orientation==='landscape'?{w:297,h:210}:{w:210,h:297};
+      }
+      function verticalCss(value){
+        return value==='start'?'flex-start':value==='end'?'flex-end':'center';
+      }
+      function updateSettingReadouts(){
+        $('#marginSummary').textContent=`${marginMm()} mm`;
+        $('#lineHeightValue').textContent=Number(state.lineHeight).toFixed(2);
+        $('#letterSpacingValue').textContent=`${Number(state.letterSpacing).toFixed(2)} em`;
+        $('#zeroMarginWarning').classList.toggle('show',marginMm()===0);
+      }
+      function styleTextNode(el,fontPt){
+        el.style.fontFamily=fontStacks[state.fontFamily]||fontStacks.sans;
+        el.style.fontWeight=state.bold?'800':'400';
+        el.style.fontSize=`${fontPt}pt`;
+        el.style.lineHeight=String(state.lineHeight);
+        el.style.letterSpacing=`${state.letterSpacing}em`;
+        el.style.textAlign=state.textAlign;
+        el.style.webkitTextStroke=state.outline>0?`${state.outline}px currentColor`:'0';
+      }
+      function prepareMeasure(text,orientation,fontPt){
+        const dims=pageDims(orientation), m=marginMm(), w=Math.max(1,dims.w-m*2), h=Math.max(1,dims.h-m*2);
+        measureBox.style.width=`${w}mm`; measureBox.style.height=`${h}mm`;
+        measureBox.style.padding=`${Math.max(0,Number(state.outline)||0)+1}px`;
+        measureBox.textContent=text;
+        styleTextNode(measureBox,fontPt);
+      }
+      function fitsAt(text,fontPt,orientation){
+        prepareMeasure(text,orientation,fontPt);
+        return measureBox.scrollWidth<=measureBox.clientWidth+1 && measureBox.scrollHeight<=measureBox.clientHeight+1;
+      }
+      function maxFontForText(text,orientation){
+        if(!text.trim()) return {size:0,valid:false};
+        if(!fitsAt(text,0.5,orientation)) return {size:0.5,valid:false};
+        let lo=.5,hi=1200;
+        // Fourteen rounds are enough to safely resolve the final 0.5 pt step over this range.
+        for(let i=0;i<14;i++){
+          const mid=(lo+hi)/2;
+          if(fitsAt(text,mid,orientation)) lo=mid; else hi=mid;
+        }
+        return {size:Math.floor(lo*2)/2,valid:true};
+      }
+      function evaluateOrientation(texts,orientation){
+        const fits=texts.map(text=>maxFontForText(text,orientation));
+        return {
+          orientation,
+          fits,
+          validCount:fits.reduce((sum,fit)=>sum+(fit.valid?1:0),0),
+          totalSize:fits.reduce((sum,fit)=>sum+(fit.valid?fit.size:0),0)
+        };
+      }
+      function chooseFit(texts){
+        if(state.orientation==='portrait'||state.orientation==='landscape'){
+          const result=evaluateOrientation(texts,state.orientation);
+          return {...result,valid:result.validCount===texts.length};
+        }
+        const p=evaluateOrientation(texts,'portrait'), l=evaluateOrientation(texts,'landscape');
+        let chosen=p;
+        if(l.validCount>p.validCount) chosen=l;
+        else if(l.validCount===p.validCount && l.totalSize>p.totalSize+(texts.length*.25)) chosen=l;
+        return {...chosen,valid:chosen.validCount===texts.length};
+      }
+      function createPaper(text,fit,index){
+        const dims=pageDims(currentOrientation),m=marginMm();
+        const el=document.createElement('div');
+        el.className='paper';
+        el.dataset.pageIndex=String(index);
+        el.style.width=`${dims.w}mm`;
+        el.style.height=`${dims.h}mm`;
+        el.style.backgroundColor=state.backgroundColor;
+        const content=document.createElement('div');
+        content.className='paper-content';
+        content.style.left=`${m}mm`;content.style.top=`${m}mm`;
+        content.style.width=`${Math.max(0,dims.w-m*2)}mm`;content.style.height=`${Math.max(0,dims.h-m*2)}mm`;
+        content.style.alignItems=verticalCss(state.verticalAlign);
+        content.style.justifyContent='stretch';
+        const textEl=document.createElement('div');
+        textEl.className='paper-text';
+        textEl.style.color=state.textColor;
+        textEl.textContent=text;
+        styleTextNode(textEl,fit?.size||12);
+        content.appendChild(textEl);
+        el.appendChild(content);
+        return el;
+      }
+      function renderPapers(){
+        const fragment=document.createDocumentFragment();
+        if(pageLimitExceeded){
+          if(pageTexts.length){
+            const paper=createPaper(pageTexts[currentPageIndex],overflowPreviewFit,currentPageIndex);
+            paper.classList.add('is-preview-active','is-last-print-page');
+            fragment.appendChild(paper);
+          }
+        }else{
+          pageTexts.forEach((text,index)=>{
+            const paper=createPaper(text,pageFits[index],index);
+            paper.classList.toggle('is-preview-active',index===currentPageIndex);
+            paper.classList.toggle('is-last-print-page',index===pageTexts.length-1);
+            fragment.appendChild(paper);
+          });
+        }
+        pagesContainer.replaceChildren(fragment);
+        emptyPreview.hidden=pageTexts.length>0;
+        $('#printPageStyle').textContent=`@page { size: A4 ${currentOrientation}; margin: 0; }`;
+        updatePaginationLabels();
+        requestAnimationFrame(updatePreviewScale);
+      }
+      function activeFit(){
+        if(!pageTexts.length) return null;
+        if(pageLimitExceeded) return overflowPreviewFit;
+        return pageFits[currentPageIndex]||null;
+      }
+      function updatePreviewScale(){
+        if(!paperStage.offsetWidth) return;
+        const paper=pagesContainer.querySelector('.paper.is-preview-active');
+        if(!paper) return;
+        const w=paper.offsetWidth||1,h=paper.offsetHeight||1;
+        const scale=Math.max(.05,Math.min(1,(paperStage.clientWidth-38)/w,(paperStage.clientHeight-48)/h));
+        paper.style.transform=`translateX(-50%) scale(${scale})`;
+      }
+      function updatePaginationLabels(){
+        const count=pageTexts.length;
+        $('#pageCountSummary').textContent=count===1?t('pageCountOne'):t('pageCount',{count});
+        const warning=$('#pageLimitWarning');
+        warning.textContent=pageLimitExceeded?t('pageLimitWarning',{count,max:MAX_PAGES}):'';
+        warning.classList.toggle('show',pageLimitExceeded);
+        $('#pageNavBar').hidden=count<=1;
+        $('#pageNavStatus').textContent=count?`${currentPageIndex+1} / ${count}`:'0 / 0';
+        $('#pagePrintSummary').textContent=count>1?t('printPagesSummary',{count}):'';
+        prevPageButton.disabled=currentPageIndex<=0;
+        nextPageButton.disabled=currentPageIndex>=count-1;
+      }
+      function updateFitLabels(){
+        const ori=t(currentOrientation==='portrait'?'portraitShort':'landscapeShort');
+        const fit=activeFit();
+        $('#orientationChip').textContent=ori;
+        $('#fontSizeChip').textContent=fit?.size?`${fit.size.toFixed(fit.size%1?1:0)} pt`:'— pt';
+        if(!pageTexts.length){
+          previewStatus.textContent=t('ready');
+        }else if(pageLimitExceeded){
+          previewStatus.textContent=t('tooManyPages',{count:pageTexts.length,max:MAX_PAGES});
+        }else if(!fitValid){
+          previewStatus.textContent=t('tooMuch');
+        }else if(pageTexts.length>1){
+          previewStatus.textContent=t('fitMulti',{current:currentPageIndex+1,count:pageTexts.length,size:fit.size.toFixed(fit.size%1?1:0),orientation:ori,margin:marginMm()});
+        }else{
+          previewStatus.textContent=t('fit',{size:fit.size.toFixed(fit.size%1?1:0),orientation:ori,margin:marginMm()});
+        }
+      }
+      function recomputeFit(){
+        clearTimeout(fitTimer);
+        pageTexts=splitIntoPages(state.text);
+        currentPageIndex=Math.max(0,Math.min(currentPageIndex,Math.max(0,pageTexts.length-1)));
+        pageLimitExceeded=pageTexts.length>MAX_PAGES;
+        pageFits=[];
+        overflowPreviewFit=null;
+        if(!pageTexts.length){
+          currentOrientation=state.orientation==='landscape'?'landscape':'portrait';
+          fitValid=false;
+        }else if(pageLimitExceeded){
+          const activeText=pageTexts[currentPageIndex];
+          if(state.orientation==='auto'){
+            const activeResult=chooseFit([activeText]);
+            currentOrientation=activeResult.orientation;
+            overflowPreviewFit=activeResult.fits[0];
+          }else{
+            currentOrientation=state.orientation;
+            overflowPreviewFit=maxFontForText(activeText,currentOrientation);
+          }
+          fitValid=false;
+        }else{
+          const result=chooseFit(pageTexts);
+          currentOrientation=result.orientation;
+          pageFits=result.fits;
+          fitValid=result.valid && pageTexts.length>0;
+        }
+        renderPapers();
+        updateFitLabels();
+        printButton.disabled=!fitValid;
+        mobilePrintButton.disabled=!fitValid;
+      }
+      function scheduleFit(){
+        clearTimeout(fitTimer);
+        fitTimer=setTimeout(recomputeFit,25);
+      }
+      function showPage(index){
+        if(!pageTexts.length) return;
+        const next=Math.max(0,Math.min(pageTexts.length-1,index));
+        if(next===currentPageIndex) return;
+        currentPageIndex=next;
+        if(pageLimitExceeded){
+          recomputeFit();
+          return;
+        }
+        $$('.paper[data-page-index]').forEach(paper=>paper.classList.toggle('is-preview-active',Number(paper.dataset.pageIndex)===currentPageIndex));
+        updatePaginationLabels();
+        updateFitLabels();
+        requestAnimationFrame(updatePreviewScale);
+      }
+      function showToast(message,{actionLabel='',onAction=null,duration=3500}={}){
+        clearTimeout(toastTimer);
+        $('#appToastMessage').textContent=message;
+        const action=$('#appToastAction');
+        action.textContent=actionLabel; action.hidden=!actionLabel||!onAction;
+        action.onclick=onAction||null;
+        $('#appToast').classList.add('show');
+        toastTimer=setTimeout(()=>$('#appToast').classList.remove('show'),duration);
+      }
+      // Template-compatible toast API used by reusable Browser Kitty patterns.
+      window.AppToast=Object.freeze({
+        show({message='',actionLabel='',onAction=null,duration=3500}={}){
+          showToast(message,{actionLabel,onAction,duration});
+        }
+      });
+      function updateState(mutator,{resetPage=false}={}){
+        mutator();
+        if(resetPage) currentPageIndex=0;
+        save(); updateCounts(); updateSettingReadouts(); scheduleFit();
+      }
+      function openPrint(){
+        if(!fitValid) return;
+        recomputeFit();
+        showToast(pageTexts.length>1?t('printOpeningPages',{count:pageTexts.length}):t('printOpening'),{duration:1400});
+        requestAnimationFrame(()=>requestAnimationFrame(()=>window.print()));
+      }
+      editor.addEventListener('input',()=>updateState(()=>state.text=editor.value));
+      $('#sampleButton').addEventListener('click',()=>{
+        if(state.text) return;
+        updateState(()=>{state.text=sampleText[getLanguage()];editor.value=state.text;},{resetPage:true});
+        showToast(t('sampleLoaded'));
+      });
+      $('#clearButton').addEventListener('click',()=>{
+        if(!state.text) return;
+        const before=state.text;
+        updateState(()=>{state.text='';editor.value='';},{resetPage:true});
+        editor.focus();
+        showToast(t('cleared'),{actionLabel:t('undo'),onAction:()=>{
+          updateState(()=>{state.text=before;editor.value=before;},{resetPage:true});
+          showToast(t('undone'));
+        },duration:5000});
+      });
+      $$('#pageSplitGroup button').forEach(b=>b.addEventListener('click',()=>updateState(()=>{
+        state.pageSplit=b.dataset.value;setPressed('pageSplitGroup',state.pageSplit);
+      },{resetPage:true})));
+      $$('#orientationGroup button').forEach(b=>b.addEventListener('click',()=>updateState(()=>{state.orientation=b.dataset.value;setPressed('orientationGroup',state.orientation)})));
+      $$('#marginGroup button').forEach(b=>b.addEventListener('click',()=>updateState(()=>{
+        state.marginPreset=b.dataset.value;setPressed('marginGroup',state.marginPreset);$('#customMarginRow').hidden=state.marginPreset!=='custom';
+      })));
+      $('#customMargin').addEventListener('change',()=>updateState(()=>{
+        const v=Math.max(0,Math.min(40,Number($('#customMargin').value)||0));state.customMargin=v;$('#customMargin').value=v;
+      }));
+      $('#fontFamily').addEventListener('change',()=>updateState(()=>state.fontFamily=$('#fontFamily').value));
+      $('#boldToggle').addEventListener('change',()=>updateState(()=>state.bold=$('#boldToggle').checked));
+      $('#textAlign').addEventListener('change',()=>updateState(()=>state.textAlign=$('#textAlign').value));
+      $('#verticalAlign').addEventListener('change',()=>updateState(()=>state.verticalAlign=$('#verticalAlign').value));
+      $('#textColor').addEventListener('input',()=>updateState(()=>state.textColor=$('#textColor').value));
+      $('#backgroundColor').addEventListener('input',()=>updateState(()=>state.backgroundColor=$('#backgroundColor').value));
+      $('#lineHeight').addEventListener('input',()=>updateState(()=>state.lineHeight=Number($('#lineHeight').value)));
+      $('#letterSpacing').addEventListener('input',()=>updateState(()=>state.letterSpacing=Number($('#letterSpacing').value)));
+      $('#outline').addEventListener('change',()=>updateState(()=>state.outline=Number($('#outline').value)));
+      function captureSettings(keys){
+        return Object.fromEntries(keys.map(key=>[key,state[key]]));
+      }
+      function applySettings(values){
+        const splitChanged=Object.prototype.hasOwnProperty.call(values,'pageSplit') && values.pageSplit!==state.pageSplit;
+        for(const [key,value] of Object.entries(values)) state[key]=value;
+        if(splitChanged) currentPageIndex=0;
+        save();
+        syncControlsFromState();
+        scheduleFit();
+      }
+      function showResetUndo(message,before){
+        showToast(message,{actionLabel:t('undo'),onAction:()=>{
+          applySettings(before);
+          showToast(t('undone'));
+        },duration:5000});
+      }
+      $('#resetSettingsButton').addEventListener('click',()=>{
+        const before=captureSettings(printSettingKeys);
+        applySettings(Object.fromEntries(printSettingKeys.map(key=>[key,defaultState[key]])));
+        showResetUndo(t('settingsResetDone'),before);
+      });
+      $('#resetAdvancedButton').addEventListener('click',()=>{
+        const keys=['lineHeight','letterSpacing','outline'];
+        const before=captureSettings(keys);
+        applySettings(Object.fromEntries(keys.map(key=>[key,defaultState[key]])));
+        showResetUndo(t('advancedResetDone'),before);
+      });
+      printButton.addEventListener('click',openPrint);
+      mobilePrintButton.addEventListener('click',openPrint);
+      prevPageButton.addEventListener('click',()=>showPage(currentPageIndex-1));
+      nextPageButton.addEventListener('click',()=>showPage(currentPageIndex+1));
+
+      $('#languageButton').addEventListener('click',()=>{
+        state.language=getLanguage()==='ja'?'en':'ja';save();applyLanguage();scheduleFit();
+      });
+      const helpDialog=$('#helpDialog');
+      $('#helpButton').addEventListener('click',()=>helpDialog.showModal());
+      $('#closeHelpButton').addEventListener('click',()=>helpDialog.close());
+      $('#helpOkButton').addEventListener('click',()=>helpDialog.close());
+      helpDialog.addEventListener('click',event=>{
+        const r=helpDialog.getBoundingClientRect();
+        if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom) helpDialog.close();
+      });
+
+      $$('[data-mobile-target]').forEach(btn=>btn.addEventListener('click',()=>{
+        const target=btn.dataset.mobileTarget;
+        $$('[data-mobile-page]').forEach(p=>p.classList.toggle('mobile-active',p.dataset.mobilePage===target));
+        $$('[data-mobile-target]').forEach(b=>b.setAttribute('aria-current',b===btn?'page':'false'));
+        if(target==='preview') requestAnimationFrame(updatePreviewScale);
+        window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+      }));
+
+      document.addEventListener('keydown',event=>{
+        if(pageTexts.length<=1 || event.altKey || event.ctrlKey || event.metaKey) return;
+        const target=event.target;
+        if(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target?.isContentEditable) return;
+        if(event.key==='ArrowLeft'){event.preventDefault();showPage(currentPageIndex-1);}
+        else if(event.key==='ArrowRight'){event.preventDefault();showPage(currentPageIndex+1);}
+      });
+
+      window.addEventListener('beforeprint',()=>recomputeFit());
+      window.addEventListener('afterprint',()=>requestAnimationFrame(updatePreviewScale));
+      window.addEventListener('resize',updatePreviewScale);
+      if('ResizeObserver' in window) new ResizeObserver(updatePreviewScale).observe(paperStage);
+
+      safeRead();
+      syncControlsFromState();
+      applyLanguage();
+      recomputeFit();
+
+      // Build metadata stays available for diagnostics without cluttering the primary UI.
+      window.__MAX_TEXT_PRINT_BUILD__=Object.freeze({version:APP_CONFIG.version,generatedAtUtc:BUILD_MANIFEST.generatedAtUtc});
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "$schema": "./schemas/app-config.schema.json",
+  "name": "Max Text Print",
+  "nameJa": "Max Text Print",
+  "slug": "max-text-print",
+  "version": "1.0.0",
+  "description": "Fit text to the largest readable size on one or multiple A4 pages, then print directly from the browser.",
+  "descriptionJa": "入力した文字を1枚または複数のA4へ分割し、各ページを収まる最大サイズへ自動調整して、そのままブラウザから印刷するツール。",
+  "defaultLanguage": "auto",
+  "repository": {
+    "owner": "ttomohisa",
+    "name": "htmlapps-max-text-print"
+  },
+  "build": {
+    "output": "dist/index.html",
+    "blockRuntimeNetwork": true,
+    "selfExtract": {
+      "enabled": true,
+      "output": "dist/index.self-extract.html"
+    },
+    "sizeBudget": {
+      "readableWarningMb": 25,
+      "selfExtractWarningMb": 12
+    }
+  }
+}
