@@ -18,7 +18,7 @@ if ([string]::IsNullOrWhiteSpace($MarkdownOutput)) { $MarkdownOutput = Join-Path
 if (-not [System.IO.Path]::IsPathRooted($MarkdownOutput)) { $MarkdownOutput = Join-Path $Root $MarkdownOutput }
 
 $config = Read-DependencyJson $DependenciesPath
-$dependencies = if ($config.dependencies) { @($config.dependencies) } else { @() }
+$dependencies = @($config.dependencies)
 $updates = @()
 $checkedCount = 0
 $disabledCount = 0
