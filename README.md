@@ -51,7 +51,7 @@ The build has no runtime package to download in v1.0.0. It also generates `dist/
    - **Blank lines** — use blank lines as page separators.
    - **Each line** — print each non-empty line on its own sheet.
    - **Each character** — print each non-whitespace grapheme on its own sheet.
-3. Check generated pages with Previous / Next. When focus is not in a form field, `←` / `→` also moves through the preview.
+3. Check generated pages with Previous / Next. When focus is not in a form field and Help is closed, `←` / `→` also moves through the preview.
 4. Adjust orientation, margin, typeface, color, or advanced settings if needed.
 5. Choose **Print**. All generated pages are sent to one native print dialog.
 6. Select a printer, or choose **Save as PDF** when you need a PDF file.
@@ -61,6 +61,10 @@ The build has no runtime package to download in v1.0.0. It also generates `dist/
 Every generated page is fitted independently, but the paper orientation is shared by the whole print job. **Auto** evaluates portrait and landscape across the generated pages and chooses one orientation for the job; mixed portrait/landscape pages are intentionally not produced.
 
 Character-per-page mode uses `Intl.Segmenter` when available so emoji and combining characters are not split in the middle. The app limits one operation to 200 generated pages to avoid accidental very large print jobs.
+
+### Clearing text safely
+
+**Clear** offers **Undo** for five seconds, until another toast replaces it or you begin typing, pasting, or composing text. New input ends Clear Undo so earlier text cannot overwrite it. Changing print settings or language alone keeps Clear Undo available.
 
 ### Resetting saved print settings
 
@@ -118,6 +122,8 @@ For the full repository check:
 ```powershell
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-repository.ps1
 ```
+
+The full repository check also runs the dependency-free Node.js interaction regressions (Node.js 22 or newer) against source, both generated variants, and the root download. The tests cover Clear Undo boundaries, saved text, and dialog shortcut isolation; browser QA is still needed for layout, native focus, and printing.
 
 No npm runtime package is currently required by the app. The dependency-update workflow remains in the repository so future pinned dependencies can be reviewed through Issues rather than updated automatically.
 

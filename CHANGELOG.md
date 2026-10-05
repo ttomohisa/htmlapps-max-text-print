@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- End Clear Undo when new typing, pasting, or IME composition starts, preserving newer saved text.
+- Reject expired/replaced Undo actions and earlier Clear callbacks after repeated clears.
+- Keep preview arrow shortcuts inactive while Help or another dialog is open.
+- Add bilingual interaction regressions for source, root download, and both standalone variants.
+
 ## 1.0.0 - 2026-08-31
 
 - Initial public release of Max Text Print.

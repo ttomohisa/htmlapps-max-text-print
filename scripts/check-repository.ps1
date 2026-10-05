@@ -186,4 +186,9 @@ $buildArguments = @{}
 if ($ForceDownload) { $buildArguments.ForceDownload = $true }
 & (Join-Path $Root "build-standalone.ps1") @buildArguments
 
+$node = Get-Command node -ErrorAction SilentlyContinue
+if (-not $node) { throw "Node.js 22 or newer is required for interaction regression tests." }
+& $node.Source (Join-Path $Root "tests/interaction.test.cjs")
+if ($LASTEXITCODE -ne 0) { throw "Interaction regression tests failed." }
+
 Write-Host "[OK] Repository check passed." -ForegroundColor Green
