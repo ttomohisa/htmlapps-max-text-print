@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Add direct preview navigation with a localized page-number field, Go action, and Enter support.
+- Validate page jumps on commit without clamping intermediate input; preserve all-page printing.
+- Disable Print during pending fitting, reject invalid current output, and cancel queued requests after text or print-setting changes.
+- Recheck fitted output at the final native-print handoff and prevent duplicate queued print requests.
+
 - End Clear Undo when new typing, pasting, or IME composition starts, preserving newer saved text.
 - Reject expired/replaced Undo actions and earlier Clear callbacks after repeated clears.
 - Keep preview arrow shortcuts inactive while Help or another dialog is open.

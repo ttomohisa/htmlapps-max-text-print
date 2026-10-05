@@ -21,7 +21,7 @@ GitHub Pages delivers the initial HTML. After it loads, text fitting, page split
 - **Fit text to A4 automatically** — Enter text and the app finds the largest font size that stays inside the selected safe margin.
 - **Split one input into multiple sheets** — Keep everything on one page, split at blank lines, put each line on its own page, or print each character on its own page.
 - **Fit every page independently** — Short and long page contents each get their own maximum font size.
-- **Preview before printing** — Move through generated pages with Previous / Next or the Left / Right arrow keys.
+- **Preview before printing** — Enter a page number and choose Go or press Enter, or use Previous / Next and the Left / Right arrow keys.
 - **Print all pages in one job** — The native browser/OS print dialog receives every generated A4 page together.
 - **Choose practical print settings** — Portrait / landscape / Auto, 10 mm / 5 mm / 0 mm / custom margins, local typefaces, bold, alignment, text/background colors, line height, letter spacing, and outline.
 - **Keep settings without an account** — Text and print settings are stored locally when browser storage is available. Reset actions can be undone from the toast immediately after use.
@@ -51,10 +51,12 @@ The build has no runtime package to download in v1.0.0. It also generates `dist/
    - **Blank lines** — use blank lines as page separators.
    - **Each line** — print each non-empty line on its own sheet.
    - **Each character** — print each non-whitespace grapheme on its own sheet.
-3. Check generated pages with Previous / Next. When focus is not in a form field and Help is closed, `←` / `→` also moves through the preview.
+3. Enter a whole page number from 1 to the total count, then choose **Go** or press **Enter** to jump directly. You can also use Previous / Next. When focus is not in a form field and Help is closed, `←` / `→` also moves through the preview.
 4. Adjust orientation, margin, typeface, color, or advanced settings if needed.
 5. Choose **Print**. All generated pages are sent to one native print dialog.
 6. Select a printer, or choose **Save as PDF** when you need a PDF file.
+
+Page navigation changes only the preview; every generated page is still printed in its original order. Print is disabled while recalculating, for empty input, or above the 200-page limit. Changing text or print settings before the dialog opens cancels the pending request; choose Print again after recalculation.
 
 ### Page splitting and orientation
 
@@ -123,7 +125,7 @@ For the full repository check:
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-repository.ps1
 ```
 
-The full repository check also runs the dependency-free Node.js interaction regressions (Node.js 22 or newer) against source, both generated variants, and the root download. The tests cover Clear Undo boundaries, saved text, and dialog shortcut isolation; browser QA is still needed for layout, native focus, and printing.
+The full repository check also runs the dependency-free Node.js interaction regressions (Node.js 22 or newer) against source, both generated variants, and the root download. The tests cover Clear Undo boundaries, saved text, direct page navigation, queued-print cancellation, and dialog shortcut isolation; browser QA is still needed for layout, native focus, and printing.
 
 No npm runtime package is currently required by the app. The dependency-update workflow remains in the repository so future pinned dependencies can be reviewed through Issues rather than updated automatically.
 
