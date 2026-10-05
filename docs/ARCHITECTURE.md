@@ -37,6 +37,10 @@ Using the same paper DOM elements for preview and printing keeps line wrapping a
 
 Text, language choice, page-splitting mode, and print settings are serialized to local storage under `max-text-print:v1`. The app remains usable when local storage is unavailable; persistence is simply skipped.
 
+## Interaction boundaries
+
+Clear Undo belongs to the current clear operation. Starting text editing (including IME composition) invalidates it; both its operation identity and the empty editor/state are checked before restoring. Toast generations reject callbacks from expired or replaced toasts. Print-setting changes do not end Clear Undo, and editing text does not invalidate a settings-reset Undo. Page arrow shortcuts are suspended while a dialog is open.
+
 ## Printing
 
 `window.print()` opens the native browser/OS print dialog. The application does not bypass that dialog and does not implement its own PDF encoder. Users who need a PDF can select the browser or OS **Save as PDF** destination.

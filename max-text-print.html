@@ -467,7 +467,8 @@
             <li>書体は端末内のフォントから選べます。端末にない書体は近い書体へフォールバックします。</li>
             <li>印刷設定は入力文字と同様にこのブラウザへ自動保存されます。「印刷設定」の「初期値に戻す」で設定全体を既定値へ戻せます。</li>
             <li>詳細設定の「初期値に戻す」は、行間・文字間隔・縁取りだけを既定値へ戻します。どちらのリセットも直後のトーストから元に戻せます。</li>
-            <li>複数ページ時はプレビューの左右ボタンでページを確認できます。「印刷する」では分割した全ページをまとめて印刷します。</li>
+            <li>「クリア」は直後のトーストから元に戻せます。文字の入力・貼り付け・日本語変換を始めると、新しい入力を保護するためクリアのUndoは終了します。</li>
+            <li>複数ページ時は左右ボタン、または入力欄やヘルプを操作していないときの左右キーで確認できます。「印刷する」では全ページをまとめて印刷します。</li>
             <li>一度に作成できるのは200ページまでです。PDFが必要な場合は、印刷先で「PDFに保存」を選んでください。</li>
           </ul>
           <h3>印刷時の注意</h3>
@@ -490,7 +491,8 @@
             <li>You can choose from local typefaces. If a selected typeface is unavailable, the browser uses a similar local fallback.</li>
             <li>Print settings are autosaved in this browser. “Reset to defaults” in Print settings restores all print settings.</li>
             <li>Reset to defaults in Advanced settings restores only line height, letter spacing, and outline. Both resets can be undone from the toast immediately afterward.</li>
-            <li>Use the previous/next buttons to inspect multi-page output. Print sends all generated pages to the browser/OS print dialog in one job.</li>
+            <li>Clear can be undone from its toast immediately afterward. Starting to type, paste, or compose text ends Clear Undo so it cannot replace your new input.</li>
+            <li>Inspect pages with the previous/next buttons, or arrow keys when you are outside form fields and Help is closed. Print sends all pages to the browser/OS print dialog in one job.</li>
             <li>Up to 200 pages can be generated at once. Choose a PDF destination in the print dialog when you need a PDF.</li>
           </ul>
           <h3>Printing notes</h3>
@@ -513,7 +515,7 @@
     (() => {
       'use strict';
       const APP_CONFIG = {"$schema":"./schemas/app-config.schema.json","name":"Max Text Print","nameJa":"Max Text Print","slug":"max-text-print","version":"1.0.0","description":"Fit text to the largest readable size on one or multiple A4 pages, then print directly from the browser.","descriptionJa":"入力した文字を1枚または複数のA4へ分割し、各ページを収まる最大サイズへ自動調整して、そのままブラウザから印刷するツール。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-max-text-print"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}};
-      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.2","generatedAtUtc":"2026-08-31T06:17:56.5804385Z","app":{"name":"Max Text Print","slug":"max-text-print","version":"1.0.0"},"dependencies":[]};
+      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.2","generatedAtUtc":"2026-10-05T05:38:01.8588457Z","app":{"name":"Max Text Print","slug":"max-text-print","version":"1.0.0"},"dependencies":[]};
       const EMBEDDED_ASSET_BUNDLE = {"schemaVersion":2,"dependencies":{}};
 
       // Keep the generic embedded-asset surface expected by the template.
@@ -606,6 +608,8 @@
       let pageLimitExceeded = false;
       let fitTimer = 0;
       let toastTimer = 0;
+      let toastGeneration = 0;
+      let clearUndo = null;
 
       const editor=$('#editor'), pagesContainer=$('#pagesContainer'), emptyPreview=$('#emptyPreview'),
             measureBox=$('#measureBox'), paperStage=$('#paperStage'), printButton=$('#printButton'),
@@ -902,12 +906,28 @@
       }
       function showToast(message,{actionLabel='',onAction=null,duration=3500}={}){
         clearTimeout(toastTimer);
+        invalidateClearUndo();
+        const generation=++toastGeneration;
         $('#appToastMessage').textContent=message;
         const action=$('#appToastAction');
         action.textContent=actionLabel; action.hidden=!actionLabel||!onAction;
-        action.onclick=onAction||null;
+        action.onclick=onAction?()=>{
+          if(generation!==toastGeneration || action.hidden) return;
+          onAction();
+        }:null;
         $('#appToast').classList.add('show');
-        toastTimer=setTimeout(()=>$('#appToast').classList.remove('show'),duration);
+        toastTimer=setTimeout(()=>{
+          if(generation!==toastGeneration) return;
+          invalidateClearUndo();
+          action.hidden=true;action.onclick=null;
+          $('#appToast').classList.remove('show');
+        },duration);
+      }
+      function invalidateClearUndo(){
+        if(!clearUndo) return;
+        clearUndo=null;
+        const action=$('#appToastAction');
+        action.hidden=true;action.onclick=null;
       }
       // Template-compatible toast API used by reusable Browser Kitty patterns.
       window.AppToast=Object.freeze({
@@ -926,7 +946,13 @@
         showToast(pageTexts.length>1?t('printOpeningPages',{count:pageTexts.length}):t('printOpening'),{duration:1400});
         requestAnimationFrame(()=>requestAnimationFrame(()=>window.print()));
       }
-      editor.addEventListener('input',()=>updateState(()=>state.text=editor.value));
+      // Editing starts a new text history, including IME composition before input.
+      editor.addEventListener('beforeinput',invalidateClearUndo);
+      editor.addEventListener('compositionstart',invalidateClearUndo);
+      editor.addEventListener('input',()=>{
+        invalidateClearUndo();
+        updateState(()=>state.text=editor.value);
+      });
       $('#sampleButton').addEventListener('click',()=>{
         if(state.text) return;
         updateState(()=>{state.text=sampleText[getLanguage()];editor.value=state.text;},{resetPage:true});
@@ -935,12 +961,17 @@
       $('#clearButton').addEventListener('click',()=>{
         if(!state.text) return;
         const before=state.text;
+        const undo={};
         updateState(()=>{state.text='';editor.value='';},{resetPage:true});
         editor.focus();
         showToast(t('cleared'),{actionLabel:t('undo'),onAction:()=>{
+          // A captured or queued action must never overwrite newer text.
+          if(clearUndo!==undo || state.text!=='' || editor.value!=='') return;
+          invalidateClearUndo();
           updateState(()=>{state.text=before;editor.value=before;},{resetPage:true});
           showToast(t('undone'));
         },duration:5000});
+        clearUndo=undo;
       });
       $$('#pageSplitGroup button').forEach(b=>b.addEventListener('click',()=>updateState(()=>{
         state.pageSplit=b.dataset.value;setPressed('pageSplitGroup',state.pageSplit);
@@ -1015,7 +1046,7 @@
       }));
 
       document.addEventListener('keydown',event=>{
-        if(pageTexts.length<=1 || event.altKey || event.ctrlKey || event.metaKey) return;
+        if(pageTexts.length<=1 || event.altKey || event.ctrlKey || event.metaKey || $('dialog[open]')) return;
         const target=event.target;
         if(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target?.isContentEditable) return;
         if(event.key==='ArrowLeft'){event.preventDefault();showPage(currentPageIndex-1);}
