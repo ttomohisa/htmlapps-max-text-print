@@ -115,12 +115,18 @@
     .primary-button{border:0;background:var(--brand);color:#fff;border-radius:11px;padding:10px 15px;font-weight:760;display:inline-flex;align-items:center;gap:8px;min-height:42px}
     .primary-button:hover:not(:disabled){background:var(--brand-2)}
     .secondary-button{border:1px solid var(--line);background:#fff;border-radius:11px;padding:9px 12px;font-weight:680}
-    .page-nav-bar{display:flex;align-items:center;gap:8px;min-height:48px;padding:6px 12px;border-bottom:1px solid var(--line);background:#fff}
+    .page-nav-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;min-height:48px;padding:6px 12px;border-bottom:1px solid var(--line);background:#fff}
     .page-nav-bar[hidden]{display:none!important}
     .page-nav-button{display:grid;place-items:center;width:36px;height:36px;padding:0;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
     .page-nav-button:hover:not(:disabled){background:var(--surface-2);border-color:var(--line-strong)}
     .page-nav-button svg{width:18px;height:18px}
     .page-nav-status{min-width:72px;text-align:center;font-size:13px;font-weight:760;color:var(--ink);font-variant-numeric:tabular-nums}
+    .page-jump{display:flex;align-items:center;gap:6px;font-size:13px;font-variant-numeric:tabular-nums}
+    .page-jump input{width:4.5em;min-height:36px;padding:6px;border:1px solid var(--line);border-radius:8px;background:#fff;text-align:center;font:inherit}
+    .page-jump input[aria-invalid="true"]{border-color:var(--danger)}
+    .page-jump button{min-height:36px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font:inherit}
+    .page-jump-error{width:100%;font-size:12px;color:var(--danger)}
+    .page-jump-error:empty{display:none}
     .page-print-summary{margin-left:auto;color:var(--muted);font-size:11px;white-space:nowrap}
     .paper-stage{height:calc(100vh - 172px);min-height:580px;background:#e9eeec;position:relative;overflow:hidden}
     .paper{display:none;position:absolute;left:50%;top:24px;transform-origin:top center;background:#fff;box-shadow:var(--shadow);overflow:hidden;print-color-adjust:exact;-webkit-print-color-adjust:exact}
@@ -407,11 +413,18 @@
           <button class="page-nav-button" type="button" id="prevPageButton" data-i18n-aria-label="prevPage" aria-label="前のページ">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
           </button>
-          <div class="page-nav-status" id="pageNavStatus">1 / 1</div>
+          <div class="page-nav-status sr-only" id="pageNavStatus" aria-live="polite">1 / 1</div>
+          <div class="page-jump">
+            <label for="pageNumber" class="sr-only" data-i18n="pageNumber">ページ番号</label>
+            <input id="pageNumber" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-describedby="pageJumpTotal pageJumpError" aria-invalid="false">
+            <span id="pageJumpTotal">/ 0</span>
+            <button id="goPageButton" type="button" data-i18n="goPage">移動</button>
+          </div>
           <button class="page-nav-button" type="button" id="nextPageButton" data-i18n-aria-label="nextPage" aria-label="次のページ">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
           </button>
           <div class="page-print-summary" id="pagePrintSummary"></div>
+          <div class="page-jump-error" id="pageJumpError" role="status"></div>
         </div>
         <div class="paper-stage" id="paperStage">
           <div id="pagesContainer"></div>
@@ -468,8 +481,8 @@
             <li>印刷設定は入力文字と同様にこのブラウザへ自動保存されます。「印刷設定」の「初期値に戻す」で設定全体を既定値へ戻せます。</li>
             <li>詳細設定の「初期値に戻す」は、行間・文字間隔・縁取りだけを既定値へ戻します。どちらのリセットも直後のトーストから元に戻せます。</li>
             <li>「クリア」は直後のトーストから元に戻せます。文字の入力・貼り付け・日本語変換を始めると、新しい入力を保護するためクリアのUndoは終了します。</li>
-            <li>複数ページ時は左右ボタン、または入力欄やヘルプを操作していないときの左右キーで確認できます。「印刷する」では全ページをまとめて印刷します。</li>
-            <li>一度に作成できるのは200ページまでです。PDFが必要な場合は、印刷先で「PDFに保存」を選んでください。</li>
+            <li>複数ページ時はページ番号を入力して「移動」またはEnterで直接確認できます。1〜総ページ数の整数を指定してください。左右ボタン、または入力欄やヘルプを操作していないときの左右キーも使えます。「印刷する」では全ページをまとめて印刷します。</li>
+            <li>一度に作成できるのは200ページまでです。再計算中や空入力・上限超過時は印刷できません。印刷画面が開く前に文字や印刷設定を変更した場合は、再計算後にもう一度「印刷する」を選んでください。PDFが必要な場合は、印刷先で「PDFに保存」を選んでください。</li>
           </ul>
           <h3>印刷時の注意</h3>
           <ul>
@@ -492,8 +505,8 @@
             <li>Print settings are autosaved in this browser. “Reset to defaults” in Print settings restores all print settings.</li>
             <li>Reset to defaults in Advanced settings restores only line height, letter spacing, and outline. Both resets can be undone from the toast immediately afterward.</li>
             <li>Clear can be undone from its toast immediately afterward. Starting to type, paste, or compose text ends Clear Undo so it cannot replace your new input.</li>
-            <li>Inspect pages with the previous/next buttons, or arrow keys when you are outside form fields and Help is closed. Print sends all pages to the browser/OS print dialog in one job.</li>
-            <li>Up to 200 pages can be generated at once. Choose a PDF destination in the print dialog when you need a PDF.</li>
+            <li>Enter a page number and choose Go or press Enter to jump directly. Use a whole number from 1 to the total page count. Previous/next buttons and arrow keys outside form fields (with Help closed) also work. Print sends all pages to the browser/OS print dialog in one job.</li>
+            <li>Up to 200 pages can be generated at once. Print is unavailable while recalculating, with empty text, or over the limit. If you edit text or print settings before the dialog opens, choose Print again after recalculation. Choose a PDF destination in the print dialog when you need a PDF.</li>
           </ul>
           <h3>Printing notes</h3>
           <ul>
@@ -515,7 +528,7 @@
     (() => {
       'use strict';
       const APP_CONFIG = {"$schema":"./schemas/app-config.schema.json","name":"Max Text Print","nameJa":"Max Text Print","slug":"max-text-print","version":"1.0.0","description":"Fit text to the largest readable size on one or multiple A4 pages, then print directly from the browser.","descriptionJa":"入力した文字を1枚または複数のA4へ分割し、各ページを収まる最大サイズへ自動調整して、そのままブラウザから印刷するツール。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-max-text-print"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}};
-      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.2","generatedAtUtc":"2026-10-05T05:38:01.8588457Z","app":{"name":"Max Text Print","slug":"max-text-print","version":"1.0.0"},"dependencies":[]};
+      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.2","generatedAtUtc":"2026-10-05T18:42:13.9941183Z","app":{"name":"Max Text Print","slug":"max-text-print","version":"1.0.0"},"dependencies":[]};
       const EMBEDDED_ASSET_BUNDLE = {"schemaVersion":2,"dependencies":{}};
 
       // Keep the generic embedded-asset surface expected by the template.
@@ -552,7 +565,7 @@
         ja:{
           tagline:'A4に収まる最大サイズで、そのまま印刷',brandMeta:'最大文字サイズに自動調整 · A4印刷 · ページ分割対応',introTitle:'A4に収まる最大サイズで文字を印刷',introLead:'入力した文字を1枚または複数のA4に分け、各ページを収まる最大サイズへ自動調整して印刷します。',localOnly:'完全ローカル処理',help:'使い方と注意事項',close:'閉じる',
           textTitle:'文字を入力',textSub:'入力した文字を、選んだページ分割ごとに最大サイズへ自動調整します。',textLabel:'印刷する文字',
-          placeholder:'例：本日休業',chars:'文字',lines:'行',sample:'サンプル',clear:'クリア',pageSplit:'ページ分割',splitSingle:'1ページにまとめる',splitBlank:'空行ごと',splitLine:'1行ごと',splitChar:'1文字ごと',pageSplitHelp:'分割した各ページを、それぞれA4に収まる最大サイズへ調整します。',pageCount:'{count}ページ',pageCountOne:'1ページ',pageLimitWarning:'{count}ページになります。一度に作成できるのは{max}ページまでです。分割を減らしてください。',prevPage:'前のページ',nextPage:'次のページ',printPagesSummary:'{count}ページをまとめて印刷します',settingsTitle:'印刷設定',
+          placeholder:'例：本日休業',chars:'文字',lines:'行',sample:'サンプル',clear:'クリア',pageSplit:'ページ分割',splitSingle:'1ページにまとめる',splitBlank:'空行ごと',splitLine:'1行ごと',splitChar:'1文字ごと',pageSplitHelp:'分割した各ページを、それぞれA4に収まる最大サイズへ調整します。',pageCount:'{count}ページ',pageCountOne:'1ページ',pageLimitWarning:'{count}ページになります。一度に作成できるのは{max}ページまでです。分割を減らしてください。',pageNumber:'ページ番号',goPage:'移動',invalidPage:'1〜{count}の整数を入力してください。',prevPage:'前のページ',nextPage:'次のページ',printPagesSummary:'{count}ページをまとめて印刷します',settingsTitle:'印刷設定',
           settingsSub:'通常はそのままでOK。向きや余白を変えると文字サイズも再計算します。',resetSettings:'初期値に戻す',settingsResetDone:'印刷設定を初期値に戻しました',orientation:'用紙の向き',
           orientationHelp:'自動は大きくなる方を選択',auto:'自動',portrait:'縦',landscape:'横',margin:'余白',standard:'標準',
           narrow:'狭い',none:'なし',custom:'指定',zeroMarginWarning:'余白なしはプリンターによって用紙端が欠ける場合があります。',
@@ -570,7 +583,7 @@
         en:{
           tagline:'Fit the largest text on A4, then print',brandMeta:'Auto-fit text to max size · A4 printing · Page splitting',introTitle:'Print text at the largest size that fits A4',introLead:'Split text across one or more A4 pages, fit each page to the largest safe size, then print directly from the browser.',localOnly:'Fully local processing',help:'How to use & notes',close:'Close',
           textTitle:'Enter text',textSub:'Text is split using your selected page mode, then each page is fitted to its largest safe size.',textLabel:'Text to print',
-          placeholder:'Example: CLOSED TODAY',chars:'chars',lines:'lines',sample:'Sample',clear:'Clear',pageSplit:'Page splitting',splitSingle:'Keep on one page',splitBlank:'Blank lines',splitLine:'Each line',splitChar:'Each character',pageSplitHelp:'Each generated page is independently fitted to the largest size that stays on A4.',pageCount:'{count} pages',pageCountOne:'1 page',pageLimitWarning:'This creates {count} pages. Up to {max} pages can be generated at once. Reduce the split.',prevPage:'Previous page',nextPage:'Next page',printPagesSummary:'Print all {count} pages',settingsTitle:'Print settings',
+          placeholder:'Example: CLOSED TODAY',chars:'chars',lines:'lines',sample:'Sample',clear:'Clear',pageSplit:'Page splitting',splitSingle:'Keep on one page',splitBlank:'Blank lines',splitLine:'Each line',splitChar:'Each character',pageSplitHelp:'Each generated page is independently fitted to the largest size that stays on A4.',pageCount:'{count} pages',pageCountOne:'1 page',pageLimitWarning:'This creates {count} pages. Up to {max} pages can be generated at once. Reduce the split.',pageNumber:'Page number',goPage:'Go',invalidPage:'Enter a whole number from 1 to {count}.',prevPage:'Previous page',nextPage:'Next page',printPagesSummary:'Print all {count} pages',settingsTitle:'Print settings',
           settingsSub:'The defaults usually work. Orientation and margins immediately recalculate the fitted size.',resetSettings:'Reset to defaults',settingsResetDone:'Print settings reset to defaults',orientation:'Orientation',
           orientationHelp:'Auto chooses the larger result',auto:'Auto',portrait:'Portrait',landscape:'Landscape',margin:'Margin',standard:'Standard',
           narrow:'Narrow',none:'None',custom:'Custom',zeroMarginWarning:'A 0 mm margin can be clipped by printers that cannot print to the physical edge.',
@@ -607,6 +620,8 @@
       let fitValid = false;
       let pageLimitExceeded = false;
       let fitTimer = 0;
+      let outputRevision = 0;
+      let printRequest = 0;
       let toastTimer = 0;
       let toastGeneration = 0;
       let clearUndo = null;
@@ -614,7 +629,7 @@
       const editor=$('#editor'), pagesContainer=$('#pagesContainer'), emptyPreview=$('#emptyPreview'),
             measureBox=$('#measureBox'), paperStage=$('#paperStage'), printButton=$('#printButton'),
             mobilePrintButton=$('#mobilePrintButton'), previewStatus=$('#previewStatus'),
-            prevPageButton=$('#prevPageButton'), nextPageButton=$('#nextPageButton');
+            prevPageButton=$('#prevPageButton'), nextPageButton=$('#nextPageButton'), pageNumber=$('#pageNumber');
 
       function getLanguage(){
         if(state.language==='ja'||state.language==='en') return state.language;
@@ -833,6 +848,12 @@
         warning.classList.toggle('show',pageLimitExceeded);
         $('#pageNavBar').hidden=count<=1;
         $('#pageNavStatus').textContent=count?`${currentPageIndex+1} / ${count}`:'0 / 0';
+        pageNumber.value=count?String(currentPageIndex+1):'';
+        pageNumber.max=String(count);
+        pageNumber.disabled=count<=1;
+        $('#goPageButton').disabled=count<=1;
+        $('#pageJumpTotal').textContent=`/ ${count}`;
+        setPageJumpError(false);
         $('#pagePrintSummary').textContent=count>1?t('printPagesSummary',{count}):'';
         prevPageButton.disabled=currentPageIndex<=0;
         nextPageButton.disabled=currentPageIndex>=count-1;
@@ -856,6 +877,7 @@
       }
       function recomputeFit(){
         clearTimeout(fitTimer);
+        fitTimer=0;
         pageTexts=splitIntoPages(state.text);
         currentPageIndex=Math.max(0,Math.min(currentPageIndex,Math.max(0,pageTexts.length-1)));
         pageLimitExceeded=pageTexts.length>MAX_PAGES;
@@ -886,9 +908,31 @@
         printButton.disabled=!fitValid;
         mobilePrintButton.disabled=!fitValid;
       }
-      function scheduleFit(){
+      function scheduleFit({outputChanged=true}={}){
+        // Only output changes cancel an accepted job; preview navigation is independent.
+        if(outputChanged) outputRevision+=1;
+        fitValid=false;
+        printButton.disabled=true;
+        mobilePrintButton.disabled=true;
         clearTimeout(fitTimer);
         fitTimer=setTimeout(recomputeFit,25);
+      }
+      function setPageJumpError(invalid){
+        pageNumber.setAttribute('aria-invalid',String(invalid));
+        $('#pageJumpError').textContent=invalid?t('invalidPage',{count:pageTexts.length}):'';
+      }
+      function jumpToPage(){
+        const entered=pageNumber.value;
+        // A text or split edit may still be waiting for its debounced fit.
+        if(fitTimer) recomputeFit();
+        const value=Number(entered);
+        if(!/^\d+$/.test(entered.trim()) || !Number.isSafeInteger(value) || value<1 || value>pageTexts.length){
+          pageNumber.value=entered;
+          setPageJumpError(true);
+          return;
+        }
+        showPage(value-1);
+        updatePaginationLabels();
       }
       function showPage(index){
         if(!pageTexts.length) return;
@@ -941,10 +985,16 @@
         save(); updateCounts(); updateSettingReadouts(); scheduleFit();
       }
       function openPrint(){
-        if(!fitValid) return;
         recomputeFit();
+        if(!fitValid) return;
+        const revision=outputRevision,request=++printRequest;
         showToast(pageTexts.length>1?t('printOpeningPages',{count:pageTexts.length}):t('printOpening'),{duration:1400});
-        requestAnimationFrame(()=>requestAnimationFrame(()=>window.print()));
+        requestAnimationFrame(()=>requestAnimationFrame(()=>{
+          if(revision!==outputRevision || request!==printRequest) return;
+          // Font/layout readiness can change between the request and the native handoff.
+          recomputeFit();
+          if(fitValid && revision===outputRevision && request===printRequest) window.print();
+        }));
       }
       // Editing starts a new text history, including IME composition before input.
       editor.addEventListener('beforeinput',invalidateClearUndo);
@@ -1024,9 +1074,14 @@
       mobilePrintButton.addEventListener('click',openPrint);
       prevPageButton.addEventListener('click',()=>showPage(currentPageIndex-1));
       nextPageButton.addEventListener('click',()=>showPage(currentPageIndex+1));
+      $('#goPageButton').addEventListener('click',jumpToPage);
+      pageNumber.addEventListener('input',()=>setPageJumpError(false));
+      pageNumber.addEventListener('keydown',event=>{
+        if(event.key==='Enter' && !event.isComposing){event.preventDefault();jumpToPage();}
+      });
 
       $('#languageButton').addEventListener('click',()=>{
-        state.language=getLanguage()==='ja'?'en':'ja';save();applyLanguage();scheduleFit();
+        state.language=getLanguage()==='ja'?'en':'ja';save();applyLanguage();scheduleFit({outputChanged:false});
       });
       const helpDialog=$('#helpDialog');
       $('#helpButton').addEventListener('click',()=>helpDialog.showModal());
