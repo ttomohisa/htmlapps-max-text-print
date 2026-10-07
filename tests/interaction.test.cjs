@@ -9,6 +9,31 @@ if(!targets.length)targets.push('src/index.template.html','dist/index.html','max
 for(const target of targets)for(const language of ['ja','en']){
   const file=path.resolve(root,target),label=`${target} / ${language}`;
   const setup=()=>{const app=boot(file,language);app.type(language==='ja'?'以前の掲示':'Previous sign');app.el('clearButton').click();return app;};
+  test(`${label}: Help tooltip matches the current-language accessible name`,()=>{
+    const app=boot(file,language);
+    assert.equal(app.el('helpButton').getAttribute('title'),language==='ja'?'使い方と注意事項':'How to use & notes');
+    app.el('languageButton').click();
+    assert.equal(app.el('helpButton').getAttribute('title'),language==='ja'?'How to use & notes':'使い方と注意事項');
+  });
+  test(`${label}: header keeps target-language labels and localized Help across toggle and reload`,()=>{
+    const app=boot(file,language);
+    const check=(instance,lang)=>{
+      const button=instance.el('languageButton'),target=lang==='ja'?'英語に切り替え':'Switch to Japanese';
+      assert.equal(instance.document.documentElement.lang,lang);
+      assert.equal(button.textContent,lang==='ja'?'EN':'JA');
+      assert.equal(button.getAttribute('aria-label'),target);
+      assert.equal(button.getAttribute('title'),target);
+      assert.equal(instance.el('helpButton').getAttribute('aria-label'),lang==='ja'?'使い方と注意事項':'How to use & notes');
+      assert.equal(instance.el('helpButton').getAttribute('title'),lang==='ja'?'使い方と注意事項':'How to use & notes');
+    };
+    app.type('Keep this script');app.setting('pageSplitGroup','line');
+    check(app,language);
+    app.el('languageButton').click();check(app,language==='ja'?'en':'ja');
+    assert.equal(app.el('editor').value,'Keep this script');assert.equal(app.saved().pageSplit,'line');
+    check(boot(file,language,app.stored),language==='ja'?'en':'ja');
+    app.el('languageButton').click();check(app,language);
+    check(boot(file,language,app.stored),language);
+  });
   test(`${label}: immediate Clear Undo restores persisted text and preview`,()=>{
     const app=setup();assert.equal(app.el('editor').value,'');assert.equal(app.saved().text,'');assert.equal(app.focused,app.el('editor'));
     app.el('appToastAction').click();app.fit();assert.equal(app.el('editor').value,language==='ja'?'以前の掲示':'Previous sign');assert.equal(app.saved().text,app.el('editor').value);assert.equal(app.el('printButton').disabled,false);
@@ -133,6 +158,10 @@ for(const target of targets)for(const language of ['ja','en']){
     app.window.dispatch('beforeprint');assert.deepEqual(app.el('pagesContainer').children.map(p=>p.children[0].children[0].textContent),['Latest','Second']);
   });
 }
+test('the initial version badge matches the canonical app version',()=>{
+  const config=require('../app.config.json');
+  for(const target of targets)assert.equal(loadHtml(path.resolve(root,target)).match(/id="versionBadge">([^<]+)/)[1],`v${config.version}`,target);
+});
 if(targets.length>1)test('source and every release share the same runtime and help content',()=>{
   const stable=file=>loadHtml(path.resolve(root,file)).replace(/\r\n/g,'\n').replace(/const APP_CONFIG = .*?;/,'const APP_CONFIG = {};').replace(/const BUILD_MANIFEST = .*?;/,'const BUILD_MANIFEST = {};').replace(/const EMBEDDED_ASSET_BUNDLE = .*?;/,'const EMBEDDED_ASSET_BUNDLE = {};');
   const parts=file=>{const h=stable(file);return [h.slice(h.indexOf('<!-- APP:HELP:BEGIN -->'),h.indexOf('<!-- APP:HELP:END -->')),h.slice(h.indexOf('<script>'),h.lastIndexOf('</script>'))];};
