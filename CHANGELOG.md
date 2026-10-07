@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.0.1 - 2026-10-07
+
+- Standardize the language button to EN / JA, with target-language labels and tooltips in the current UI language.
+- Keep the Help tooltip synchronized with its localized accessible name.
+
 - Add direct preview navigation with a localized page-number field, Go action, and Enter support.
 - Validate page jumps on commit without clamping intermediate input; preserve all-page printing.
 - Disable Print during pending fitting, reject invalid current output, and cancel queued requests after text or print-setting changes.

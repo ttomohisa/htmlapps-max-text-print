@@ -224,7 +224,7 @@
             </svg>
           </div>
           <div class="brandcopy">
-            <div class="brandname"><span id="brandName">Max Text Print</span><span class="version-badge" id="versionBadge">v1.0.0</span></div>
+            <div class="brandname"><span id="brandName">Max Text Print</span><span class="version-badge" id="versionBadge">v1.0.1</span></div>
             <div class="brandtag" data-i18n="brandMeta">最大文字サイズに自動調整 · A4印刷 · ページ分割対応</div>
           </div>
         </div>
@@ -527,8 +527,8 @@
   <script>
     (() => {
       'use strict';
-      const APP_CONFIG = {"$schema":"./schemas/app-config.schema.json","name":"Max Text Print","nameJa":"Max Text Print","slug":"max-text-print","version":"1.0.0","description":"Fit text to the largest readable size on one or multiple A4 pages, then print directly from the browser.","descriptionJa":"入力した文字を1枚または複数のA4へ分割し、各ページを収まる最大サイズへ自動調整して、そのままブラウザから印刷するツール。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-max-text-print"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}};
-      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.2","generatedAtUtc":"2026-10-05T18:42:13.9941183Z","app":{"name":"Max Text Print","slug":"max-text-print","version":"1.0.0"},"dependencies":[]};
+      const APP_CONFIG = {"$schema":"./schemas/app-config.schema.json","name":"Max Text Print","nameJa":"Max Text Print","slug":"max-text-print","version":"1.0.1","description":"Fit text to the largest readable size on one or multiple A4 pages, then print directly from the browser.","descriptionJa":"入力した文字を1枚または複数のA4へ分割し、各ページを収まる最大サイズへ自動調整して、そのままブラウザから印刷するツール。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-max-text-print"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}};
+      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.2","generatedAtUtc":"2026-10-07T06:49:45.1442594Z","app":{"name":"Max Text Print","slug":"max-text-print","version":"1.0.1"},"dependencies":[]};
       const EMBEDDED_ASSET_BUNDLE = {"schemaVersion":2,"dependencies":{}};
 
       // Keep the generic embedded-asset surface expected by the template.
@@ -678,8 +678,11 @@
         $$('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n)});
         $$('[data-i18n-placeholder]').forEach(el=>{el.placeholder=t(el.dataset.i18nPlaceholder)});
         $$('[data-i18n-aria-label]').forEach(el=>el.setAttribute('aria-label',t(el.dataset.i18nAriaLabel)));
-        $('#languageButton').textContent=lang==='ja'?'EN':'日本語';
-        $('#languageButton').setAttribute('aria-label',lang==='ja'?'Switch to English':'日本語に切り替え');
+        $('#languageButton').textContent=lang==='ja'?'EN':'JA';
+        const languageTarget=lang==='ja'?'英語に切り替え':'Switch to Japanese';
+        $('#languageButton').setAttribute('aria-label',languageTarget);
+        $('#languageButton').setAttribute('title',languageTarget);
+        $('#helpButton').setAttribute('title',t('help'));
         $$('[data-help-lang]').forEach(el=>el.hidden=el.dataset.helpLang!==lang);
         document.title=APP_CONFIG.name;
         $('#versionBadge').textContent=`v${APP_CONFIG.version}`;
