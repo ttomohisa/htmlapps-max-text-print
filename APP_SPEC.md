@@ -3,7 +3,7 @@
 ## 1. Product identity
 
 - **Name:** Max Text Print
-- **Version:** 1.0.2
+- **Version:** 1.0.3
 - **Purpose:** 入力した文字を1枚または複数のA4へ分割し、各ページを安全領域に収まる最大文字サイズへ自動調整して、そのままブラウザから印刷する。
 - **Primary users:** 張り紙、案内、受付表示、簡易サイン、大きな文字を複数枚まとめて印刷したい人。
 - **Release artifacts:** `dist/index.html` / `dist/index.self-extract.html`
@@ -109,4 +109,4 @@
 
 ## Brand icon consistency
 
-- Brand backgrounds use #16624f with corner radii equal to exactly 25% of each background axis. Preserve foreground artwork, placement, and existing canvas padding across SVG assets, app headers, and embedded favicons.
+- Use the supplied printer artwork from `assets/favicon.svg` in the header and embedded favicons, including the self-extracting loader. Preserve the complete 64×64 artwork with #16624f background and rx=16 (25%) corners.
