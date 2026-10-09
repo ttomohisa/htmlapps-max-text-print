@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.3 - 2026-10-10
+
+- Replace the app icon with the supplied artwork in the canonical SVG, full-size header, and embedded favicon.
+- Regenerate release HTML and the Browser Kitty root alias; verify icon and compressed-payload parity.
+- Keep the root download alias synchronized automatically during standard builds.
+
 ## 1.0.2 - 2026-10-09
 
 - Normalize brand icon backgrounds to #16624f with exact 25% corner radii across SVG assets, header icons, and embedded favicons, preserving existing artwork.

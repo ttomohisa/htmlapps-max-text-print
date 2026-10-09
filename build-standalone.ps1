@@ -339,6 +339,10 @@ foreach ($entry in $replacements.GetEnumerator()) {
 $outputDirectory = Split-Path -Parent $OutputPath
 New-Item -ItemType Directory -Force -Path $outputDirectory | Out-Null
 [System.IO.File]::WriteAllText($OutputPath, $template, (New-Object System.Text.UTF8Encoding($false)))
+# Keep the Browser Kitty root download synchronized on standard builds.
+if (-not $OutputPathWasSpecified) {
+  [System.IO.File]::WriteAllText((Join-Path $Root "max-text-print.html"), $template, (New-Object System.Text.UTF8Encoding($false)))
+}
 [System.IO.File]::WriteAllText((Join-Path $outputDirectory "dependency-manifest.json"), ($manifest | ConvertTo-Json -Depth 40), (New-Object System.Text.UTF8Encoding($false)))
 [System.IO.File]::WriteAllText((Join-Path $outputDirectory ".nojekyll"), "", (New-Object System.Text.UTF8Encoding($false)))
 

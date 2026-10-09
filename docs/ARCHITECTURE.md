@@ -50,3 +50,8 @@ Text and print-setting changes invalidate an output revision and disable both Pr
 ## Network
 
 There are no third-party runtime dependencies. The generated application CSP blocks runtime connections with `connect-src 'none'`; external fonts, scripts, analytics, telemetry, and APIs are not used.
+
+## Brand assets
+
+`assets/favicon.svg` is the canonical supplied artwork. The source template embeds the same SVG in the full-size header and favicon. The self-extracting loader inherits the readable HTML favicon; icon regression tests compare all source and generated copies.
+The standard build also regenerates `max-text-print.html` byte-for-byte from the readable output. Explicit custom output builds leave the root alias untouched.
