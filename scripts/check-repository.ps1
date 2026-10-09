@@ -192,3 +192,6 @@ if (-not $node) { throw "Node.js 22 or newer is required for interaction regress
 if ($LASTEXITCODE -ne 0) { throw "Interaction regression tests failed." }
 
 Write-Host "[OK] Repository check passed." -ForegroundColor Green
+
+& node --test (Join-Path $Root "tests/icon-brand.test.cjs")
+if ($LASTEXITCODE -ne 0) { throw "Brand icon regression failed." }
