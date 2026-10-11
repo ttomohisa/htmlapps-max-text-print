@@ -58,6 +58,8 @@ The build has no runtime package to download in v1.0.0. It also generates `dist/
 
 Page navigation changes only the preview; every generated page is still printed in its original order. Print is disabled while recalculating, for empty input, or above the 200-page limit. Changing text or print settings before the dialog opens cancels the pending request; choose Print again after recalculation.
 
+Help keeps the background page still while open. Scroll inside Help to read longer content, then close it with either close button, Escape, or the backdrop to resume normal page scrolling.
+
 ### Page splitting and orientation
 
 Every generated page is fitted independently, but the paper orientation is shared by the whole print job. **Auto** evaluates portrait and landscape across the generated pages and chooses one orientation for the job; mixed portrait/landscape pages are intentionally not produced.
@@ -125,7 +127,7 @@ For the full repository check:
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-repository.ps1
 ```
 
-The full repository check also runs the dependency-free Node.js interaction regressions (Node.js 22 or newer) against source, both generated variants, and the root download. The tests cover Clear Undo boundaries, saved text, direct page navigation, queued-print cancellation, and dialog shortcut isolation; browser QA is still needed for layout, native focus, and printing.
+The full repository check also runs the dependency-free Node.js interaction regressions (Node.js 22 or newer) against source, both generated variants, and the root download. The tests cover Clear Undo boundaries, saved text, direct page navigation, queued-print cancellation, dialog shortcut isolation, and repeated Help dismissal. Source contracts check modal-only scroll locking and the existing Help shell; browser QA is still needed for layout, wheel scrolling, native Escape/focus, and printing.
 
 No npm runtime package is currently required by the app. The dependency-update workflow remains in the repository so future pinned dependencies can be reviewed through Issues rather than updated automatically.
 
