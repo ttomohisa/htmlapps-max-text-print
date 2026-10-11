@@ -3,7 +3,7 @@
 ## 1. Product identity
 
 - **Name:** Max Text Print
-- **Version:** 1.0.3
+- **Version:** 1.0.4
 - **Purpose:** 入力した文字を1枚または複数のA4へ分割し、各ページを安全領域に収まる最大文字サイズへ自動調整して、そのままブラウザから印刷する。
 - **Primary users:** 張り紙、案内、受付表示、簡易サイン、大きな文字を複数枚まとめて印刷したい人。
 - **Release artifacts:** `dist/index.html` / `dist/index.self-extract.html`
@@ -81,6 +81,8 @@
 - 複数ページの前後移動ボタンは十分なタップ領域を持つ。
 - `prefers-reduced-motion`を尊重。
 - ヘルプは右上の`?`ダイアログ。
+- ヘルプのモーダル表示中だけルート要素とbodyの背景スクロールを止める。ヘルプ内のスクロールと上下の閉じるボタンを維持し、閉じるボタン・Esc・背景クリックで閉じると通常のスクロールへ戻る。印刷時のoverflowは従来どおり維持する。
+- While Help is modal, lock background scrolling on both the root element and body. Preserve the existing inner scrolling and both close buttons; closing by a button, Escape, or the backdrop restores ordinary page scrolling. Keep print overflow behavior unchanged.
 - Light only。絵文字を主要UIアイコンに使わない。
 
 ## 8. Acceptance criteria
@@ -94,6 +96,8 @@
 - 1文字ごとモードでZWJ絵文字を途中分割しない。
 - 複数ページでもすべて同じ用紙向きになる。
 - 前後ボタンと左右キーでページを移動できる。ヘルプ表示中の左右キーでは背後のページが変わらず、閉じると通常のページ移動に戻る。
+- 日本語/英語、デスクトップ/狭い画面（393×252を含む）でヘルプを開き、背後をホイール操作してもページ位置が変わらない。ヘルプ内を最後まで読めて上下の閉じるボタンへ到達できる。各ボタン・Esc・背景クリックで閉じた後と再度開いた後に、背景スクロールの停止/復帰を確認する。
+- Verify Help in Japanese/English on desktop and narrow viewports, including 393×252: outside-wheel input does not move the background page, content and both close buttons remain reachable, and every dismissal/reopen restores the correct scrolling state. Source contracts supplement these browser checks; they do not prove native geometry, focus, scrolling, or printing.
 - クリア直後はUndoで復元できる。新しい入力後や入力してから空に戻した後は以前の文字を復元せず、再読み込み後も新しい内容を保持する。
 - 日本語/英語で、繰り返しクリア・IME開始・サンプル挿入・Undo期限切れを検証する。
 - 印刷メディアでアプリUIが消え、生成ページだけが連続するA4ページとして出力される。

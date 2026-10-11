@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.4 - 2026-10-11
+
+- Stop background page scrolling only while Help is modal, preserving the existing scrollable Help, close controls, and print layout.
+- ヘルプのモーダル表示中だけ背後のスクロールを停止し、ヘルプ内のスクロール・閉じる操作・印刷レイアウトを維持。
+- Add source contracts for modal-only root/body locking, the existing Help shell, and the local-processing shield; cover repeated close-button/backdrop use in both languages.
+- 日英のヘルプ・仕様・使い方を更新。実際のスクロール、Esc、フォーカス、印刷の確認には別途ブラウザ検証が必要。
+
 ## 1.0.3 - 2026-10-10
 
 - Replace the app icon with the supplied artwork in the canonical SVG, full-size header, and embedded favicon.

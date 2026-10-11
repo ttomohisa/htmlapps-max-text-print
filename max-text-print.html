@@ -20,6 +20,7 @@
     [hidden]{display:none!important}
     .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
     html,body{margin:0;min-height:100%;background:var(--surface-2);color:var(--ink)}
+    html:has(dialog:modal),body:has(dialog:modal){overflow:hidden}
     body{font-size:15px}
     button,input,select,textarea{font:inherit;color:inherit}
     button{cursor:pointer}
@@ -234,7 +235,7 @@
 </svg>
           </div>
           <div class="brandcopy">
-            <div class="brandname"><span id="brandName">Max Text Print</span><span class="version-badge" id="versionBadge">v1.0.3</span></div>
+            <div class="brandname"><span id="brandName">Max Text Print</span><span class="version-badge" id="versionBadge">v1.0.4</span></div>
             <div class="brandtag" data-i18n="brandMeta">最大文字サイズに自動調整 · A4印刷 · ページ分割対応</div>
           </div>
         </div>
@@ -481,6 +482,7 @@
       <div class="dialog-body">
         <!-- APP:HELP:BEGIN -->
         <div data-help-lang="ja">
+          <p>ヘルプを開いている間は、背後のページはスクロールしません。長い説明はヘルプ内をスクロールして読めます。上下の閉じるボタン、Escキー、または背景のクリックで閉じると、通常のページスクロールに戻ります。</p>
           <h3>基本操作</h3>
           <ul>
             <li>文字を入力すると、A4の安全領域に収まる最大文字サイズを自動計算します。</li>
@@ -505,6 +507,7 @@
           <p>入力文字と設定はこのブラウザ内だけで処理されます。外部サーバーへ送信しません。ブラウザでローカルストレージが利用できる場合、作業内容を同じブラウザ内へ自動保存します。</p>
         </div>
         <div data-help-lang="en" hidden>
+          <p>The page behind Help stays still while Help is open. Scroll inside Help to read longer content. Close it with either close button, Escape, or a click on the backdrop to resume normal page scrolling.</p>
           <h3>Basics</h3>
           <ul>
             <li>As you type, the app calculates the largest font size that still fits inside the A4 safe area.</li>
@@ -537,8 +540,8 @@
   <script>
     (() => {
       'use strict';
-      const APP_CONFIG = {"$schema":"./schemas/app-config.schema.json","name":"Max Text Print","nameJa":"Max Text Print","slug":"max-text-print","version":"1.0.3","description":"Fit text to the largest readable size on one or multiple A4 pages, then print directly from the browser.","descriptionJa":"入力した文字を1枚または複数のA4へ分割し、各ページを収まる最大サイズへ自動調整して、そのままブラウザから印刷するツール。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-max-text-print"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}};
-      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.2","generatedAtUtc":"2026-10-09T18:14:33.1806327Z","app":{"name":"Max Text Print","slug":"max-text-print","version":"1.0.3"},"dependencies":[]};
+      const APP_CONFIG = {"$schema":"./schemas/app-config.schema.json","name":"Max Text Print","nameJa":"Max Text Print","slug":"max-text-print","version":"1.0.4","description":"Fit text to the largest readable size on one or multiple A4 pages, then print directly from the browser.","descriptionJa":"入力した文字を1枚または複数のA4へ分割し、各ページを収まる最大サイズへ自動調整して、そのままブラウザから印刷するツール。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-max-text-print"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}};
+      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.2","generatedAtUtc":"2026-10-11T02:07:53.4519370Z","app":{"name":"Max Text Print","slug":"max-text-print","version":"1.0.4"},"dependencies":[]};
       const EMBEDDED_ASSET_BUNDLE = {"schemaVersion":2,"dependencies":{}};
 
       // Keep the generic embedded-asset surface expected by the template.

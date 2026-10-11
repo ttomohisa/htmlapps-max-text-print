@@ -79,6 +79,15 @@ for(const target of targets)for(const language of ['ja','en']){
     for(const id of ['editor','customMargin','fontFamily'])assert.equal(app.press('ArrowRight',app.el(id)).defaultPrevented,false);
     assert.equal(app.press('ArrowRight',app.document.body,{ctrlKey:true}).defaultPrevented,false);assert.equal(app.el('pageNavStatus').textContent,'2 / 3');app.press('ArrowLeft');assert.equal(app.el('pageNavStatus').textContent,'1 / 3');
   });
+  test(`${label}: both Help close buttons and the backdrop preserve input across repeated openings`,()=>{
+    const app=boot(file,language);app.type('Keep this sign');app.setting('pageSplitGroup','line');app.fit();
+    const before=JSON.stringify(app.saved()),dialog=app.el('helpDialog');
+    for(const close of [()=>app.el('closeHelpButton').click(),()=>app.el('helpOkButton').click(),()=>dialog.dispatch('click',{clientX:0,clientY:0})]){
+      app.el('helpButton').click();assert.equal(dialog.open,true);
+      dialog.dispatch('click',{clientX:20,clientY:20});assert.equal(dialog.open,true,'inside clicks keep Help open');
+      close();assert.equal(dialog.open,false);assert.equal(app.el('editor').value,'Keep this sign');assert.equal(JSON.stringify(app.saved()),before);
+    }
+  });
 
   const pages=Array.from({length:200},(_,i)=>`Page ${i+1}`);
   const withPages=(count=3)=>{
@@ -156,6 +165,34 @@ for(const target of targets)for(const language of ['ja','en']){
   test(`${label}: beforeprint refresh and native print shortcut remain available`,()=>{
     const app=withPages();app.type('Latest\nSecond');assert.equal(app.press('p',app.document.body,{ctrlKey:true}).defaultPrevented,false);assert.equal(app.press('p',app.document.body,{metaKey:true}).defaultPrevented,false);
     app.window.dispatch('beforeprint');assert.deepEqual(app.el('pagesContainer').children.map(p=>p.children[0].children[0].textContent),['Latest','Second']);
+  });
+}
+// Source contracts complement real-browser checks. They do not simulate CSS,
+// native Escape/focus behavior, wheel scrolling, or dialog geometry.
+for(const target of targets){
+  const html=loadHtml(path.resolve(root,target));
+  const styles=[...html.matchAll(/<style(?:\s[^>]*)?>([\s\S]*?)<\/style>/g)].map(m=>m[1]).join('\n');
+  const screenStyles=styles.split('@media print')[0];
+  test(`${target}: root and body scroll lock is scoped to native modal state`,()=>{
+    const rule=screenStyles.match(/html:has\(dialog:modal\)\s*,\s*body:has\(dialog:modal\)\s*\{([^}]+)\}/);
+    assert.ok(rule,'both html and body must lock only while a native dialog is modal');
+    assert.match(rule[1],/(?:^|;)\s*overflow\s*:\s*hidden\s*(?:;|$)/);
+    const normalPageRule=screenStyles.match(/(?:^|\n)\s*html\s*,\s*body\s*\{([^}]+)\}/);
+    assert.ok(normalPageRule,'normal page styles remain separate');
+    assert.doesNotMatch(normalPageRule[1],/overflow\s*:\s*(hidden|clip)/,'the closed page must not have a permanent scroll lock');
+  });
+  test(`${target}: Help keeps its existing inner scroll shell and print overflow override`,()=>{
+    assert.match(screenStyles,/dialog\{max-height:calc\(100dvh - 20px\);margin:auto 10px 10px;/);
+    assert.match(screenStyles,/\.dialog-body\{overflow:auto;max-height:calc\(100dvh - 155px\)\}/);
+    assert.match(html,/<div class="dialog-head">[\s\S]*?id="closeHelpButton"/);
+    assert.match(html,/<div class="dialog-foot"><button[^>]*id="helpOkButton"/);
+    assert.match(styles,/@media print\s*\{\s*html,body\{[^}]*overflow:visible!important/);
+  });
+  test(`${target}: local-processing badge preserves its decorative shield`,()=>{
+    const badge=html.match(/<div class="local-badge">([\s\S]*?)<\/div>/);
+    assert.ok(badge);
+    assert.match(badge[1],/<svg[^>]*aria-hidden="true"/);
+    assert.match(badge[1],/<path d="M12 3 5 6v5c0 4\.6 2\.8 8 7 10 4\.2-2 7-5\.4 7-10V6z"/);
   });
 }
 test('the initial version badge matches the canonical app version',()=>{
