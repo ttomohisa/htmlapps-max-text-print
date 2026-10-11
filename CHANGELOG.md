@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Clarify Japanese and English help by removing internal layout, implementation, and audit commentary while preserving usage guidance and cautions.
+
 ## 1.0.4 - 2026-10-11
 
 - Stop background page scrolling only while Help is modal, preserving the existing scrollable Help, close controls, and print layout.
