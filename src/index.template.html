@@ -203,7 +203,7 @@
     }
     @media print{
       html,body{margin:0!important;padding:0!important;background:#fff!important;width:auto!important;height:auto!important;overflow:visible!important}
-      .topbar,.page-intro,.left-stack,.preview-toolbar,.page-nav-bar,.preview-footer,.mobile-bottom,.toast,dialog{display:none!important}
+      .topbar,.page-intro,.left-stack,.preview-toolbar,.page-nav-bar,.preview-footer,.print-summary,.mobile-bottom,.toast,dialog{display:none!important}
       .shell{display:block!important;max-width:none!important;margin:0!important;padding:0!important}
       .preview-card{display:block!important;position:static!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
       .paper-stage{display:block!important;position:static!important;height:auto!important;min-height:0!important;background:#fff!important;overflow:visible!important}
@@ -514,8 +514,8 @@
             <li>文字を入力すると、選んだA3・A4・A5・Letterの安全領域に収まる最大文字サイズを自動計算します。</li>
             <li>自動折り返しをOFFにすると入力した改行だけを使います。「全ページの文字サイズを揃える」で共通の最大サイズにできます。</li>
             <li>縦書きは右から左へ列を並べます。英数字は標準的な混在表示になり、用紙の向きとは別に選べます。</li>
-            <li>「ページ分割」で、すべてを1ページにまとめるほか、空行ごと・1行ごと・1文字ごとに分けて一括印刷できます。各ページは個別に最大サイズへ調整されます。</li>
-            <li>1ページにまとめる場合はEnterで入れた改行を維持し、長い行は用紙幅に合わせて自動で折り返します。</li>
+            <li>「ページ分割」で、すべてを1ページにまとめるほか、空行ごと・1行ごと・1文字ごとに分けて一括印刷できます。既定では各ページを個別に最大化します。</li>
+            <li>1ページにまとめる場合はEnterで入れた改行を維持し、自動折り返しONでは長い行を用紙に合わせて折り返します。</li>
             <li>「自動」の用紙向きでは全ページを縦・横の両方で評価し、印刷物全体として文字を大きくできる方へ統一します。</li>
             <li>書体は端末内のフォントから選べます。端末にない書体は近い書体へフォールバックします。</li>
             <li>印刷設定は入力文字と同様にこのブラウザへ自動保存されます。「印刷設定」の「初期値に戻す」で設定全体を既定値へ戻せます。</li>
@@ -540,8 +540,8 @@
             <li>As you type, the app fits text inside the safe area of A3, A4, A5, or Letter paper.</li>
             <li>Turn automatic wrapping OFF to use only explicit line breaks. Choose common sizing to use the largest size that fits every page.</li>
             <li>Vertical writing runs in columns from right to left with standard mixed Latin orientation, independently of paper orientation.</li>
-            <li>Page splitting can keep everything on one page or create pages by blank line, line, or character. Each page is fitted independently.</li>
-            <li>In single-page mode, manual line breaks are preserved and long lines wrap automatically.</li>
+            <li>Page splitting can keep everything on one page or create pages by blank line, line, or character. Each page is fitted independently by default.</li>
+            <li>In single-page mode, manual line breaks are preserved; long lines wrap when automatic wrapping is ON.</li>
             <li>Auto orientation evaluates all pages in both portrait and landscape and uses one orientation for the whole print job.</li>
             <li>You can choose from local typefaces. If a selected typeface is unavailable, the browser uses a similar local fallback.</li>
             <li>Print settings are autosaved in this browser. “Reset to defaults” in Print settings restores all print settings.</li>
@@ -692,7 +692,7 @@
           const raw=localStorage.getItem(storageKey); if(!raw) return;
           const parsed=JSON.parse(raw); state={...defaultState,...parsed};
           if(!['single','blank','line','char'].includes(state.pageSplit)) state.pageSplit='single';
-          if(!Object.prototype.hasOwnProperty.call(paperSizes,state.paperSize)) state.paperSize='A4';
+          if(typeof state.paperSize!=='string' || !Object.prototype.hasOwnProperty.call(paperSizes,state.paperSize)) state.paperSize='A4';
           if(!['horizontal-tb','vertical-rl'].includes(state.writingMode)) state.writingMode='horizontal-tb';
           if(typeof state.autoWrap!=='boolean') state.autoWrap=true;
           if(typeof state.uniformFontSize!=='boolean') state.uniformFontSize=false;
@@ -791,6 +791,9 @@
         $('#zeroMarginWarning').classList.toggle('show',marginMm()===0);
       }
       function styleTextNode(el,fontPt){
+        // Font glyph bounds can extend beyond line boxes, especially with tight leading.
+        // Apply the same proportional gutter to measurement and actual paper text.
+        el.style.padding=`calc(0.2em + ${Math.max(0,Number(state.outline)||0)+1}px)`;
         el.style.writingMode=state.writingMode;
         el.style.textOrientation='mixed';
         el.style.whiteSpace=state.autoWrap?'pre-wrap':'pre';
@@ -806,13 +809,19 @@
       function prepareMeasure(text,orientation,fontPt){
         const dims=pageDims(orientation), m=marginMm(), w=Math.max(1,dims.w-m*2), h=Math.max(1,dims.h-m*2);
         measureBox.style.width=`${w}mm`; measureBox.style.height=`${h}mm`;
-        measureBox.style.padding=`${Math.max(0,Number(state.outline)||0)+1}px`;
         measureBox.textContent=text;
         styleTextNode(measureBox,fontPt);
       }
       function fitsAt(text,fontPt,orientation){
         prepareMeasure(text,orientation,fontPt);
-        return measureBox.scrollWidth<=measureBox.clientWidth+1 && measureBox.scrollHeight<=measureBox.clientHeight+1;
+        if(measureBox.scrollWidth>measureBox.clientWidth || measureBox.scrollHeight>measureBox.clientHeight) return false;
+        // scroll extents cover layout overflow, not every font's glyph/line bounds.
+        // Check all four sides as vertical writing and alignment change overflow direction.
+        const range=document.createRange();
+        range.selectNodeContents(measureBox);
+        const textBounds=range.getBoundingClientRect(),box=measureBox.getBoundingClientRect();
+        const stroke=Math.max(0,Number(state.outline)||0)/2;
+        return textBounds.left-stroke>=box.left && textBounds.right+stroke<=box.right && textBounds.top-stroke>=box.top && textBounds.bottom+stroke<=box.bottom;
       }
       function maxFontForText(text,orientation){
         if(!text.trim()) return {size:0,valid:false};
@@ -869,7 +878,6 @@
         textEl.style.width=vertical?'auto':'100%';
         textEl.style.height=vertical?'100%':'auto';
         textEl.style.flexShrink='0';
-        textEl.style.padding=`${Math.max(0,Number(state.outline)||0)+1}px`;
         textEl.style.color=state.textColor;
         textEl.textContent=text;
         styleTextNode(textEl,fit?.size||12);

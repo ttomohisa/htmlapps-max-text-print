@@ -34,6 +34,12 @@ for(const target of targets) for(const language of ['ja','en']) {
   const stored=new Map([['max-text-print:v1',JSON.stringify({text:'test',paperSize:'bad',autoWrap:'false',uniformFontSize:'true'})]]),app=boot(file,language,stored);
   assert.equal(app.el('paperSize')?.value,'A4');assert.equal(app.el('autoWrapToggle')?.checked,true);assert.equal(app.el('uniformFontToggle')?.checked,false);
  });
+ test(`${label}: non-string saved paper values cannot prevent startup`,()=>{
+  for(const paperSize of [null,[],{}, {toString:null}]){
+   const stored=new Map([['max-text-print:v1',JSON.stringify({text:'test',paperSize})]]),app=boot(file,language,stored);
+   assert.equal(app.el('paperSize').value,'A4');assert.equal(app.el('printButton').disabled,false);
+  }
+ });
  test(`${label}: common sizing chooses the smallest page maximum and Auto optimizes it`,()=>{
   const app=boot(file,language),m=app.el('measureBox');
   // The real fit/search runs; this deterministic geometry isolates its aggregation policy.
