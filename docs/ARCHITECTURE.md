@@ -17,7 +17,7 @@ A maximum of 200 generated pages is enforced before printing.
 
 ## Fitting algorithm
 
-Each generated page is measured independently in an off-screen measurement box using the same font family, weight, line height, letter spacing, wrapping rules, and safe-area dimensions as the visible paper. The app binary-searches from 0.5 to 1200 pt and rounds the result down to 0.5 pt.
+Each generated page is measured independently in an off-screen measurement box using the same font family, weight, line height, letter spacing, wrapping rules, and safe-area dimensions as the visible paper. The app binary-searches from 0.5 to 1200 pt and rounds the result down to 0.5 pt. Shared 0.2 em plus outline/1 px padding reserves room for font overhang; scroll extents and four-sided DOM Range bounds must both fit. The proportional gutter prevents tight leading and vertical glyphs from clipping at the safe-area boundary.
 
 For a fixed orientation, every page receives its own maximum size by default. With common sizing enabled, the minimum of these maxima is used for all pages, and Auto compares the resulting common sizes. In Auto orientation, portrait and landscape are evaluated for the full page set and one shared orientation is selected for the whole print job. Mixed portrait/landscape output is intentionally not generated.
 

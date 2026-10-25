@@ -13,7 +13,7 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
 (async()=>{
  const browser=await chromium.launch({headless:true});
  const page=await browser.newPage({viewport:{width:1360,height:900},locale:'ja-JP'});
- const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
  const source=process.env.PREVIEW_URL||pathToFileURL(path.join(root,'dist/index.html')).href;
  await page.goto(source);await page.locator('#editor').fill('「受付」ABC 123、。\nご案内（２階）');
  const ready=()=>page.waitForFunction(()=>!document.querySelector('#printButton').disabled);
@@ -72,8 +72,15 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
   check(doc.getPageCount()===2,`PDF page count ${paper}/${orientation}/${writing}`,doc.getPageCount());
   for(const p of doc.getPages()){const {width,height}=p.getSize();check(Math.abs(width-expected[0]*72/25.4)<1.2&&Math.abs(height-expected[1]*72/25.4)<1.2,`PDF paper ${paper}/${orientation}/${writing}`,{width,height});}
  }
+ await page.locator('#editor').fill(Array.from({length:200},(_,i)=>`Page ${i+1}`).join('\n'));await ready();
+ check(await page.locator('.paper').count()===200,'200 pages rendered');
+ const manySizes=await fonts();check(new Set(manySizes).size===1,'200 pages share common size');
+ await page.locator('#pageNumber').fill('180');await page.locator('#goPageButton').click();check(await page.locator('.paper.is-preview-active').getAttribute('data-page-index')==='179','direct jump to page 180');
+ await page.locator('#editor').fill(Array.from({length:201},(_,i)=>`Page ${i+1}`).join('\n'));
+ await page.waitForFunction(()=>document.querySelector('#pageLimitWarning').classList.contains('show'));check(!(await page.locator('#printButton').isEnabled()),'201 pages disable printing');
+ await page.locator('#editor').fill('受付\nこちらでご案内します');await ready();
  await page.emulateMedia({media:'screen'});await setting('paperSize','A4');await setting('writingMode','vertical-rl');await page.locator('#pageSplitGroup [data-value="single"]').click();await page.locator('#editor').fill('春の文化祭\n開催のご案内');await ready();
- if(await page.locator('html').getAttribute('lang')!=='ja')await page.locator('#languageButton').click();await page.screenshot({path:path.join(out,'screenshot-ja.png')});
+ if(await page.locator('html').getAttribute('lang')!=='ja')await page.locator('#languageButton').click();await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:path.join(out,'screenshot-ja.png')});
  await page.locator('#languageButton').click();await page.screenshot({path:path.join(out,'screenshot-en.png')});
  for(const variant of ['dist/index.html','dist/index.self-extract.html','max-text-print.html']){
   const local=await browser.newPage();const localErrors=[];local.on('pageerror',e=>localErrors.push(e.message));
@@ -81,6 +88,7 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
   await local.waitForFunction(()=>!document.querySelector('#printButton').disabled);
   check((await local.locator('#versionBadge').innerText())==='v1.1.0'&&!localErrors.length,`file opening ${variant}`,localErrors);await local.close();
  }
+ check(requests.filter(url=>/^https?:/.test(url)&&url!==source).length===0,'no runtime network requests',requests);
  check(errors.length===0,'no console errors',errors);
  await browser.close();fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({results,failures},null,2));
  console.log(`${results.length} browser/PDF assertions; ${failures.length} failures`);for(const f of failures)console.log(JSON.stringify(f));assert.equal(failures.length,0);
