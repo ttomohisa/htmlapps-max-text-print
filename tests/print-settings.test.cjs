@@ -40,6 +40,10 @@ for(const target of targets) for(const language of ['ja','en']) {
    assert.equal(app.el('paperSize').value,'A4');assert.equal(app.el('printButton').disabled,false);
   }
  });
+ test(`${label}: summary tolerates a malformed legacy background color`,()=>{
+  const stored=new Map([['max-text-print:v1',JSON.stringify({text:'test',backgroundColor:null})]]);
+  assert.doesNotThrow(()=>boot(file,language,stored));
+ });
  test(`${label}: common sizing chooses the smallest page maximum and Auto optimizes it`,()=>{
   const app=boot(file,language),m=app.el('measureBox');
   // The real fit/search runs; this deterministic geometry isolates its aggregation policy.

@@ -943,7 +943,7 @@
         $('#printJobSummary').textContent=t('printJob',{count:pageTexts.length,paper:state.paperSize,orientation:t(currentOrientation==='portrait'?'portraitShort':'landscapeShort'),margin:marginMm()});
         $('#printSettingsSummary').textContent=[t(state.writingMode==='vertical-rl'?'verticalWriting':'horizontalWriting'),t(state.autoWrap?'wrapOn':'wrapOff'),t(state.uniformFontSize?'commonSize':'independentSize')].join(' · ');
         $('#printEdgeWarning').classList.toggle('show',marginMm()===0);
-        $('#printBackgroundWarning').classList.toggle('show',state.backgroundColor.toLowerCase()!=='#ffffff');
+        $('#printBackgroundWarning').classList.toggle('show',String(state.backgroundColor||'#ffffff').toLowerCase()!=='#ffffff');
       }
       function updateFitLabels(){
         updatePrintSummary();

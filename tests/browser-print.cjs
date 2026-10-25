@@ -79,6 +79,8 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
  await page.locator('#editor').fill(Array.from({length:201},(_,i)=>`Page ${i+1}`).join('\n'));
  await page.waitForFunction(()=>document.querySelector('#pageLimitWarning').classList.contains('show'));check(!(await page.locator('#printButton').isEnabled()),'201 pages disable printing');
  await page.locator('#editor').fill('受付\nこちらでご案内します');await ready();
+ await page.locator('#pageSplitGroup [data-value="single"]').click();await setting('paperSize','A4');await setting('writingMode','vertical-rl');await page.locator('#editor').fill('「受付」ABC 123、。\nご案内（２階）');await ready();
+ await page.emulateMedia({media:'print'});await page.pdf({path:path.join(out,'vertical-mixed.pdf'),preferCSSPageSize:true,printBackground:true});await page.emulateMedia({media:'screen'});
  await page.emulateMedia({media:'screen'});await setting('paperSize','A4');await setting('writingMode','vertical-rl');await page.locator('#pageSplitGroup [data-value="single"]').click();await page.locator('#editor').fill('春の文化祭\n開催のご案内');await ready();
  if(await page.locator('html').getAttribute('lang')!=='ja')await page.locator('#languageButton').click();await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:path.join(out,'screenshot-ja.png')});
  await page.locator('#languageButton').click();await page.screenshot({path:path.join(out,'screenshot-en.png')});
