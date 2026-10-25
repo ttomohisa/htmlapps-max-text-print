@@ -5,6 +5,8 @@ const { test } = require('node:test');
 const { gunzipSync } = require('node:zlib');
 
 const rejected = [
+  "上下の閉じるボタン、Escキー、または背景のクリックで閉じられます。",
+  "Close Help with either close button, Escape, or a click on the backdrop.",
   "ヘルプを開いている間は、背後のページはスクロールしません。長い説明はヘルプ内をスクロールして読めます。上下の閉じるボタン、Escキー、または背景のクリックで閉じると、通常のページスクロールに戻ります。",
   "The page behind Help stays still while Help is open. Scroll inside Help to read longer content. Close it with either close button, Escape, or a click on the backdrop to resume normal page scrolling."
 ];
