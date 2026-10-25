@@ -199,3 +199,6 @@ if ($LASTEXITCODE -ne 0) { throw "Brand icon regression failed." }
 # Keep internal QA/implementation prose out of user-facing help.
 & node (Join-Path $Root "tests/help-copy.test.cjs")
 if ($LASTEXITCODE -ne 0) { throw "User-facing help copy regression failed." }
+
+& node (Join-Path $Root "tests/print-settings.test.cjs") "src/index.template.html" "dist/index.html" "dist/index.self-extract.html" "max-text-print.html"
+if ($LASTEXITCODE -ne 0) { throw "Print settings regression failed." }

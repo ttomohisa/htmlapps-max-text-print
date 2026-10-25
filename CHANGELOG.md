@@ -1,6 +1,14 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 - 2026-10-25
+
+- Add automatic-wrapping ON/OFF and optional common maximum font size across all pages.
+- Add A3, A5, Letter and genuine vertical Japanese writing, separate from paper orientation.
+- Show a localized preprint summary and settings-dependent edge/background warnings without another confirmation dialog.
+- Label line-height and letter-spacing sliders for assistive technology; remove the redundant Help dismissal sentence in both languages while preserving controls.
+- Preserve A4, Auto orientation, horizontal writing, wrapping ON and independent-size defaults; include new settings in persistence and reset Undo.
+- 自動折り返し・全ページサイズ統一・用紙追加・縦書き・印刷前確認・読み上げ名を追加。既存の分割・保存・Undoを維持。
+
 
 - Clarify Japanese and English help by removing internal layout, implementation, and audit commentary while preserving usage guidance and cautions.
 
@@ -21,8 +29,6 @@
 
 - Normalize brand icon backgrounds to #16624f with exact 25% corner radii across SVG assets, header icons, and embedded favicons, preserving existing artwork.
 - Add focused brand representation regression checks.
-
-## Unreleased
 
 ## 1.0.1 - 2026-10-07
 

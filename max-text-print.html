@@ -129,11 +129,13 @@
     .page-jump-error{width:100%;font-size:12px;color:var(--danger)}
     .page-jump-error:empty{display:none}
     .page-print-summary{margin-left:auto;color:var(--muted);font-size:11px;white-space:nowrap}
+    .print-summary{padding:12px 16px;border-bottom:1px solid var(--line);font-size:12px;line-height:1.6;overflow-wrap:anywhere}
+    .print-summary strong{font-size:13px}
     .paper-stage{height:calc(100vh - 172px);min-height:580px;background:#e9eeec;position:relative;overflow:hidden}
     .paper{display:none;position:absolute;left:50%;top:24px;transform-origin:top center;background:#fff;box-shadow:var(--shadow);overflow:hidden;print-color-adjust:exact;-webkit-print-color-adjust:exact}
     .paper.is-preview-active{display:block}
     .paper-content{position:absolute;display:flex;overflow:hidden}
-    .paper-text{width:100%;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;text-rendering:optimizeLegibility}
+    .paper-text{box-sizing:border-box;width:100%;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;text-rendering:optimizeLegibility}
     .empty-preview{position:absolute;inset:0;display:grid;place-items:center;color:#9aa5a1;font-size:14px;pointer-events:none;text-align:center;padding:20px}
     .preview-footer{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--line);background:#fff;font-size:12px;color:var(--muted)}
     .preview-status{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -201,7 +203,7 @@
     }
     @media print{
       html,body{margin:0!important;padding:0!important;background:#fff!important;width:auto!important;height:auto!important;overflow:visible!important}
-      .topbar,.page-intro,.left-stack,.preview-toolbar,.page-nav-bar,.preview-footer,.mobile-bottom,.toast,dialog{display:none!important}
+      .topbar,.page-intro,.left-stack,.preview-toolbar,.page-nav-bar,.preview-footer,.print-summary,.mobile-bottom,.toast,dialog{display:none!important}
       .shell{display:block!important;max-width:none!important;margin:0!important;padding:0!important}
       .preview-card{display:block!important;position:static!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
       .paper-stage{display:block!important;position:static!important;height:auto!important;min-height:0!important;background:#fff!important;overflow:visible!important}
@@ -235,8 +237,8 @@
 </svg>
           </div>
           <div class="brandcopy">
-            <div class="brandname"><span id="brandName">Max Text Print</span><span class="version-badge" id="versionBadge">v1.0.4</span></div>
-            <div class="brandtag" data-i18n="brandMeta">最大文字サイズに自動調整 · A4印刷 · ページ分割対応</div>
+            <div class="brandname"><span id="brandName">Max Text Print</span><span class="version-badge" id="versionBadge">v1.1.0</span></div>
+            <div class="brandtag" data-i18n="brandMeta">最大文字サイズに自動調整 · 用紙いっぱいに印刷 · ページ分割対応</div>
           </div>
         </div>
         <div class="top-actions">
@@ -250,8 +252,8 @@
 
     <section class="page-intro" aria-labelledby="heroTitle">
       <div>
-        <h1 id="heroTitle" data-i18n="introTitle">A4に収まる最大サイズで文字を印刷</h1>
-        <p data-i18n="introLead">入力した文字を1枚または複数のA4に分け、各ページを収まる最大サイズへ自動調整して印刷します。</p>
+        <h1 id="heroTitle" data-i18n="introTitle">用紙に収まる最大サイズで文字を印刷</h1>
+        <p data-i18n="introLead">入力した文字を1枚または複数の用紙に分け、各ページを収まる最大サイズへ自動調整して印刷します。</p>
       </div>
       <div class="local-badge">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.8 8 7 10 4.2-2 7-5.4 7-10V6z"/><path d="m9 12 2 2 4-5"/></svg>
@@ -286,7 +288,7 @@
                 <button type="button" data-value="line" aria-pressed="false" data-i18n="splitLine">1行ごと</button>
                 <button type="button" data-value="char" aria-pressed="false" data-i18n="splitChar">1文字ごと</button>
               </div>
-              <div class="page-split-note" data-i18n="pageSplitHelp">分割した各ページを、それぞれA4に収まる最大サイズへ調整します。</div>
+              <div class="page-split-note" data-i18n="pageSplitHelp">分割した各ページを用紙に合わせます。文字サイズの統一も選べます。</div>
               <div class="warning-box" id="pageLimitWarning"></div>
             </div>
           </div>
@@ -301,6 +303,23 @@
             <button type="button" class="advanced-reset settings-reset" id="resetSettingsButton" data-i18n="resetSettings">初期値に戻す</button>
           </div>
           <div class="card-body">
+            <div class="setting-group">
+              <div class="field">
+                <label for="paperSize" data-i18n="paperSize">用紙サイズ</label>
+                <select id="paperSize"><option value="A4">A4</option><option value="A3">A3</option><option value="A5">A5</option><option value="Letter">Letter</option></select>
+              </div>
+              <div class="field" style="margin-top:12px">
+                <label for="writingMode" data-i18n="writingMode">文字の方向</label>
+                <select id="writingMode"><option value="horizontal-tb" data-i18n="horizontalWriting">横書き</option><option value="vertical-rl" data-i18n="verticalWriting">縦書き（右から左）</option></select>
+                <div class="font-note" data-i18n="verticalWritingNote">縦書きの英数字は標準的な混在表示です。用紙の向きとは別に設定できます。</div>
+              </div>
+            </div>
+            <div class="setting-group">
+              <label class="toggle-row"><span data-i18n="autoWrap">自動折り返し</span><input id="autoWrapToggle" type="checkbox" checked data-i18n-aria-label="autoWrap"></label>
+              <div class="setting-help" data-i18n="autoWrapHelp">OFFにすると、入力した改行だけで折り返します。</div>
+              <label class="toggle-row"><span data-i18n="uniformFontSize">全ページの文字サイズを揃える</span><input id="uniformFontToggle" type="checkbox" data-i18n-aria-label="uniformFontSize"></label>
+              <div class="setting-help" data-i18n="uniformFontHelp">すべてのページに収まる最大の共通サイズを使います。</div>
+            </div>
             <div class="setting-group">
               <div class="setting-label"><span data-i18n="orientation">用紙の向き</span><span class="setting-help" data-i18n="orientationHelp">自動は大きくなる方を選択</span></div>
               <div class="segmented" id="orientationGroup">
@@ -389,11 +408,11 @@
                 <div class="advanced-reset-row"><button type="button" class="advanced-reset" id="resetAdvancedButton" data-i18n="resetAdvanced">初期値に戻す</button></div>
                 <div>
                   <div class="setting-label"><span data-i18n="lineHeight">行間</span><span class="range-value" id="lineHeightValue">1.05</span></div>
-                  <div class="range-row"><input type="range" id="lineHeight" min="0.85" max="1.5" step="0.01" value="1.05"><span class="range-value" data-i18n="relative">倍率</span></div>
+                  <div class="range-row"><input type="range" id="lineHeight" data-i18n-aria-label="lineHeight" min="0.85" max="1.5" step="0.01" value="1.05"><span class="range-value" data-i18n="relative">倍率</span></div>
                 </div>
                 <div>
                   <div class="setting-label"><span data-i18n="letterSpacing">文字間隔</span><span class="range-value" id="letterSpacingValue">0.00 em</span></div>
-                  <div class="range-row"><input type="range" id="letterSpacing" min="-0.08" max="0.20" step="0.01" value="0"><span class="range-value">em</span></div>
+                  <div class="range-row"><input type="range" id="letterSpacing" data-i18n-aria-label="letterSpacing" min="-0.08" max="0.20" step="0.01" value="0"><span class="range-value">em</span></div>
                 </div>
                 <div class="field">
                   <label for="outline" data-i18n="outline">縁取り</label>
@@ -411,7 +430,7 @@
 
       <section class="card preview-card" data-mobile-page="preview" id="previewSection">
         <div class="preview-toolbar">
-          <div class="preview-heading" data-i18n="preview">A4プレビュー</div>
+          <div class="preview-heading" data-i18n="preview">印刷プレビュー</div>
           <div class="fit-chip"><span id="orientationChip">縦</span><strong id="fontSizeChip">— pt</strong></div>
           <div class="preview-actions desktop-print">
             <button class="primary-button" type="button" id="printButton">
@@ -437,9 +456,17 @@
           <div class="page-print-summary" id="pagePrintSummary"></div>
           <div class="page-jump-error" id="pageJumpError" role="status"></div>
         </div>
+        <div class="print-summary" aria-live="polite">
+          <strong data-i18n="beforePrinting">印刷前の確認</strong>
+          <div id="printJobSummary"></div>
+          <div id="printSettingsSummary"></div>
+          <div class="font-note" data-i18n="printControlNote">印刷画面でも用紙・向き・倍率100%・ヘッダー/フッターOFFを確認してください。アプリから完全には指定できません。</div>
+          <div class="warning-box" id="printEdgeWarning" data-i18n="zeroMarginWarning"></div>
+          <div class="warning-box" id="printBackgroundWarning" data-i18n="backgroundNote"></div>
+        </div>
         <div class="paper-stage" id="paperStage">
           <div id="pagesContainer"></div>
-          <div class="empty-preview" id="emptyPreview" data-i18n="emptyPreview">文字を入力すると、ここにA4プレビューが表示されます。</div>
+          <div class="empty-preview" id="emptyPreview" data-i18n="emptyPreview">文字を入力すると、ここに印刷プレビューが表示されます。</div>
         </div>
         <div class="preview-footer">
           <div class="preview-status" id="previewStatus" aria-live="polite" data-i18n="ready">文字を入力してください</div>
@@ -482,12 +509,13 @@
       <div class="dialog-body">
         <!-- APP:HELP:BEGIN -->
         <div data-help-lang="ja">
-          <p>上下の閉じるボタン、Escキー、または背景のクリックで閉じられます。</p>
           <h3>基本操作</h3>
           <ul>
-            <li>文字を入力すると、A4の安全領域に収まる最大文字サイズを自動計算します。</li>
-            <li>「ページ分割」で、すべてを1ページにまとめるほか、空行ごと・1行ごと・1文字ごとに分けて一括印刷できます。各ページは個別に最大サイズへ調整されます。</li>
-            <li>1ページにまとめる場合はEnterで入れた改行を維持し、長い行は用紙幅に合わせて自動で折り返します。</li>
+            <li>文字を入力すると、選んだA3・A4・A5・Letterの安全領域に収まる最大文字サイズを自動計算します。</li>
+            <li>自動折り返しをOFFにすると入力した改行だけを使います。「全ページの文字サイズを揃える」で共通の最大サイズにできます。</li>
+            <li>縦書きは右から左へ列を並べます。英数字は標準的な混在表示になり、用紙の向きとは別に選べます。</li>
+            <li>「ページ分割」で、すべてを1ページにまとめるほか、空行ごと・1行ごと・1文字ごとに分けて一括印刷できます。既定では各ページを個別に最大化します。</li>
+            <li>1ページにまとめる場合はEnterで入れた改行を維持し、自動折り返しONでは長い行を用紙に合わせて折り返します。</li>
             <li>「自動」の用紙向きでは全ページを縦・横の両方で評価し、印刷物全体として文字を大きくできる方へ統一します。</li>
             <li>書体は端末内のフォントから選べます。端末にない書体は近い書体へフォールバックします。</li>
             <li>印刷設定は入力文字と同様にこのブラウザへ自動保存されます。「印刷設定」の「初期値に戻す」で設定全体を既定値へ戻せます。</li>
@@ -507,12 +535,13 @@
           <p>入力文字と設定はこのブラウザ内だけで処理されます。外部サーバーへ送信しません。ブラウザでローカルストレージが利用できる場合、作業内容を同じブラウザ内へ自動保存します。</p>
         </div>
         <div data-help-lang="en" hidden>
-          <p>Close Help with either close button, Escape, or a click on the backdrop.</p>
           <h3>Basics</h3>
           <ul>
-            <li>As you type, the app calculates the largest font size that still fits inside the A4 safe area.</li>
-            <li>Page splitting can keep everything on one page or create pages by blank line, line, or character. Each page is fitted independently.</li>
-            <li>In single-page mode, manual line breaks are preserved and long lines wrap automatically.</li>
+            <li>As you type, the app fits text inside the safe area of A3, A4, A5, or Letter paper.</li>
+            <li>Turn automatic wrapping OFF to use only explicit line breaks. Choose common sizing to use the largest size that fits every page.</li>
+            <li>Vertical writing runs in columns from right to left with standard mixed Latin orientation, independently of paper orientation.</li>
+            <li>Page splitting can keep everything on one page or create pages by blank line, line, or character. Each page is fitted independently by default.</li>
+            <li>In single-page mode, manual line breaks are preserved; long lines wrap when automatic wrapping is ON.</li>
             <li>Auto orientation evaluates all pages in both portrait and landscape and uses one orientation for the whole print job.</li>
             <li>You can choose from local typefaces. If a selected typeface is unavailable, the browser uses a similar local fallback.</li>
             <li>Print settings are autosaved in this browser. “Reset to defaults” in Print settings restores all print settings.</li>
@@ -540,8 +569,8 @@
   <script>
     (() => {
       'use strict';
-      const APP_CONFIG = {"$schema":"./schemas/app-config.schema.json","name":"Max Text Print","nameJa":"Max Text Print","slug":"max-text-print","version":"1.0.4","description":"Fit text to the largest readable size on one or multiple A4 pages, then print directly from the browser.","descriptionJa":"入力した文字を1枚または複数のA4へ分割し、各ページを収まる最大サイズへ自動調整して、そのままブラウザから印刷するツール。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-max-text-print"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}};
-      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.2","generatedAtUtc":"2026-10-11T22:21:04.5580661Z","app":{"name":"Max Text Print","slug":"max-text-print","version":"1.0.4"},"dependencies":[]};
+      const APP_CONFIG = {"$schema":"./schemas/app-config.schema.json","name":"Max Text Print","nameJa":"Max Text Print","slug":"max-text-print","version":"1.1.0","description":"Fit horizontal or vertical text to A3, A4, A5 or Letter paper, with wrapping and common font sizing controls.","descriptionJa":"A3・A4・A5・Letterへ横書き・縦書きの文字を最大サイズで配置。折り返しや全ページの文字サイズ統一を選んで印刷できます。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-max-text-print"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}};
+      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.2","generatedAtUtc":"2026-10-25T02:55:59.9399103Z","app":{"name":"Max Text Print","slug":"max-text-print","version":"1.1.0"},"dependencies":[]};
       const EMBEDDED_ASSET_BUNDLE = {"schemaVersion":2,"dependencies":{}};
 
       // Keep the generic embedded-asset surface expected by the template.
@@ -576,38 +605,42 @@
       const sampleText = { ja:'本日休業', en:'CLOSED TODAY' };
       const translations = {
         ja:{
-          tagline:'A4に収まる最大サイズで、そのまま印刷',brandMeta:'最大文字サイズに自動調整 · A4印刷 · ページ分割対応',introTitle:'A4に収まる最大サイズで文字を印刷',introLead:'入力した文字を1枚または複数のA4に分け、各ページを収まる最大サイズへ自動調整して印刷します。',localOnly:'完全ローカル処理',help:'使い方と注意事項',close:'閉じる',
+          writingMode:'文字の方向',horizontalWriting:'横書き',verticalWriting:'縦書き（右から左）',verticalWritingNote:'縦書きの英数字は標準的な混在表示です。用紙の向きとは別に設定できます。',beforePrinting:'印刷前の確認',printJob:'{count}ページ · {paper} · {orientation} · 余白 {margin} mm',wrapOn:'折り返しON',wrapOff:'折り返しOFF',commonSize:'文字サイズを統一',independentSize:'ページごとに最大化',printControlNote:'印刷画面でも用紙・向き・倍率100%・ヘッダー/フッターOFFを確認してください。アプリから完全には指定できません。',
+          paperSize:'用紙サイズ',autoWrap:'自動折り返し',autoWrapHelp:'OFFにすると、入力した改行だけで折り返します。',uniformFontSize:'全ページの文字サイズを揃える',uniformFontHelp:'すべてのページに収まる最大の共通サイズを使います。',
+          tagline:'用紙に収まる最大サイズで、そのまま印刷',brandMeta:'最大文字サイズに自動調整 · 用紙いっぱいに印刷 · ページ分割対応',introTitle:'用紙に収まる最大サイズで文字を印刷',introLead:'入力した文字を1枚または複数の用紙に分け、各ページを収まる最大サイズへ自動調整して印刷します。',localOnly:'完全ローカル処理',help:'使い方と注意事項',close:'閉じる',
           textTitle:'文字を入力',textSub:'入力した文字を、選んだページ分割ごとに最大サイズへ自動調整します。',textLabel:'印刷する文字',
-          placeholder:'例：本日休業',chars:'文字',lines:'行',sample:'サンプル',clear:'クリア',pageSplit:'ページ分割',splitSingle:'1ページにまとめる',splitBlank:'空行ごと',splitLine:'1行ごと',splitChar:'1文字ごと',pageSplitHelp:'分割した各ページを、それぞれA4に収まる最大サイズへ調整します。',pageCount:'{count}ページ',pageCountOne:'1ページ',pageLimitWarning:'{count}ページになります。一度に作成できるのは{max}ページまでです。分割を減らしてください。',pageNumber:'ページ番号',goPage:'移動',invalidPage:'1〜{count}の整数を入力してください。',prevPage:'前のページ',nextPage:'次のページ',printPagesSummary:'{count}ページをまとめて印刷します',settingsTitle:'印刷設定',
+          placeholder:'例：本日休業',chars:'文字',lines:'行',sample:'サンプル',clear:'クリア',pageSplit:'ページ分割',splitSingle:'1ページにまとめる',splitBlank:'空行ごと',splitLine:'1行ごと',splitChar:'1文字ごと',pageSplitHelp:'分割した各ページを用紙に合わせます。文字サイズの統一も選べます。',pageCount:'{count}ページ',pageCountOne:'1ページ',pageLimitWarning:'{count}ページになります。一度に作成できるのは{max}ページまでです。分割を減らしてください。',pageNumber:'ページ番号',goPage:'移動',invalidPage:'1〜{count}の整数を入力してください。',prevPage:'前のページ',nextPage:'次のページ',printPagesSummary:'{count}ページをまとめて印刷します',settingsTitle:'印刷設定',
           settingsSub:'通常はそのままでOK。向きや余白を変えると文字サイズも再計算します。',resetSettings:'初期値に戻す',settingsResetDone:'印刷設定を初期値に戻しました',orientation:'用紙の向き',
           orientationHelp:'自動は大きくなる方を選択',auto:'自動',portrait:'縦',landscape:'横',margin:'余白',standard:'標準',
           narrow:'狭い',none:'なし',custom:'指定',zeroMarginWarning:'余白なしはプリンターによって用紙端が欠ける場合があります。',
           font:'書体',sans:'ゴシック',serif:'明朝',rounded:'丸ゴシック系',mono:'等幅',meiryo:'メイリオ',yuGothic:'游ゴシック',yuMincho:'游明朝',bizGothic:'BIZ UDPゴシック',fontNote:'端末にない書体は近い書体で表示されます。',bold:'太字',boldHelp:'張り紙ではON推奨',
           align:'配置',horizontal:'左右',vertical:'上下',left:'左',center:'中央',right:'右',top:'上',middle:'中央',bottom:'下',
           colors:'色',textColor:'文字',backgroundColor:'背景',advanced:'詳細設定',resetAdvanced:'初期値に戻す',advancedResetDone:'詳細設定を初期値に戻しました',lineHeight:'行間',relative:'倍率',letterSpacing:'文字間隔',
-          outline:'縁取り',outlineNone:'なし',outlineThin:'細い',outlineThick:'太い',preview:'A4プレビュー',print:'印刷する',
-          emptyPreview:'文字を入力すると、ここにA4プレビューが表示されます。',ready:'文字を入力してください',
+          outline:'縁取り',outlineNone:'なし',outlineThin:'細い',outlineThick:'太い',preview:'印刷プレビュー',print:'印刷する',
+          emptyPreview:'文字を入力すると、ここに印刷プレビューが表示されます。',ready:'文字を入力してください',
           pdfHint:'PDFは印刷画面から「PDFに保存」を選べます。',mobileText:'文字',mobileSettings:'設定',mobilePreview:'確認',
           helpTitle:'使い方と注意事項',fit:'最大 {size} pt · {orientation} · 余白 {margin} mm',fitMulti:'{current}/{count}ページ · 最大 {size} pt · {orientation} · 余白 {margin} mm',portraitShort:'縦',landscapeShort:'横',
-          tooMuch:'収められないページがあります。文字数を減らすか設定を調整してください。',tooManyPages:'{count}ページになります。一度に作成できるのは{max}ページまでです。',maximized:'A4に収まる最大サイズへ自動調整済み',
+          tooMuch:'収められないページがあります。文字数を減らすか設定を調整してください。',tooManyPages:'{count}ページになります。一度に作成できるのは{max}ページまでです。',maximized:'用紙に収まる最大サイズへ自動調整済み',
           cleared:'クリアしました',undo:'元に戻す',undone:'元に戻しました',sampleLoaded:'サンプルを入力しました',
           printOpening:'印刷画面を開きます',printOpeningPages:'{count}ページの印刷画面を開きます',closeAria:'閉じる',backgroundNote:'背景色を印刷するには印刷設定の「背景のグラフィック」が必要な場合があります。'
         },
         en:{
-          tagline:'Fit the largest text on A4, then print',brandMeta:'Auto-fit text to max size · A4 printing · Page splitting',introTitle:'Print text at the largest size that fits A4',introLead:'Split text across one or more A4 pages, fit each page to the largest safe size, then print directly from the browser.',localOnly:'Fully local processing',help:'How to use & notes',close:'Close',
+          writingMode:'Writing direction',horizontalWriting:'Horizontal writing',verticalWriting:'Vertical writing (right to left)',verticalWritingNote:'Latin text uses standard mixed orientation in vertical writing. Paper orientation is a separate setting.',beforePrinting:'Before printing',printJob:'{count} pages · {paper} · {orientation} · {margin} mm margin',wrapOn:'Wrapping ON',wrapOff:'Wrapping OFF',commonSize:'Common font size',independentSize:'Maximize each page',printControlNote:'In the print dialog, check paper, orientation, 100% scale, and headers/footers OFF. The app cannot fully control these settings.',
+          paperSize:'Paper size',autoWrap:'Automatic wrapping',autoWrapHelp:'When OFF, only your explicit line breaks are used.',uniformFontSize:'Use the same font size on all pages',uniformFontHelp:'Use the largest common size that fits every page.',
+          tagline:'Fit the largest text on paper, then print',brandMeta:'Auto-fit text to max size · Full-page printing · Page splitting',introTitle:'Print text at the largest size that fits your paper',introLead:'Split text across one or more sheets, fit each page to the largest safe size, then print directly from the browser.',localOnly:'Fully local processing',help:'How to use & notes',close:'Close',
           textTitle:'Enter text',textSub:'Text is split using your selected page mode, then each page is fitted to its largest safe size.',textLabel:'Text to print',
-          placeholder:'Example: CLOSED TODAY',chars:'chars',lines:'lines',sample:'Sample',clear:'Clear',pageSplit:'Page splitting',splitSingle:'Keep on one page',splitBlank:'Blank lines',splitLine:'Each line',splitChar:'Each character',pageSplitHelp:'Each generated page is independently fitted to the largest size that stays on A4.',pageCount:'{count} pages',pageCountOne:'1 page',pageLimitWarning:'This creates {count} pages. Up to {max} pages can be generated at once. Reduce the split.',pageNumber:'Page number',goPage:'Go',invalidPage:'Enter a whole number from 1 to {count}.',prevPage:'Previous page',nextPage:'Next page',printPagesSummary:'Print all {count} pages',settingsTitle:'Print settings',
+          placeholder:'Example: CLOSED TODAY',chars:'chars',lines:'lines',sample:'Sample',clear:'Clear',pageSplit:'Page splitting',splitSingle:'Keep on one page',splitBlank:'Blank lines',splitLine:'Each line',splitChar:'Each character',pageSplitHelp:'Fit each generated page to the paper, with optional common sizing.',pageCount:'{count} pages',pageCountOne:'1 page',pageLimitWarning:'This creates {count} pages. Up to {max} pages can be generated at once. Reduce the split.',pageNumber:'Page number',goPage:'Go',invalidPage:'Enter a whole number from 1 to {count}.',prevPage:'Previous page',nextPage:'Next page',printPagesSummary:'Print all {count} pages',settingsTitle:'Print settings',
           settingsSub:'The defaults usually work. Orientation and margins immediately recalculate the fitted size.',resetSettings:'Reset to defaults',settingsResetDone:'Print settings reset to defaults',orientation:'Orientation',
           orientationHelp:'Auto chooses the larger result',auto:'Auto',portrait:'Portrait',landscape:'Landscape',margin:'Margin',standard:'Standard',
           narrow:'Narrow',none:'None',custom:'Custom',zeroMarginWarning:'A 0 mm margin can be clipped by printers that cannot print to the physical edge.',
           font:'Typeface',sans:'Sans serif',serif:'Serif',rounded:'Rounded-style',mono:'Monospace',meiryo:'Meiryo',yuGothic:'Yu Gothic',yuMincho:'Yu Mincho',bizGothic:'BIZ UDPGothic',fontNote:'If a typeface is not installed, the browser uses a similar local fallback.',bold:'Bold',boldHelp:'Recommended for signs',
           align:'Alignment',horizontal:'Horizontal',vertical:'Vertical',left:'Left',center:'Center',right:'Right',top:'Top',middle:'Center',bottom:'Bottom',
           colors:'Colors',textColor:'Text',backgroundColor:'Background',advanced:'Advanced settings',resetAdvanced:'Reset to defaults',advancedResetDone:'Advanced settings reset to defaults',lineHeight:'Line height',relative:'ratio',letterSpacing:'Letter spacing',
-          outline:'Outline',outlineNone:'None',outlineThin:'Thin',outlineThick:'Thick',preview:'A4 preview',print:'Print',
-          emptyPreview:'Enter text to see the A4 preview here.',ready:'Enter some text',pdfHint:'Need a PDF? Choose “Save as PDF” in the print dialog.',
+          outline:'Outline',outlineNone:'None',outlineThin:'Thin',outlineThick:'Thick',preview:'Print preview',print:'Print',
+          emptyPreview:'Enter text to see the Print preview here.',ready:'Enter some text',pdfHint:'Need a PDF? Choose “Save as PDF” in the print dialog.',
           mobileText:'Text',mobileSettings:'Settings',mobilePreview:'Preview',helpTitle:'How to use & notes',
           fit:'Max {size} pt · {orientation} · {margin} mm margin',fitMulti:'Page {current}/{count} · Max {size} pt · {orientation} · {margin} mm margin',portraitShort:'Portrait',landscapeShort:'Landscape',
-          tooMuch:'At least one page cannot fit. Reduce the text or adjust the settings.',tooManyPages:'This creates {count} pages. Up to {max} pages can be generated at once.',maximized:'Automatically fitted to the largest A4-safe size',
+          tooMuch:'At least one page cannot fit. Reduce the text or adjust the settings.',tooManyPages:'This creates {count} pages. Up to {max} pages can be generated at once.',maximized:'Automatically fitted to the largest paper-safe size',
           cleared:'Cleared',undo:'Undo',undone:'Restored',sampleLoaded:'Sample added',printOpening:'Opening print dialog',printOpeningPages:'Opening print dialog for {count} pages',
           closeAria:'Close',backgroundNote:'Colored backgrounds may require enabling “Background graphics” in the print dialog.'
         }
@@ -615,13 +648,14 @@
 
       const MAX_PAGES = 200;
       const graphemeSegmenter = typeof Intl.Segmenter === 'function' ? new Intl.Segmenter(undefined,{granularity:'grapheme'}) : null;
+      const paperSizes = Object.freeze({A3:{w:297,h:420},A4:{w:210,h:297},A5:{w:148,h:210},Letter:{w:215.9,h:279.4}});
       const defaultState = {
-        text:'',language:'auto',pageSplit:'single',orientation:'auto',marginPreset:'10',customMargin:10,fontFamily:'sans',bold:true,
+        text:'',language:'auto',pageSplit:'single',paperSize:'A4',writingMode:'horizontal-tb',autoWrap:true,uniformFontSize:false,orientation:'auto',marginPreset:'10',customMargin:10,fontFamily:'sans',bold:true,
         textAlign:'center',verticalAlign:'center',textColor:'#111111',backgroundColor:'#ffffff',lineHeight:1.05,
         letterSpacing:0,outline:0
       };
       const printSettingKeys = Object.freeze([
-        'pageSplit','orientation','marginPreset','customMargin','fontFamily','bold','textAlign','verticalAlign',
+        'pageSplit','paperSize','writingMode','autoWrap','uniformFontSize','orientation','marginPreset','customMargin','fontFamily','bold','textAlign','verticalAlign',
         'textColor','backgroundColor','lineHeight','letterSpacing','outline'
       ]);
       let state = {...defaultState};
@@ -658,6 +692,10 @@
           const raw=localStorage.getItem(storageKey); if(!raw) return;
           const parsed=JSON.parse(raw); state={...defaultState,...parsed};
           if(!['single','blank','line','char'].includes(state.pageSplit)) state.pageSplit='single';
+          if(typeof state.paperSize!=='string' || !Object.prototype.hasOwnProperty.call(paperSizes,state.paperSize)) state.paperSize='A4';
+          if(!['horizontal-tb','vertical-rl'].includes(state.writingMode)) state.writingMode='horizontal-tb';
+          if(typeof state.autoWrap!=='boolean') state.autoWrap=true;
+          if(typeof state.uniformFontSize!=='boolean') state.uniformFontSize=false;
         }catch{}
       }
       function save(){
@@ -671,6 +709,10 @@
         setPressed('pageSplitGroup',state.pageSplit);
         setPressed('orientationGroup',state.orientation);
         setPressed('marginGroup',state.marginPreset);
+        $('#paperSize').value=state.paperSize;
+        $('#writingMode').value=state.writingMode;
+        $('#autoWrapToggle').checked=state.autoWrap;
+        $('#uniformFontToggle').checked=state.uniformFontSize;
         $('#customMargin').value=state.customMargin;
         $('#customMarginRow').hidden=state.marginPreset!=='custom';
         $('#fontFamily').value=state.fontFamily;
@@ -736,7 +778,8 @@
         return Number(state.marginPreset)||0;
       }
       function pageDims(orientation){
-        return orientation==='landscape'?{w:297,h:210}:{w:210,h:297};
+        const dims=paperSizes[state.paperSize]||paperSizes.A4;
+        return orientation==='landscape'?{w:dims.h,h:dims.w}:{...dims};
       }
       function verticalCss(value){
         return value==='start'?'flex-start':value==='end'?'flex-end':'center';
@@ -748,24 +791,37 @@
         $('#zeroMarginWarning').classList.toggle('show',marginMm()===0);
       }
       function styleTextNode(el,fontPt){
+        // Font glyph bounds can extend beyond line boxes, especially with tight leading.
+        // Apply the same proportional gutter to measurement and actual paper text.
+        el.style.padding=`calc(0.2em + ${Math.max(0,Number(state.outline)||0)+1}px)`;
+        el.style.writingMode=state.writingMode;
+        el.style.textOrientation='mixed';
+        el.style.whiteSpace=state.autoWrap?'pre-wrap':'pre';
+        el.style.overflowWrap=state.autoWrap?'anywhere':'normal';
         el.style.fontFamily=fontStacks[state.fontFamily]||fontStacks.sans;
         el.style.fontWeight=state.bold?'800':'400';
         el.style.fontSize=`${fontPt}pt`;
         el.style.lineHeight=String(state.lineHeight);
         el.style.letterSpacing=`${state.letterSpacing}em`;
-        el.style.textAlign=state.textAlign;
+        el.style.textAlign=state.writingMode==='vertical-rl'?(state.verticalAlign==='start'?'start':state.verticalAlign==='end'?'end':'center'):state.textAlign;
         el.style.webkitTextStroke=state.outline>0?`${state.outline}px currentColor`:'0';
       }
       function prepareMeasure(text,orientation,fontPt){
         const dims=pageDims(orientation), m=marginMm(), w=Math.max(1,dims.w-m*2), h=Math.max(1,dims.h-m*2);
         measureBox.style.width=`${w}mm`; measureBox.style.height=`${h}mm`;
-        measureBox.style.padding=`${Math.max(0,Number(state.outline)||0)+1}px`;
         measureBox.textContent=text;
         styleTextNode(measureBox,fontPt);
       }
       function fitsAt(text,fontPt,orientation){
         prepareMeasure(text,orientation,fontPt);
-        return measureBox.scrollWidth<=measureBox.clientWidth+1 && measureBox.scrollHeight<=measureBox.clientHeight+1;
+        if(measureBox.scrollWidth>measureBox.clientWidth || measureBox.scrollHeight>measureBox.clientHeight) return false;
+        // scroll extents cover layout overflow, not every font's glyph/line bounds.
+        // Check all four sides as vertical writing and alignment change overflow direction.
+        const range=document.createRange();
+        range.selectNodeContents(measureBox);
+        const textBounds=range.getBoundingClientRect(),box=measureBox.getBoundingClientRect();
+        const stroke=Math.max(0,Number(state.outline)||0)/2;
+        return textBounds.left-stroke>=box.left && textBounds.right+stroke<=box.right && textBounds.top-stroke>=box.top && textBounds.bottom+stroke<=box.bottom;
       }
       function maxFontForText(text,orientation){
         if(!text.trim()) return {size:0,valid:false};
@@ -779,7 +835,11 @@
         return {size:Math.floor(lo*2)/2,valid:true};
       }
       function evaluateOrientation(texts,orientation){
-        const fits=texts.map(text=>maxFontForText(text,orientation));
+        let fits=texts.map(text=>maxFontForText(text,orientation));
+        if(state.uniformFontSize && fits.length){
+          const size=Math.min(...fits.map(fit=>fit.size));
+          fits=fits.map(fit=>({...fit,size}));
+        }
         return {
           orientation,
           fits,
@@ -810,10 +870,14 @@
         content.className='paper-content';
         content.style.left=`${m}mm`;content.style.top=`${m}mm`;
         content.style.width=`${Math.max(0,dims.w-m*2)}mm`;content.style.height=`${Math.max(0,dims.h-m*2)}mm`;
-        content.style.alignItems=verticalCss(state.verticalAlign);
-        content.style.justifyContent='stretch';
+        const vertical=state.writingMode==='vertical-rl';
+        content.style.alignItems=vertical?'stretch':verticalCss(state.verticalAlign);
+        content.style.justifyContent=vertical?(state.textAlign==='left'?'flex-start':state.textAlign==='right'?'flex-end':'center'):'stretch';
         const textEl=document.createElement('div');
         textEl.className='paper-text';
+        textEl.style.width=vertical?'auto':'100%';
+        textEl.style.height=vertical?'100%':'auto';
+        textEl.style.flexShrink='0';
         textEl.style.color=state.textColor;
         textEl.textContent=text;
         styleTextNode(textEl,fit?.size||12);
@@ -839,7 +903,8 @@
         }
         pagesContainer.replaceChildren(fragment);
         emptyPreview.hidden=pageTexts.length>0;
-        $('#printPageStyle').textContent=`@page { size: A4 ${currentOrientation}; margin: 0; }`;
+        const dims=pageDims(currentOrientation);
+        $('#printPageStyle').textContent=`@page { size: ${dims.w}mm ${dims.h}mm; margin: 0; }`;
         updatePaginationLabels();
         requestAnimationFrame(updatePreviewScale);
       }
@@ -874,7 +939,14 @@
         prevPageButton.disabled=currentPageIndex<=0;
         nextPageButton.disabled=currentPageIndex>=count-1;
       }
+      function updatePrintSummary(){
+        $('#printJobSummary').textContent=t('printJob',{count:pageTexts.length,paper:state.paperSize,orientation:t(currentOrientation==='portrait'?'portraitShort':'landscapeShort'),margin:marginMm()});
+        $('#printSettingsSummary').textContent=[t(state.writingMode==='vertical-rl'?'verticalWriting':'horizontalWriting'),t(state.autoWrap?'wrapOn':'wrapOff'),t(state.uniformFontSize?'commonSize':'independentSize')].join(' · ');
+        $('#printEdgeWarning').classList.toggle('show',marginMm()===0);
+        $('#printBackgroundWarning').classList.toggle('show',String(state.backgroundColor||'#ffffff').toLowerCase()!=='#ffffff');
+      }
       function updateFitLabels(){
+        updatePrintSummary();
         const ori=t(currentOrientation==='portrait'?'portraitShort':'landscapeShort');
         const fit=activeFit();
         $('#orientationChip').textContent=ori;
@@ -1049,6 +1121,10 @@
       $('#customMargin').addEventListener('change',()=>updateState(()=>{
         const v=Math.max(0,Math.min(40,Number($('#customMargin').value)||0));state.customMargin=v;$('#customMargin').value=v;
       }));
+      $('#writingMode').addEventListener('change',()=>updateState(()=>state.writingMode=$('#writingMode').value));
+      $('#paperSize').addEventListener('change',()=>updateState(()=>state.paperSize=$('#paperSize').value));
+      $('#autoWrapToggle').addEventListener('change',()=>updateState(()=>state.autoWrap=$('#autoWrapToggle').checked));
+      $('#uniformFontToggle').addEventListener('change',()=>updateState(()=>state.uniformFontSize=$('#uniformFontToggle').checked));
       $('#fontFamily').addEventListener('change',()=>updateState(()=>state.fontFamily=$('#fontFamily').value));
       $('#boldToggle').addEventListener('change',()=>updateState(()=>state.bold=$('#boldToggle').checked));
       $('#textAlign').addEventListener('change',()=>updateState(()=>state.textAlign=$('#textAlign').value));

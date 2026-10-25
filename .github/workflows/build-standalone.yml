@@ -53,3 +53,22 @@ jobs:
             dist/.nojekyll
           if-no-files-found: error
           retention-days: 14
+
+      - name: Install browser-only QA dependencies
+        shell: pwsh
+        run: |
+          npm install --no-save --package-lock=false playwright@1.57.0 pdf-lib@1.17.1
+          npx playwright install chromium
+
+      - name: Verify real layout and PDF output
+        shell: pwsh
+        run: node tests/browser-print.cjs
+
+      - name: Upload browser and PDF evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: print-qa-${{ github.event.pull_request.head.sha || github.sha }}
+          path: qa-artifacts/
+          if-no-files-found: warn
+          retention-days: 14

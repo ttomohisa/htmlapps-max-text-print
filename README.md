@@ -6,7 +6,7 @@
 
 [日本語版 README](README.ja.md)
 
-A single-HTML browser app that fits entered text to the largest size that stays within A4, with optional multi-page splitting and direct printing from the browser.
+A single-HTML browser app that fits entered text to the largest size that stays within the selected paper, with optional multi-page splitting and direct printing from the browser.
 
 ## 🚀 Live demo
 
@@ -18,11 +18,18 @@ GitHub Pages delivers the initial HTML. After it loads, text fitting, page split
 
 ## Features
 
-- **Fit text to A4 automatically** — Enter text and the app finds the largest font size that stays inside the selected safe margin.
+- A3 / A4 (default) / A5 / Letter paper, with independent paper orientation and horizontal/vertical writing.
+- Automatic wrapping ON/OFF; OFF preserves only explicit line breaks.
+- Optional common font size: use the largest size that fits every page.
+- A preprint summary shows the full job and relevant warnings. Check paper, orientation, scale 100%, and headers/footers OFF in the browser print dialog.
+- Vertical Japanese columns run right to left; Latin uses standard mixed orientation. Appearance depends on installed fonts and browser support.
+
+
+- **Fit text to paper automatically** — Enter text and the app finds the largest font size that stays inside the selected safe margin.
 - **Split one input into multiple sheets** — Keep everything on one page, split at blank lines, put each line on its own page, or print each character on its own page.
 - **Fit every page independently** — Short and long page contents each get their own maximum font size.
 - **Preview before printing** — Enter a page number and choose Go or press Enter, or use Previous / Next and the Left / Right arrow keys.
-- **Print all pages in one job** — The native browser/OS print dialog receives every generated A4 page together.
+- **Print all pages in one job** — The native browser/OS print dialog receives every generated page together.
 - **Choose practical print settings** — Portrait / landscape / Auto, 10 mm / 5 mm / 0 mm / custom margins, local typefaces, bold, alignment, text/background colors, line height, letter spacing, and outline.
 - **Keep settings without an account** — Text and print settings are stored locally when browser storage is available. Reset actions can be undone from the toast immediately after use.
 - **Fully local processing** — No runtime CDN, API, analytics, telemetry, or remote font is used. Runtime connections are blocked with `connect-src 'none'`.
@@ -41,7 +48,7 @@ Just [open the demo](https://ttomohisa.github.io/htmlapps-max-text-print/). No i
 3. Copy the generated `dist/index.html` wherever you need it.
 4. Open that single file later without an internet connection or local web server.
 
-The build has no runtime package to download in v1.0.0. It also generates `dist/index.self-extract.html`, a smaller gzip self-extracting variant for browsers that support `DecompressionStream`. Generated `dist/` files are intentionally not committed; GitHub Pages and CI rebuild them from source.
+The build has no runtime package to download in v1.1.0. It also generates `dist/index.self-extract.html`, a smaller gzip self-extracting variant for browsers that support `DecompressionStream`. Generated `dist/` files are intentionally not committed; GitHub Pages and CI rebuild them from source.
 
 ## Usage
 
@@ -62,7 +69,7 @@ Help keeps the background page still while open. Scroll inside Help to read long
 
 ### Page splitting and orientation
 
-Every generated page is fitted independently, but the paper orientation is shared by the whole print job. **Auto** evaluates portrait and landscape across the generated pages and chooses one orientation for the job; mixed portrait/landscape pages are intentionally not produced.
+Every generated page is fitted independently by default, but the paper orientation is shared by the whole print job. **Auto** evaluates portrait and landscape across the generated pages and chooses one orientation for the job; mixed portrait/landscape pages are intentionally not produced.
 
 Character-per-page mode uses `Intl.Segmenter` when available so emoji and combining characters are not split in the middle. The app limits one operation to 200 generated pages to avoid accidental very large print jobs.
 
@@ -104,7 +111,7 @@ Each build verifies the standalone HTML, runtime-network restriction, embedded f
 .
 ├─ src/index.template.html       # Application source
 ├─ app.config.json               # App metadata and build settings
-├─ dependencies.json             # Embedded runtime dependencies (none in v1.0.0)
+├─ dependencies.json             # Embedded runtime dependencies (none in v1.1.0)
 ├─ dependencies.lock.json        # Pinned dependency lock
 ├─ build-standalone.bat          # Windows build entry point
 ├─ build-standalone.ps1          # Standalone HTML builder
@@ -131,6 +138,9 @@ The full repository check also runs the dependency-free Node.js interaction regr
 
 No npm runtime package is currently required by the app. The dependency-update workflow remains in the repository so future pinned dependencies can be reviewed through Issues rather than updated automatically.
 
+
+Browser/PDF regressions are in `tests/browser-print.cjs` and run in CI with pinned dev-only Playwright and pdf-lib packages. They do not become runtime dependencies.
+
 ## Privacy and runtime network protection
 
 The generated HTML includes a Content Security Policy with `connect-src 'none'`. Max Text Print does not use runtime APIs, CDNs, analytics, telemetry, or remote fonts.
@@ -152,7 +162,7 @@ For use with the network completely disconnected, open `dist/index.html` locally
 
 ## Dependencies
 
-Max Text Print v1.0.0 has no third-party runtime dependencies. It uses browser-native APIs and locally installed system fonts. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Max Text Print v1.1.0 has no third-party runtime dependencies. It uses browser-native APIs and locally installed system fonts. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Contributing
 

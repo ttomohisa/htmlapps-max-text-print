@@ -51,6 +51,7 @@ function boot(file, language='en', stored=new Map()) {
     if(s==='.paper[data-page-index]')return nodes.get('#pagesContainer').children;
     const attr=s.match(/^\[([^\]]+)\]$/);return attr?[...nodes.values()].filter(el=>el.attrs.has(attr[1])):[];
   };
+  document.createRange=()=>({selectNodeContents(el){this.el=el;},getBoundingClientRect(){return this.el.getBoundingClientRect();}});
   document.createElement=tag=>new Element(tag);document.createDocumentFragment=()=>new Element('fragment');
   const window=new Element('window');window.scrollTo=()=>{};
   const context=vm.createContext({document,window,navigator:{language},Intl,Blob,URL,Uint8Array,atob,
