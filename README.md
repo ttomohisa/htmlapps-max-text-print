@@ -138,6 +138,9 @@ The full repository check also runs the dependency-free Node.js interaction regr
 
 No npm runtime package is currently required by the app. The dependency-update workflow remains in the repository so future pinned dependencies can be reviewed through Issues rather than updated automatically.
 
+
+Browser/PDF regressions are in `tests/browser-print.cjs` and run in CI with pinned dev-only Playwright and pdf-lib packages. They do not become runtime dependencies.
+
 ## Privacy and runtime network protection
 
 The generated HTML includes a Content Security Policy with `connect-src 'none'`. Max Text Print does not use runtime APIs, CDNs, analytics, telemetry, or remote fonts.

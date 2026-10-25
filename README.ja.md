@@ -138,6 +138,9 @@ powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-
 
 現在のアプリ本体にはnpmのランタイム依存はありません。将来依存を追加した場合に備え、依存更新は自動変更ではなくIssueで確認するワークフローを残しています。
 
+
+実ブラウザー・PDF回帰は `tests/browser-print.cjs` にあり、CIで固定バージョンの開発検証用Playwright / pdf-libを使います。アプリの実行時依存には含まれません。
+
 ## プライバシーと通信防止
 
 生成HTMLには `connect-src 'none'` を含むContent Security Policyがあります。Max Text Printは実行時API、CDN、アクセス解析、テレメトリ、外部フォントを使用しません。
