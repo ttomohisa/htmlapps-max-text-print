@@ -61,3 +61,9 @@ The standard build also regenerates `max-text-print.html` byte-for-byte from the
 A central paper-size table supplies portrait dimensions for A3/A4/A5/Letter; landscape swaps the physical axes. Dynamic @page uses those exact dimensions. Automatic wrapping uses pre-wrap/anywhere; OFF uses pre/normal. Both preserve explicit line breaks. Vertical writing uses vertical-rl and text-orientation:mixed in measurement and output; paper orientation is unchanged. Physical horizontal/vertical alignment is mapped onto the corresponding inline/block axes.
 
 The preprint summary describes the entire job, not only the preview page. It discloses browser/OS control limits and shows conditional edge and background warnings.
+
+## Fixed common UI adapter
+
+`components/ui-conventions.{js,css}` v1.0.0 are pinned and embedded by `scripts/embed-ui-conventions.ps1` during the existing build. The application owns autosave failure/read protection, retry and saved timestamps; the shared API only renders states and resolves/chooses language. Legacy language is read through a JSON-field adapter without a startup migration. Storage keys and dependencies are unchanged.
+
+The print geometry, fit search, splitting and all-page output remain the original implementation. Pending Print state wraps the existing output revision and two-animation-frame handoff; final ownership cleanup runs even when `window.print()` throws. Toasts retain callbacks/generation while keyed copy relocalizes. `tests/common-ui.test.cjs` runs the actual inline IIFE using the existing interaction harness on source and all shipped forms; native geometry/dialog behavior remains separate acceptance.

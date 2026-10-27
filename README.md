@@ -173,3 +173,5 @@ Bug reports and feature proposals are welcome through GitHub Issues. See [CONTRI
 Copyright © 2026 ttomohisa
 
 Licensed under the [MIT License](LICENSE).
+
+Text and print settings are autosaved in this browser. Check the save status beside the editor; if saving fails, your current draft stays available for Retry saving or Print. Language changes preserve your draft and Undo. PDF filenames and destinations are chosen in the browser/OS print dialog.

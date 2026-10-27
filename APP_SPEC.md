@@ -119,3 +119,11 @@
 ## Brand icon consistency
 
 - Use the supplied printer artwork from `assets/favicon.svg` in the header and embedded favicons, including the self-extracting loader. Preserve the complete 64×64 artwork with #16624f background and rx=16 (25%) corners.
+
+## Common save, action and language behavior
+
+Text and print settings retain the existing `max-text-print:v1` JSON autosave. The editor reports saved/error state and retry; timestamps advance only after a successful write. Unreadable records are protected from replacement until a retry can read a valid record or an absent key. Current work remains editable and printable. No project format or application-managed file download is introduced; PDF names belong to the native print dialog.
+
+Shared v1 language priority is valid URL `lang`, common preference, legacy JSON language, first supported browser language, then English. Reading does not write. Only an explicit language choice updates the common key, and failures leave a persistent screen-only notice. Input, page-number draft, validation, Undo, and accepted print requests survive language-only refreshes.
+
+Executable actions use native ready/unavailable/busy states. Print owns its pending two-frame handoff, blocks duplicates, rechecks the existing output revision/fit, and recovers after native handoff errors. Existing text/settings resets retain genuine Undo; a focused Undo action does not expire. Known status and failure copy relocalizes without restarting callbacks.

@@ -55,3 +55,8 @@
 - Added locally persisted text and print settings, reset-to-default actions with Undo, Japanese/English UI, mobile bottom navigation, and help.
 - Added a 200-page safety limit and grapheme-aware character splitting where `Intl.Segmenter` is available.
 - Added standalone and gzip self-extracting HTML builds with runtime network access blocked by CSP.
+
+## Unreleased
+
+- Unify autosave status/retry, native action states, focused/localized Undo and shared language preferences across the single-file distributions.
+- Preserve unreadable stored work and page-number drafts; prevent duplicate Print handoffs and recover from native handoff errors without changing print geometry.

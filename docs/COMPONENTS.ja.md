@@ -250,3 +250,5 @@ mobileBar.setEnabled('save', true);
 - `env(safe-area-inset-bottom)` と本文側の下余白を維持し、バーで内容を隠さないようにします。
 - フォーカス表示、`aria-current`、標準button、`disabled` セマンティクスを維持します。
 - 320 / 360 / 390〜393 / 430px幅で確認し、ページ全体の横スクロールが出ないことを確認します。
+
+Fixed common UI v1.0.0 is vendored under `components/ui-conventions.*`. Its exact JS/CSS hashes and build embedding are verified locally; application-owned adapters connect autosave, language, button states and existing Undo without changing the shared component.

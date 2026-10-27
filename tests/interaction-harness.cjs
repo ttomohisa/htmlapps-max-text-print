@@ -10,7 +10,7 @@ function loadHtml(file) {
   const payload = html.match(/<script id="self-extract-payload"[^>]*>([\s\S]*?)<\/script>/);
   return payload ? gunzipSync(Buffer.from(payload[1].replace(/\s/g, ''), 'base64')).toString('utf8') : html;
 }
-function boot(file, language='en', stored=new Map()) {
+function boot(file, language='en', stored=new Map(), options={}) {
   const html=loadHtml(file), timers=new Map(), nodes=new Map(), groups=new Map();
   let serial=0, focused=null;
   const frames=[];
@@ -30,6 +30,8 @@ function boot(file, language='en', stored=new Map()) {
     showModal(){this.open=true;}
     close(){this.open=false;}
     setAttribute(k,v){this.attrs.set(k,String(v));}
+    removeAttribute(k){this.attrs.delete(k);}
+    contains(el){return el===this || this.children.some(child=>child.contains(el));}
     getAttribute(k){return this.attrs.get(k)??null;}
     appendChild(el){this.children.push(el);return el;}
     replaceChildren(...els){this.children=els.flatMap(el=>el.tagName==='FRAGMENT'?el.children:[el]);}
@@ -45,6 +47,7 @@ function boot(file, language='en', stored=new Map()) {
     groups.set(id,[...block.matchAll(/<button\s+([^>]+)>/g)].map(m=>new Element('button',m[1])));
   }
   const document=new Element('document');document.documentElement={};document.body=new Element('body');
+  Object.defineProperty(document,'activeElement',{get:()=>focused});
   document.querySelector=s=>s==='dialog[open]'?[...nodes.values()].find(el=>el.tagName==='DIALOG'&&el.open)||null:nodes.get(s)||null;
   document.querySelectorAll=s=>{
     const m=s.match(/^#(\w+) button/);if(m)return groups.get(m[1])||[];
@@ -54,15 +57,17 @@ function boot(file, language='en', stored=new Map()) {
   document.createRange=()=>({selectNodeContents(el){this.el=el;},getBoundingClientRect(){return this.el.getBoundingClientRect();}});
   document.createElement=tag=>new Element(tag);document.createDocumentFragment=()=>new Element('fragment');
   const window=new Element('window');window.scrollTo=()=>{};
-  const context=vm.createContext({document,window,navigator:{language},Intl,Blob,URL,Uint8Array,atob,
+  const context=vm.createContext({document,window,navigator:{language,languages:options.languages||[language]},location:{href:options.url||'https://example.test/'},history:{state:null,replaceState(_state,_title,url){this.url=url;}},Intl,Blob,URL,Uint8Array,atob,
     HTMLInputElement:Input,HTMLTextAreaElement:Textarea,HTMLSelectElement:Select,
     localStorage:{getItem:k=>stored.get(k)??null,setItem:(k,v)=>stored.set(k,v)},
     setTimeout:(fn,delay)=>{timers.set(++serial,{fn,delay});return serial;},clearTimeout:id=>timers.delete(id),
     requestAnimationFrame:fn=>{frames.push(fn);return frames.length;},matchMedia:()=>({matches:true})});
   let script=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].find(m=>m[1].includes('const translations ='))[1];
   script=script.replace('__APP_CONFIG_JSON__',fs.readFileSync(path.join(__dirname,'../app.config.json'),'utf8')).replace('__BUILD_MANIFEST_JSON__','{}').replace('__EMBEDDED_ASSET_BUNDLE_JSON__','{}');
+  const shared=path.join(__dirname,'../components/ui-conventions.js');
+  if(fs.existsSync(shared))vm.runInContext(fs.readFileSync(shared,'utf8'),context);
   vm.runInContext(script,context,{filename:file});
-  return {html,stored,timers,document,window,el:id=>nodes.get('#'+id),get focused(){return focused;},
+  return {html,stored,timers,document,window,context,el:id=>nodes.get('#'+id),get focused(){return focused;},
     frame(){const pending=frames.splice(0);pending.forEach(fn=>fn());},
     flushFrames(){let count=0;while(frames.length){if(++count>100)throw new Error('Animation frame loop');this.frame();}},
     type(value,event='input'){nodes.get('#editor').value=value;nodes.get('#editor').dispatch(event);},

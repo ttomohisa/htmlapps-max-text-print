@@ -232,3 +232,5 @@ Useful mount options include `initialPage`, `pageTopTarget`, `pageTopOffset`, `o
 - Keep `env(safe-area-inset-bottom)` and enough body bottom padding so content cannot hide behind the bar.
 - Preserve visible focus, `aria-current`, semantic buttons, and native `disabled` behavior.
 - Test at 320, 360, 390/393, and 430px widths and confirm there is no page-level horizontal scrolling.
+
+Fixed common UI v1.0.0 is vendored under `components/ui-conventions.*`. Its exact JS/CSS hashes and build embedding are verified locally; application-owned adapters connect autosave, language, button states and existing Undo without changing the shared component.

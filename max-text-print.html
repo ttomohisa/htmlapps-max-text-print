@@ -60,6 +60,7 @@
     .editor{width:100%;min-height:170px;resize:vertical;border:1px solid var(--line-strong);border-radius:14px;padding:15px 16px;line-height:1.55;background:#fff}
     .editor:focus{outline:none;border-color:var(--brand);box-shadow:var(--focus)}
     .editor::placeholder{color:#9aa5a1}
+    .save-feedback{font-size:13px;overflow-wrap:anywhere}.save-feedback p:empty{display:none}.save-feedback p{margin:8px 0}.save-feedback button{border-radius:10px;padding:6px 12px}
     .editor-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
     .editor-meta{font-size:12px;color:var(--muted)}
     .tool-buttons{display:flex;gap:8px}
@@ -212,6 +213,118 @@
       .empty-preview{display:none!important}
     }
   </style>
+  <style>/* Browser Kitty shared UI conventions 1.0.0. Explicit opt-in only. */
+[data-bk-button] { min-height: 44px; border: 1px solid #BFC1BA; background: #FFFFFF; color: #202823; cursor: pointer; opacity: 1; }
+[data-bk-button][data-bk-variant="primary"] { background: #16624F; border-color: #16624F; color: #FFFFFF; }
+[data-bk-button][data-bk-variant="primary"]:hover:not(:disabled) { background: #0E503F; border-color: #0E503F; }
+[data-bk-button][data-bk-variant="secondary"] { background: #FFFFFF; color: #202823; border-color: #BFC1BA; }
+[data-bk-button][data-bk-variant="secondary"]:hover:not(:disabled) { background: #FFFFFF; color: #202823; border-color: #BFC1BA; }
+[data-bk-button][data-bk-variant="danger"] { background: #B3261E; border-color: #B3261E; color: #FFFFFF; }
+[data-bk-button][data-bk-variant="danger"]:hover:not(:disabled) { background: #8C1D18; border-color: #8C1D18; color: #FFFFFF; }
+[data-bk-button]:focus-visible, [data-bk-header-action]:focus-visible { outline: 2px solid #16624F; outline-offset: 2px; }
+[data-bk-button]:disabled, [data-bk-button]:disabled:hover, [data-bk-button]:disabled:active { background: #E7EBE7; color: #59635C; border-color: #E7EBE7; cursor: not-allowed; opacity: 1; transform: none; }
+[data-bk-button][data-bk-state="busy"], [data-bk-button][data-bk-state="stopping"], [data-bk-button][data-bk-state="busy"]:hover, [data-bk-button][data-bk-state="stopping"]:hover { background: #E1F0EA; color: #16624F; border-color: #E1F0EA; cursor: wait; opacity: 1; }
+[data-bk-button][data-bk-state="busy"]::before, [data-bk-button][data-bk-state="stopping"]::before { content: ''; display: inline-block; width: .85em; height: .85em; margin-inline-end: .45em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; vertical-align: -.1em; animation: bk-ui-spin .85s linear infinite; }
+[data-bk-header-action] { min-width: 44px; min-height: 44px; }
+[data-bk-save-status] { display: block; font-size: .85rem; color: #59635C; overflow-wrap: anywhere; }
+[data-bk-save-status="error"] { color: #B3261E; }
+@keyframes bk-ui-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { [data-bk-button] { transition: none; } [data-bk-button]::before { animation: none !important; } }
+</style>
+  <script data-bk-ui-version="1.0.0">/* Browser Kitty shared UI conventions 1.0.0. Build-time embed only; no network. */
+(function (root) {
+  'use strict';
+  const version = '1.0.0';
+  const languageKey = 'browser-kitty:ui-language:v1';
+  const validLanguage = value => value === 'ja' || value === 'en';
+  function safely(read, fallback) { try { return read(); } catch (_) { return fallback; } }
+  function dependency(options, key, readDefault, fallback) {
+    return safely(() => Object.prototype.hasOwnProperty.call(options, key) ? options[key] : readDefault(), fallback);
+  }
+  function storageFrom(options) { return dependency(options, 'storage', () => root.localStorage, null); }
+  function urlFrom(options) { return dependency(options, 'url', () => root.location.href, ''); }
+  function parseUrl(value) { return safely(() => new URL(String(value), 'https://browser-kitty.invalid/'), null); }
+  function readLanguage(storage, key) { return safely(() => storage && storage.getItem(key), null); }
+  function resolveLanguage(options = {}) {
+    const url = parseUrl(urlFrom(options));
+    const query = url && url.searchParams.get('lang');
+    if (validLanguage(query)) return query;
+    const storage = storageFrom(options);
+    const shared = readLanguage(storage, languageKey);
+    if (validLanguage(shared)) return shared;
+    for (const key of options.legacyKeys || []) {
+      const legacy = readLanguage(storage, key);
+      if (validLanguage(legacy)) return legacy;
+    }
+    const languages = dependency(options, 'languages', () => root.navigator.languages || [root.navigator.language], []);
+    for (const value of languages || []) {
+      const language = String(value).toLowerCase().split('-')[0];
+      if (validLanguage(language)) return language;
+    }
+    return 'en';
+  }
+  function chooseLanguage(language, options = {}) {
+    if (!validLanguage(language)) throw new TypeError('Unsupported language: ' + language);
+    const storage = storageFrom(options);
+    const persisted = safely(() => { if (!storage) return false; storage.setItem(languageKey, language); return true; }, false);
+    const url = parseUrl(urlFrom(options));
+    const history = dependency(options, 'history', () => root.history, null);
+    const urlUpdated = safely(() => {
+      if (!url || !url.searchParams.has('lang') || !history) return false;
+      url.searchParams.set('lang', language);
+      history.replaceState(history.state, '', url.href);
+      return true;
+    }, false);
+    return { language, persisted, urlUpdated };
+  }
+  const copy = {
+    en: {
+      sessionOnly: 'Your work will be lost when this tab closes',
+      manualSave: 'Your work is not saved automatically. Save a project file to continue editing later.',
+      dirty: 'Unsaved changes', saving: 'Saving…', saved: 'Saved in this browser',
+      saveFailed: 'Could not save in this browser', downloadStarted: 'Download started',
+      previousResult: 'Previous result', stopping: 'Stopping…', stopProcessing: 'Stop processing', cancel: 'Cancel',
+      languageSessionOnly: 'Language applies to this screen only'
+    },
+    ja: {
+      sessionOnly: '作業内容はこのタブを閉じると消えます',
+      manualSave: '自動保存されません。続きの編集には作業ファイルを保存してください',
+      dirty: '未保存の変更があります', saving: '保存しています…', saved: 'このブラウザーに保存済み',
+      saveFailed: 'このブラウザーに保存できませんでした', downloadStarted: '保存を開始しました',
+      previousResult: '前回の結果', stopping: '中止しています…', stopProcessing: '処理を中止', cancel: 'キャンセル',
+      languageSessionOnly: '言語はこの画面だけに適用されます'
+    }
+  };
+  function text(key, language = 'en', values = {}) {
+    const locale = validLanguage(language) ? language : 'en';
+    let value = copy[locale][key] || copy.en[key] || String(key);
+    if (key === 'saved' && values.time) value += (locale === 'ja' ? '・' : ' · ') + String(values.time);
+    return value.replace(/\{([a-zA-Z0-9_]+)\}/g, (match, name) => Object.prototype.hasOwnProperty.call(values, name) ? String(values[name]) : match);
+  }
+  function setButtonState(button, state) {
+    if (!['ready', 'unavailable', 'busy', 'stopping'].includes(state)) throw new TypeError('Unsupported button state: ' + state);
+    button.disabled = state !== 'ready';
+    button.setAttribute('data-bk-state', state);
+    if (state === 'busy' || state === 'stopping') button.setAttribute('aria-busy', 'true');
+    else button.removeAttribute('aria-busy');
+  }
+  function setSaveStatus(element, options = {}) {
+    const mode = options.mode || 'session';
+    const state = options.state || 'dirty';
+    if (!['session', 'manual', 'autosave'].includes(mode)) throw new TypeError('Unsupported save mode: ' + mode);
+    if (!['dirty', 'saving', 'saved', 'error'].includes(state)) throw new TypeError('Unsupported save state: ' + state);
+    const key = mode === 'session' ? 'sessionOnly' : mode === 'manual' ? 'manualSave' : state === 'error' ? 'saveFailed' : state;
+    element.textContent = text(key, options.language, { time: options.time });
+    element.setAttribute('role', 'status');
+    element.setAttribute('aria-live', 'polite');
+    element.setAttribute('data-bk-save-status', state);
+    element.setAttribute('data-bk-save-mode', mode);
+  }
+  const api = Object.freeze({ version, languageKey, resolveLanguage, chooseLanguage, text, setButtonState, setSaveStatus });
+  root.BrowserKittyUI = api;
+  if (typeof module === 'object' && module.exports) module.exports = api;
+})(typeof globalThis === 'object' ? globalThis : window);
+</script>
 </head>
 <body>
   <div class="app">
@@ -242,8 +355,8 @@
           </div>
         </div>
         <div class="top-actions">
-          <button class="lang-button" id="languageButton" type="button" aria-label="Switch language">EN</button>
-          <button class="icon-button header-icon-button" id="helpButton" type="button" data-i18n-aria-label="help" title="Help">
+          <button class="lang-button" id="languageButton" data-bk-header-action type="button" aria-label="Switch language">EN</button>
+          <button class="icon-button header-icon-button" id="helpButton" data-bk-header-action type="button" data-i18n-aria-label="help" title="Help">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.35 2.35 0 1 1 3.72 1.9c-.92.67-1.52 1.12-1.52 2.1"/><path d="M12 17h.01"/></svg>
           </button>
         </div>
@@ -273,11 +386,17 @@
           <div class="card-body">
             <label for="editor" class="sr-only" data-i18n="textLabel">印刷する文字</label>
             <textarea id="editor" class="editor" maxlength="12000" data-i18n-placeholder="placeholder" placeholder="例：本日休業"></textarea>
+            <div class="save-feedback">
+              <p id="saveStatus"></p><p id="saveDetail"></p>
+              <button type="button" id="retrySaveButton" data-bk-button data-bk-variant="secondary" data-i18n="retrySave" hidden>保存を再試行</button>
+              <p id="languageNotice" role="status" aria-live="polite"></p>
+              <p id="printNotice" role="status" aria-live="polite"></p>
+            </div>
             <div class="editor-tools">
               <div class="editor-meta"><span id="charCount">0</span> <span data-i18n="chars">文字</span> · <span id="lineCount">0</span> <span data-i18n="lines">行</span></div>
               <div class="tool-buttons">
-                <button type="button" class="quiet-button" id="sampleButton" data-i18n="sample">サンプル</button>
-                <button type="button" class="quiet-button danger" id="clearButton" data-i18n="clear">クリア</button>
+                <button type="button" class="quiet-button" id="sampleButton" data-bk-button data-bk-variant="secondary" data-i18n="sample">サンプル</button>
+                <button type="button" class="quiet-button danger" id="clearButton" data-bk-button data-bk-variant="secondary" data-i18n="clear">クリア</button>
               </div>
             </div>
             <div class="page-split-block">
@@ -300,7 +419,7 @@
               <div class="step-title"><span class="step-badge">2</span><span data-i18n="settingsTitle">印刷設定</span></div>
               <div class="card-sub" data-i18n="settingsSub">通常はそのままでOK。向きや余白を変えると文字サイズも再計算します。</div>
             </div>
-            <button type="button" class="advanced-reset settings-reset" id="resetSettingsButton" data-i18n="resetSettings">初期値に戻す</button>
+            <button type="button" class="advanced-reset settings-reset" id="resetSettingsButton" data-bk-button data-bk-variant="secondary" data-i18n="resetSettings">初期値に戻す</button>
           </div>
           <div class="card-body">
             <div class="setting-group">
@@ -405,7 +524,7 @@
             <details class="advanced">
               <summary data-i18n="advanced">詳細設定</summary>
               <div class="advanced-body">
-                <div class="advanced-reset-row"><button type="button" class="advanced-reset" id="resetAdvancedButton" data-i18n="resetAdvanced">初期値に戻す</button></div>
+                <div class="advanced-reset-row"><button type="button" class="advanced-reset" id="resetAdvancedButton" data-bk-button data-bk-variant="secondary" data-i18n="resetAdvanced">初期値に戻す</button></div>
                 <div>
                   <div class="setting-label"><span data-i18n="lineHeight">行間</span><span class="range-value" id="lineHeightValue">1.05</span></div>
                   <div class="range-row"><input type="range" id="lineHeight" data-i18n-aria-label="lineHeight" min="0.85" max="1.5" step="0.01" value="1.05"><span class="range-value" data-i18n="relative">倍率</span></div>
@@ -433,14 +552,14 @@
           <div class="preview-heading" data-i18n="preview">印刷プレビュー</div>
           <div class="fit-chip"><span id="orientationChip">縦</span><strong id="fontSizeChip">— pt</strong></div>
           <div class="preview-actions desktop-print">
-            <button class="primary-button" type="button" id="printButton">
+            <button class="primary-button" type="button" id="printButton" data-bk-button data-bk-variant="primary">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 8V3h10v5"/><rect x="5" y="14" width="14" height="7" rx="1"/><path d="M5 17H3V9h18v8h-2"/><path d="M17 12h.01"/></svg>
               <span data-i18n="print">印刷する</span>
             </button>
           </div>
         </div>
         <div class="page-nav-bar" id="pageNavBar" hidden>
-          <button class="page-nav-button" type="button" id="prevPageButton" data-i18n-aria-label="prevPage" aria-label="前のページ">
+          <button class="page-nav-button" type="button" id="prevPageButton" data-bk-button data-bk-variant="secondary" data-i18n-aria-label="prevPage" aria-label="前のページ">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
           </button>
           <div class="page-nav-status sr-only" id="pageNavStatus" aria-live="polite">1 / 1</div>
@@ -448,9 +567,9 @@
             <label for="pageNumber" class="sr-only" data-i18n="pageNumber">ページ番号</label>
             <input id="pageNumber" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-describedby="pageJumpTotal pageJumpError" aria-invalid="false">
             <span id="pageJumpTotal">/ 0</span>
-            <button id="goPageButton" type="button" data-i18n="goPage">移動</button>
+            <button id="goPageButton" data-bk-button data-bk-variant="secondary" type="button" data-i18n="goPage">移動</button>
           </div>
-          <button class="page-nav-button" type="button" id="nextPageButton" data-i18n-aria-label="nextPage" aria-label="次のページ">
+          <button class="page-nav-button" type="button" id="nextPageButton" data-bk-button data-bk-variant="secondary" data-i18n-aria-label="nextPage" aria-label="次のページ">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
           </button>
           <div class="page-print-summary" id="pagePrintSummary"></div>
@@ -488,7 +607,7 @@
       <button type="button" data-mobile-target="preview">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v5h4"/></svg><span data-i18n="mobilePreview">確認</span>
       </button>
-      <button type="button" class="mobile-print" id="mobilePrintButton" disabled>
+      <button type="button" class="mobile-print" id="mobilePrintButton" data-bk-button data-bk-variant="primary" disabled>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 8V3h10v5"/><rect x="5" y="14" width="14" height="7" rx="1"/><path d="M5 17H3V9h18v8h-2"/></svg><span data-i18n="print">印刷する</span>
       </button>
     </nav>
@@ -496,13 +615,13 @@
     <div id="measureBox" aria-hidden="true"></div>
 
     <div class="toast" id="appToast" role="status" aria-live="polite">
-      <span id="appToastMessage"></span><button type="button" id="appToastAction" hidden></button>
+      <span id="appToastMessage"></span><button type="button" id="appToastAction" data-bk-button data-bk-variant="secondary" hidden></button>
     </div>
 
     <dialog id="helpDialog">
       <div class="dialog-head">
         <h2 data-i18n="helpTitle">使い方と注意事項</h2>
-        <button class="icon-button" id="closeHelpButton" type="button" data-i18n-aria-label="close">
+        <button class="icon-button" id="closeHelpButton" data-bk-header-action type="button" data-i18n-aria-label="close">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </button>
       </div>
@@ -560,9 +679,11 @@
           <h3>Privacy</h3>
           <p>Text and settings are processed only in this browser and are not sent to an external server. When local storage is available, your work is autosaved in the same browser.</p>
         </div>
+        <p data-help-lang="ja">保存状態は文字と印刷設定の保存結果を示します。保存失敗時は入力を残し、再試行または印刷できます。PDFの保存先とファイル名は印刷画面で指定してください。言語切替は入力と作業中の操作を保ちます。</p>
+        <p data-help-lang="en" hidden>Save status covers your text and print settings. A save failure keeps your draft available for retrying or printing. Choose the PDF destination and filename in the print dialog. Language changes keep your input and current work.</p>
         <!-- APP:HELP:END -->
       </div>
-      <div class="dialog-foot"><button class="secondary-button" type="button" id="helpOkButton" data-i18n="close">閉じる</button></div>
+      <div class="dialog-foot"><button class="secondary-button" type="button" id="helpOkButton" data-bk-button data-bk-variant="secondary" data-i18n="close">閉じる</button></div>
     </dialog>
   </div>
 
@@ -570,7 +691,7 @@
     (() => {
       'use strict';
       const APP_CONFIG = {"$schema":"./schemas/app-config.schema.json","name":"Max Text Print","nameJa":"Max Text Print","slug":"max-text-print","version":"1.1.0","description":"Fit horizontal or vertical text to A3, A4, A5 or Letter paper, with wrapping and common font sizing controls.","descriptionJa":"A3・A4・A5・Letterへ横書き・縦書きの文字を最大サイズで配置。折り返しや全ページの文字サイズ統一を選んで印刷できます。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-max-text-print"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}};
-      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.2","generatedAtUtc":"2026-10-25T02:55:59.9399103Z","app":{"name":"Max Text Print","slug":"max-text-print","version":"1.1.0"},"dependencies":[]};
+      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.2","generatedAtUtc":"2026-10-27T13:27:08.6420988Z","app":{"name":"Max Text Print","slug":"max-text-print","version":"1.1.0"},"dependencies":[]};
       const EMBEDDED_ASSET_BUNDLE = {"schemaVersion":2,"dependencies":{}};
 
       // Keep the generic embedded-asset surface expected by the template.
@@ -646,6 +767,10 @@
         }
       };
 
+      Object.assign(translations.en, {retrySave:'Retry saving',saveScope:'Text and print settings are autosaved in this browser.',readFailed:'Stored work could not be read. This draft stays in this tab; printing is still available. Retry after storage is available or the stored data has been repaired.',printFailed:'Could not open the print dialog. Try Print again.'});
+      Object.assign(translations.ja, {retrySave:'保存を再試行',saveScope:'入力文字と印刷設定をこのブラウザーに自動保存します。',readFailed:'保存済みの作業を読み取れませんでした。現在の入力はこのタブ内に保持され、印刷できます。保存領域が利用可能になるか、保存データを修復した後で再試行してください。',printFailed:'印刷画面を開けませんでした。「印刷する」から再試行してください。'});
+      const ui=BrowserKittyUI;
+      let uiLanguage='en',saveState='dirty',savedTime='',readBlocked=false,languageUnstored=false,printFailure=false,printing=false,toastCopy=null;
       const MAX_PAGES = 200;
       const graphemeSegmenter = typeof Intl.Segmenter === 'function' ? new Intl.Segmenter(undefined,{granularity:'grapheme'}) : null;
       const paperSizes = Object.freeze({A3:{w:297,h:420},A4:{w:210,h:297},A5:{w:148,h:210},Letter:{w:215.9,h:279.4}});
@@ -678,29 +803,49 @@
             mobilePrintButton=$('#mobilePrintButton'), previewStatus=$('#previewStatus'),
             prevPageButton=$('#prevPageButton'), nextPageButton=$('#nextPageButton'), pageNumber=$('#pageNumber');
 
-      function getLanguage(){
-        if(state.language==='ja'||state.language==='en') return state.language;
-        return (navigator.language||'').toLowerCase().startsWith('ja')?'ja':'en';
-      }
+      function getLanguage(){return uiLanguage;}
       function t(key, vars={}){
         const lang=getLanguage(); let text=translations[lang][key] ?? translations.en[key] ?? key;
         for(const [k,v] of Object.entries(vars)) text=text.replaceAll(`{${k}}`,String(v));
         return text;
       }
+      function parseStored(raw){
+        if(raw===null) return null;
+        const parsed=JSON.parse(raw);
+        if(!parsed || typeof parsed!=='object' || Array.isArray(parsed) || (Object.hasOwn(parsed,'text') && typeof parsed.text!=='string')) throw new Error('Invalid stored work');
+        return parsed;
+      }
+      function renderSharedUi(){
+        ui.setSaveStatus($('#saveStatus'),{mode:'autosave',state:saveState,language:getLanguage(),time:savedTime});
+        $('#saveDetail').textContent=t(readBlocked?'readFailed':'saveScope');
+        $('#retrySaveButton').hidden=saveState!=='error';
+        $('#languageNotice').textContent=languageUnstored?ui.text('languageSessionOnly',getLanguage()):'';
+        $('#printNotice').textContent=printFailure?t('printFailed'):'';
+      }
+      function syncPrintButtons(){
+        for(const button of [printButton,mobilePrintButton]) ui.setButtonState(button,printing?'busy':fitValid?'ready':'unavailable');
+      }
       function safeRead(){
         try{
-          const raw=localStorage.getItem(storageKey); if(!raw) return;
-          const parsed=JSON.parse(raw); state={...defaultState,...parsed};
+          const parsed=parseStored(localStorage.getItem(storageKey)); if(parsed===null) return;
+          state={...defaultState,...parsed}; saveState='saved';
           if(!['single','blank','line','char'].includes(state.pageSplit)) state.pageSplit='single';
           if(typeof state.paperSize!=='string' || !Object.prototype.hasOwnProperty.call(paperSizes,state.paperSize)) state.paperSize='A4';
           if(!['horizontal-tb','vertical-rl'].includes(state.writingMode)) state.writingMode='horizontal-tb';
           if(typeof state.autoWrap!=='boolean') state.autoWrap=true;
           if(typeof state.uniformFontSize!=='boolean') state.uniformFontSize=false;
-        }catch{}
+        }catch{readBlocked=true;saveState='error';}
       }
       function save(){
-        try{localStorage.setItem(storageKey,JSON.stringify(state));}catch{}
+        if(readBlocked){saveState='error';renderSharedUi();return;}
+        try{saveState='saving';renderSharedUi();localStorage.setItem(storageKey,JSON.stringify(state));saveState='saved';savedTime=new Date().toLocaleTimeString(getLanguage(),{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+        catch{saveState='error';}
+        renderSharedUi();
       }
+      $('#retrySaveButton').addEventListener('click',()=>{
+        if(readBlocked){try{parseStored(localStorage.getItem(storageKey));readBlocked=false;}catch{renderSharedUi();return;}}
+        save();
+      });
       function setPressed(group,value){
         $$(`#${group} button[data-value]`).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.value===String(value))));
       }
@@ -742,8 +887,10 @@
         document.title=APP_CONFIG.name;
         $('#versionBadge').textContent=`v${APP_CONFIG.version}`;
         updateSettingReadouts();
-        updatePaginationLabels();
+        updatePaginationLabels({preserveInput:true});
         updateFitLabels();
+        renderSharedUi();
+        if(toastCopy){$('#appToastMessage').textContent=t(toastCopy.key,toastCopy.vars);if(!$('#appToastAction').hidden) $('#appToastAction').textContent=t('undo');}
       }
       function graphemes(text){
         if(!text) return [];
@@ -755,8 +902,8 @@
         const lines=state.text?state.text.split(/\r?\n/).length:0;
         $('#charCount').textContent=new Intl.NumberFormat(getLanguage()).format(chars);
         $('#lineCount').textContent=new Intl.NumberFormat(getLanguage()).format(lines);
-        $('#sampleButton').disabled=!!state.text;
-        $('#clearButton').disabled=!state.text;
+        ui.setButtonState($('#sampleButton'),state.text?'unavailable':'ready');
+        ui.setButtonState($('#clearButton'),state.text?'ready':'unavailable');
       }
       function splitIntoPages(text){
         const normalized=(text||'').replace(/\r\n?/g,'\n');
@@ -921,7 +1068,7 @@
         const scale=Math.max(.05,Math.min(1,(paperStage.clientWidth-38)/w,(paperStage.clientHeight-48)/h));
         paper.style.transform=`translateX(-50%) scale(${scale})`;
       }
-      function updatePaginationLabels(){
+      function updatePaginationLabels({preserveInput=false}={}){
         const count=pageTexts.length;
         $('#pageCountSummary').textContent=count===1?t('pageCountOne'):t('pageCount',{count});
         const warning=$('#pageLimitWarning');
@@ -929,15 +1076,15 @@
         warning.classList.toggle('show',pageLimitExceeded);
         $('#pageNavBar').hidden=count<=1;
         $('#pageNavStatus').textContent=count?`${currentPageIndex+1} / ${count}`:'0 / 0';
-        pageNumber.value=count?String(currentPageIndex+1):'';
+        if(!preserveInput) pageNumber.value=count?String(currentPageIndex+1):'';
         pageNumber.max=String(count);
         pageNumber.disabled=count<=1;
-        $('#goPageButton').disabled=count<=1;
+        ui.setButtonState($('#goPageButton'),count<=1?'unavailable':'ready');
         $('#pageJumpTotal').textContent=`/ ${count}`;
-        setPageJumpError(false);
+        setPageJumpError(preserveInput && pageNumber.getAttribute('aria-invalid')==='true');
         $('#pagePrintSummary').textContent=count>1?t('printPagesSummary',{count}):'';
-        prevPageButton.disabled=currentPageIndex<=0;
-        nextPageButton.disabled=currentPageIndex>=count-1;
+        ui.setButtonState(prevPageButton,currentPageIndex<=0?'unavailable':'ready');
+        ui.setButtonState(nextPageButton,currentPageIndex>=count-1?'unavailable':'ready');
       }
       function updatePrintSummary(){
         $('#printJobSummary').textContent=t('printJob',{count:pageTexts.length,paper:state.paperSize,orientation:t(currentOrientation==='portrait'?'portraitShort':'landscapeShort'),margin:marginMm()});
@@ -993,15 +1140,13 @@
         }
         renderPapers();
         updateFitLabels();
-        printButton.disabled=!fitValid;
-        mobilePrintButton.disabled=!fitValid;
+        syncPrintButtons();
       }
       function scheduleFit({outputChanged=true}={}){
         // Only output changes cancel an accepted job; preview navigation is independent.
         if(outputChanged) outputRevision+=1;
         fitValid=false;
-        printButton.disabled=true;
-        mobilePrintButton.disabled=true;
+        syncPrintButtons();
         clearTimeout(fitTimer);
         fitTimer=setTimeout(recomputeFit,25);
       }
@@ -1036,10 +1181,12 @@
         updateFitLabels();
         requestAnimationFrame(updatePreviewScale);
       }
-      function showToast(message,{actionLabel='',onAction=null,duration=3500}={}){
+      function showToastKey(key,options={}){showToast(t(key,options.vars),{...options,key});}
+      function showToast(message,{actionLabel='',onAction=null,duration=3500,key='',vars={}}={}){
         clearTimeout(toastTimer);
         invalidateClearUndo();
         const generation=++toastGeneration;
+        toastCopy=key?{key,vars}:null;
         $('#appToastMessage').textContent=message;
         const action=$('#appToastAction');
         action.textContent=actionLabel; action.hidden=!actionLabel||!onAction;
@@ -1048,12 +1195,14 @@
           onAction();
         }:null;
         $('#appToast').classList.add('show');
-        toastTimer=setTimeout(()=>{
+        const expire=()=>{
           if(generation!==toastGeneration) return;
+          if(document.activeElement===action || $('#appToast').contains(document.activeElement)){toastTimer=setTimeout(expire,1000);return;}
           invalidateClearUndo();
           action.hidden=true;action.onclick=null;
-          $('#appToast').classList.remove('show');
-        },duration);
+          $('#appToast').classList.remove('show');toastCopy=null;
+        };
+        toastTimer=setTimeout(expire,duration);
       }
       function invalidateClearUndo(){
         if(!clearUndo) return;
@@ -1073,15 +1222,19 @@
         save(); updateCounts(); updateSettingReadouts(); scheduleFit();
       }
       function openPrint(){
+        if(printing) return;
         recomputeFit();
         if(!fitValid) return;
         const revision=outputRevision,request=++printRequest;
-        showToast(pageTexts.length>1?t('printOpeningPages',{count:pageTexts.length}):t('printOpening'),{duration:1400});
+        printing=true;syncPrintButtons();
+        showToastKey(pageTexts.length>1?'printOpeningPages':'printOpening',{vars:{count:pageTexts.length},duration:1400});
         requestAnimationFrame(()=>requestAnimationFrame(()=>{
-          if(revision!==outputRevision || request!==printRequest) return;
-          // Font/layout readiness can change between the request and the native handoff.
-          recomputeFit();
-          if(fitValid && revision===outputRevision && request===printRequest) window.print();
+          try{
+            if(revision!==outputRevision || request!==printRequest) return;
+            recomputeFit();
+            if(fitValid && revision===outputRevision && request===printRequest){window.print();printFailure=false;}
+          }catch{if(request===printRequest) printFailure=true;}
+          finally{if(request===printRequest){printing=false;syncPrintButtons();renderSharedUi();}}
         }));
       }
       // Editing starts a new text history, including IME composition before input.
@@ -1094,7 +1247,7 @@
       $('#sampleButton').addEventListener('click',()=>{
         if(state.text) return;
         updateState(()=>{state.text=sampleText[getLanguage()];editor.value=state.text;},{resetPage:true});
-        showToast(t('sampleLoaded'));
+        showToastKey('sampleLoaded');
       });
       $('#clearButton').addEventListener('click',()=>{
         if(!state.text) return;
@@ -1102,12 +1255,12 @@
         const undo={};
         updateState(()=>{state.text='';editor.value='';},{resetPage:true});
         editor.focus();
-        showToast(t('cleared'),{actionLabel:t('undo'),onAction:()=>{
+        showToastKey('cleared',{actionLabel:t('undo'),onAction:()=>{
           // A captured or queued action must never overwrite newer text.
           if(clearUndo!==undo || state.text!=='' || editor.value!=='') return;
           invalidateClearUndo();
           updateState(()=>{state.text=before;editor.value=before;},{resetPage:true});
-          showToast(t('undone'));
+          showToastKey('undone');
         },duration:5000});
         clearUndo=undo;
       });
@@ -1146,21 +1299,21 @@
         scheduleFit();
       }
       function showResetUndo(message,before){
-        showToast(message,{actionLabel:t('undo'),onAction:()=>{
+        showToastKey(message,{actionLabel:t('undo'),onAction:()=>{
           applySettings(before);
-          showToast(t('undone'));
+          showToastKey('undone');
         },duration:5000});
       }
       $('#resetSettingsButton').addEventListener('click',()=>{
         const before=captureSettings(printSettingKeys);
         applySettings(Object.fromEntries(printSettingKeys.map(key=>[key,defaultState[key]])));
-        showResetUndo(t('settingsResetDone'),before);
+        showResetUndo('settingsResetDone',before);
       });
       $('#resetAdvancedButton').addEventListener('click',()=>{
         const keys=['lineHeight','letterSpacing','outline'];
         const before=captureSettings(keys);
         applySettings(Object.fromEntries(keys.map(key=>[key,defaultState[key]])));
-        showResetUndo(t('advancedResetDone'),before);
+        showResetUndo('advancedResetDone',before);
       });
       printButton.addEventListener('click',openPrint);
       mobilePrintButton.addEventListener('click',openPrint);
@@ -1173,7 +1326,7 @@
       });
 
       $('#languageButton').addEventListener('click',()=>{
-        state.language=getLanguage()==='ja'?'en':'ja';save();applyLanguage();scheduleFit({outputChanged:false});
+        uiLanguage=getLanguage()==='ja'?'en':'ja';state.language=uiLanguage;languageUnstored=!ui.chooseLanguage(uiLanguage).persisted;applyLanguage();
       });
       const helpDialog=$('#helpDialog');
       $('#helpButton').addEventListener('click',()=>helpDialog.showModal());
@@ -1206,6 +1359,8 @@
       if('ResizeObserver' in window) new ResizeObserver(updatePreviewScale).observe(paperStage);
 
       safeRead();
+      uiLanguage=ui.resolveLanguage({legacyKeys:['legacy:print-language'],storage:{getItem(key){if(key==='legacy:print-language') return state.language;return localStorage.getItem(key);}}});
+      $$('[data-bk-button]').forEach(button=>ui.setButtonState(button,'ready'));
       syncControlsFromState();
       applyLanguage();
       recomputeFit();

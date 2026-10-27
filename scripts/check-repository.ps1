@@ -202,3 +202,6 @@ if ($LASTEXITCODE -ne 0) { throw "User-facing help copy regression failed." }
 
 & node (Join-Path $Root "tests/print-settings.test.cjs") "src/index.template.html" "dist/index.html" "dist/index.self-extract.html" "max-text-print.html"
 if ($LASTEXITCODE -ne 0) { throw "Print settings regression failed." }
+
+& node (Join-Path $Root "tests/common-ui.test.cjs") "src/index.template.html" "dist/index.html" "dist/index.self-extract.html" "max-text-print.html"
+if ($LASTEXITCODE -ne 0) { throw "Common UI behavior regression failed." }

@@ -14,3 +14,13 @@
 12. Confirm the browser DevTools Network panel shows no runtime requests from the application.
 
 The operating system may independently contact printer services; that is outside the app's runtime network behavior.
+
+## Common UI manual acceptance (not yet performed)
+
+Open both readable and self-extract HTML, with networking disabled, in supported desktop and mobile browsers. Enter a multi-page sign and change print settings; reload. Pass: saved text/settings return and no startup writes occur. Deny storage, edit again, change language and retry after restoring storage. Pass: current draft survives, error stays visible until a successful retry, unrelated errors are retained, and the saved timestamp advances only on success. With malformed stored JSON, pass: editing/Retry never overwrites it; Print remains available.
+
+Clear text, focus Undo with the keyboard for longer than five seconds, and change language. Pass: translated Undo remains usable and restores the exact text; newer typing invalidates Clear Undo. Test both settings-reset scopes. Enter an invalid/intermediate page number, switch language. Pass: draft remains intact and validation relocalizes.
+
+Rapidly activate desktop/mobile Print, change inputs during pending handoff, cancel native print, and print again. Pass: one dialog per accepted action, stale jobs do not print, buttons recover, all pages retain their original fit/geometry, and the PDF destination/name is chosen in the native dialog. Check A3/A4/A5/Letter, horizontal/vertical, wrapping, common sizing and 200-page bounds.
+
+At narrow and short viewports, pass: status/retry are readable, buttons reachable with keyboard/touch, Help can scroll to its end and close via buttons/Escape/backdrop, and print output contains no UI/status elements. These native/device checks are incomplete because the managed browser policy denied file and local HTTP access; VM/CLI evidence is not a substitute.
