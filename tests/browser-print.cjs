@@ -85,6 +85,11 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
  check(await page.locator('.paper').count()===4,'mobile page split select generates four pages');
  check(await page.locator('#mobilePrintButton').isEnabled(),'mobile Print enabled for valid input');
  await page.locator('#mobileSettingsToggle').click();
+ check(await page.locator('#verticalWritingNote').isHidden(),'vertical writing note hidden in horizontal mode');
+ await page.locator('#writingMode').selectOption('vertical-rl');await mobileReady();
+ check(await page.locator('#verticalWritingNote').isVisible(),'vertical writing note visible for vertical mode');
+ await page.locator('#writingMode').selectOption('horizontal-tb');await mobileReady();
+ check(await page.locator('#verticalWritingNote').isHidden(),'vertical writing note rehidden after horizontal mode');
  check(await page.locator('#mobileExtraSettingsToggle').isVisible(),'mobile optional settings control visible');
  check(await page.locator('#extraSettingsBody').isHidden(),'mobile extra options initially collapsed');
  await page.locator('#mobileExtraSettingsToggle').click();
