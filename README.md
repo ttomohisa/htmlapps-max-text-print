@@ -26,14 +26,14 @@ GitHub Pages delivers the initial HTML. After it loads, text fitting, page split
 
 
 - **Fit text to paper automatically** — Enter text and the app finds the largest font size that stays inside the selected safe margin.
-- **Split one input into multiple sheets** — Keep everything on one page, split at blank lines, put each line on its own page, or print each character on its own page.
+- **Split one input into multiple sheets** — Keep everything on one page, put each line on its own page, or print each character on its own page.
 - **Fit every page independently** — Short and long page contents each get their own maximum font size.
 - **Preview before printing** — Enter a page number and choose Go or press Enter, or use Previous / Next and the Left / Right arrow keys.
 - **Print all pages in one job** — The native browser/OS print dialog receives every generated page together.
 - **Choose practical print settings** — Portrait / landscape / Auto, 10 mm / 5 mm / 0 mm / custom margins, local typefaces, bold, alignment, text/background colors, line height, letter spacing, and outline.
 - **Keep settings without an account** — Text and print settings are stored locally when browser storage is available. Reset actions can be undone from the toast immediately after use.
 - **Fully local processing** — No runtime CDN, API, analytics, telemetry, or remote font is used. Runtime connections are blocked with `connect-src 'none'`.
-- **Single HTML and bilingual UI** — Japanese / English are included in the same HTML, with a smartphone layout for Text / Settings / Preview / Print.
+- **Single HTML and bilingual UI** — Japanese / English are included in the same HTML, with a single-flow phone layout: editor, optional settings, preview, and a fixed Print button.
 
 ## Quick start
 
@@ -48,14 +48,13 @@ Just [open the demo](https://ttomohisa.github.io/htmlapps-max-text-print/). No i
 3. Copy the generated `dist/index.html` wherever you need it.
 4. Open that single file later without an internet connection or local web server.
 
-The build has no runtime package to download in v1.1.0. It also generates `dist/index.self-extract.html`, a smaller gzip self-extracting variant for browsers that support `DecompressionStream`. Generated `dist/` files are intentionally not committed; GitHub Pages and CI rebuild them from source.
+The build has no runtime package to download in v1.2.0. It also generates `dist/index.self-extract.html`, a smaller gzip self-extracting variant for browsers that support `DecompressionStream`. Generated `dist/` files are intentionally not committed; GitHub Pages and CI rebuild them from source.
 
 ## Usage
 
 1. Enter or paste the text you want to print.
 2. If needed, choose **Page splitting**:
    - **Keep on one page** — fit the complete input on one sheet.
-   - **Blank lines** — use blank lines as page separators.
    - **Each line** — print each non-empty line on its own sheet.
    - **Each character** — print each non-whitespace grapheme on its own sheet.
 3. Enter a whole page number from 1 to the total count, then choose **Go** or press **Enter** to jump directly. You can also use Previous / Next. When focus is not in a form field and Help is closed, `←` / `→` also moves through the preview.
@@ -63,9 +62,11 @@ The build has no runtime package to download in v1.1.0. It also generates `dist/
 5. Choose **Print**. All generated pages are sent to one native print dialog.
 6. Select a printer, or choose **Save as PDF** when you need a PDF file.
 
+On phones, the text box starts shorter so the print preview appears sooner, and it can be resized vertically. Page splitting and the print preview follow the text editor on the same screen. Expand **Paper and text settings** to access the **Paper** and **Text** groups; alignment, colors, wrapping, and less common options are under **Layout, colors and more**. Use the fixed **Print** button at the bottom. The detailed preprint checklist is collapsed on phones, but warnings for 0 mm margins and colored backgrounds stay visible. The local-processing badge is hidden on phones without changing how data is handled.
+
 Page navigation changes only the preview; every generated page is still printed in its original order. Print is disabled while recalculating, for empty input, or above the 200-page limit. Changing text or print settings before the dialog opens cancels the pending request; choose Print again after recalculation.
 
-Help keeps the background page still while open. Scroll inside Help to read longer content, then close it with either close button, Escape, or the backdrop to resume normal page scrolling.
+Help now presents three steps plus essential printing, storage, and privacy notes. It keeps the background still while open, and closes via the top-right button, Escape, or the backdrop.
 
 ### Page splitting and orientation
 
@@ -111,7 +112,7 @@ Each build verifies the standalone HTML, runtime-network restriction, embedded f
 .
 ├─ src/index.template.html       # Application source
 ├─ app.config.json               # App metadata and build settings
-├─ dependencies.json             # Embedded runtime dependencies (none in v1.1.0)
+├─ dependencies.json             # Embedded runtime dependencies (none in v1.2.0)
 ├─ dependencies.lock.json        # Pinned dependency lock
 ├─ build-standalone.bat          # Windows build entry point
 ├─ build-standalone.ps1          # Standalone HTML builder
@@ -141,6 +142,8 @@ No npm runtime package is currently required by the app. The dependency-update w
 
 Browser/PDF regressions are in `tests/browser-print.cjs` and run in CI with pinned dev-only Playwright and pdf-lib packages. They do not become runtime dependencies.
 
+Releases are prepared and checked as downloadable HTML, ZIP, and SHA-256 files during PR validation. After the repository owner merges a new version into `main`, [the release workflow](docs/RELEASING.md) builds and tests that exact commit, then creates its version tag and publishes the GitHub Release. An open PR never publishes a tag or release.
+
 ## Privacy and runtime network protection
 
 The generated HTML includes a Content Security Policy with `connect-src 'none'`. Max Text Print does not use runtime APIs, CDNs, analytics, telemetry, or remote fonts.
@@ -162,7 +165,7 @@ For use with the network completely disconnected, open `dist/index.html` locally
 
 ## Dependencies
 
-Max Text Print v1.1.0 has no third-party runtime dependencies. It uses browser-native APIs and locally installed system fonts. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Max Text Print v1.2.0 has no third-party runtime dependencies. It uses browser-native APIs and locally installed system fonts. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Contributing
 

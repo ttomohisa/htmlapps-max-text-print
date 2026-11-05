@@ -20,6 +20,7 @@ on:
       - "scripts/build-self-extract.ps1"
       - "scripts/verify-self-extract.ps1"
       - ".github/workflows/build-standalone.yml"
+      - ".github/workflows/release.yml"
 
 permissions:
   contents: read
@@ -71,4 +72,18 @@ jobs:
           name: print-qa-${{ github.event.pull_request.head.sha || github.sha }}
           path: qa-artifacts/
           if-no-files-found: warn
+          retention-days: 14
+
+      - name: Prepare and verify release downloads (no tag on PR)
+        if: success()
+        shell: pwsh
+        run: ./scripts/package-release.ps1
+
+      - name: Upload release candidate for review
+        if: success()
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-candidate-${{ github.event.pull_request.head.sha || github.sha }}
+          path: release/
+          if-no-files-found: error
           retention-days: 14

@@ -9,11 +9,10 @@ Max Text Print is a dependency-free single-page application whose editable sourc
 Before fitting, the input is converted into one or more page strings according to the selected mode:
 
 - Keep on one page: the complete input stays together.
-- Blank lines: one or more blank lines separate page blocks.
 - Each line: every non-empty line becomes one page.
 - Each character: every non-whitespace grapheme becomes one page. `Intl.Segmenter` is used when available, with Unicode code-point splitting as a fallback.
 
-A maximum of 200 generated pages is enforced before printing.
+A maximum of 200 generated pages is enforced before printing. Older saved selections of the removed blank-line mode are migrated to the single-page option.
 
 ## Fitting algorithm
 
@@ -29,9 +28,9 @@ The app creates one `.paper` DOM element for each generated page.
 - On print media, all generated `.paper` elements are displayed at unscaled selected-paper geometry in sequence.
 - Each paper uses millimeter dimensions and the selected safe margin inside the paper itself.
 - `@page` is set to the exact selected-paper dimensions in millimeters with zero browser page margin.
-- Page breaks are inserted between generated papers.
+- Page breaks are inserted between generated papers. In print media the paper flow boxes reserve 1 CSS pixel in width and height to avoid accidental second sheets from print-engine rounding, while `@page` remains the exact selected size. Print also cancels the screen root minimum viewport height.
 
-Using the same paper DOM elements for preview and printing keeps line wrapping and fitted sizes as consistent as the browser allows.
+Using the same paper DOM elements for preview and printing keeps line wrapping and fitted sizes as consistent as the browser allows. For centered lines with letter spacing, the browser includes a trailing inter-character advance in line centering, shifting the visible ink by half the spacing. The shared text styling balances logical inline-start and inline-end padding by half the configured letter spacing; the same correction runs in off-screen fitting, on-screen preview, and printed pages, for both horizontal and vertical writing.
 
 ## Persistence
 
@@ -60,4 +59,10 @@ The standard build also regenerates `max-text-print.html` byte-for-byte from the
 
 A central paper-size table supplies portrait dimensions for A3/A4/A5/Letter; landscape swaps the physical axes. Dynamic @page uses those exact dimensions. Automatic wrapping uses pre-wrap/anywhere; OFF uses pre/normal. Both preserve explicit line breaks. Vertical writing uses vertical-rl and text-orientation:mixed in measurement and output; paper orientation is unchanged. Physical horizontal/vertical alignment is mapped onto the corresponding inline/block axes.
 
-The preprint summary describes the entire job, not only the preview page. It discloses browser/OS control limits and shows conditional edge and background warnings.
+The Help dialog uses a single top-right dismissal control plus Esc/backdrop, without a redundant footer Close action. PDF saving remains a plain textual hint without a generic information icon.
+
+The preprint summary describes the entire job, not only the preview page. It discloses browser/OS control limits and shows conditional edge and background warnings. On narrow screens the checklist is collapsed by default, but both warning boxes remain visible independently of its disclosure state.
+
+## Responsive workflow
+
+Desktop retains the side-by-side editor/settings and paper preview. At 980px and below, mobile starts with an 88px vertically resizable text box and uses one continuous flow: text editor, a single page-splitting select, collapsible paper/text settings, paper preview, page navigation, and a fixed Print action. Both split controls share the same persisted state; changing one updates the other. A compact settings summary reflects paper size, selected orientation setting, and safe margin. Its mobile disclosure presents Paper and Text groups first; Layout/Colors and wrapping/common-size/advanced settings are kept behind a second optional disclosure. Desktop shows all groups without the extra disclosure. The Bold control is a full-row label on mobile. During input focus the fixed Print action is hidden to prevent keyboard overlap. This responsive layout changes the presentation only; fit calculations, page DOM, native printing, page limits, settings persistence, and Undo keep the same implementation.

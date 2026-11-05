@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.2.0 - 2026-11-05
+
+- Add post-merge release automation with version-tag creation, GitHub Release, downloadable standalone HTML and ZIP assets, and SHA-256 checksums; PRs validate release packages without publishing them.
+
+- Correct visible text centering with nonzero letter spacing, including horizontal and vertical writing. Match the fit measurement, print preview, and PDF output.
+
+- Start mobile text entry at 88px height, with vertical resizing, to show the print preview sooner.
+- Retire blank-line splitting from the UI, mapping saved selections to single-page mode.
+- Prevent an extra print sheet with a 1px print-only paper sizing tolerance and no viewport minimum height.
+- Test the reported one-page A4 monospace/line-height 1.29/letter-spacing 0.20 em configuration in Chromium PDF output.
+
+- Reduce Japanese and English Help to three practical steps plus essential printing, storage, and privacy notes.
+- Validate persisted state on startup to recover from malformed or outdated browser settings without breaking the editor.
+- Localize accessible custom-margin labels, increase compact header tap targets, and show vertical-writing guidance only when that mode is selected.
+
+- Replace the smartphone four-tab layout with one editor-to-preview flow and a single fixed Print action.
+- Collapse print settings behind a compact paper/orientation/margin summary on mobile; keep all original controls and reset/Undo behaviors.
+- Use a mobile page-splitting select synchronized with desktop presets and persisted settings.
+- Put the paper preview before the optional preprint checklist on mobile, while keeping edge/background warnings visible.
+- Simplify smartphone labels and remove the local-processing badge and version chip from the compact header. Keep desktop behavior and privacy guarantees unchanged.
+- スマホ版の入力・プレビュー・印刷を1画面に整理。設定の開閉、ページ分割切替、注意表示を改善し、既存の印刷・保存・Undoは維持。
+- Group mobile settings into Paper and Text, with layout, colors, and advanced controls behind an optional disclosure; keep desktop controls unchanged.
+- Remove the duplicate footer Help close control, remove the unclear information icon before the PDF hint, and make the Bold row easier to tap.
+
+
 ## 1.1.0 - 2026-10-25
 
 - Add automatic-wrapping ON/OFF and optional common maximum font size across all pages.

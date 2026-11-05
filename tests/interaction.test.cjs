@@ -34,6 +34,97 @@ for(const target of targets)for(const language of ['ja','en']){
     app.el('languageButton').click();check(app,language);
     check(boot(file,language,app.stored),language);
   });
+  test(`${label}: removed blank-line splitting is migrated to single-page mode`,()=>{
+    const stored=new Map([['max-text-print:v1',JSON.stringify({text:'First\n\nSecond',pageSplit:'blank'})]]);
+    const app=boot(file,language,stored);
+    assert.equal(app.el('mobilePageSplitSelect').value,'single');
+    assert.equal(app.document.querySelectorAll('#pageSplitGroup button').length,3);
+    const selectHtml=app.html.slice(app.html.indexOf('id="mobilePageSplitSelect"')).split('</select>')[0];
+    assert.equal((selectHtml.match(/<option /g)||[]).length,3);
+    app.fit();
+    assert.equal(app.el('pagesContainer').children.length,1);
+    app.type('Updated');app.fit();
+    assert.equal(app.saved().pageSplit,'single');
+  });
+  test(`${label}: malformed stored settings recover without losing valid defaults`,()=>{
+    const stored=new Map([['max-text-print:v1',JSON.stringify({
+      text:{unexpected:true},language:'unknown',pageSplit:'oops',paperSize:'A0',
+      writingMode:'diagonal',orientation:'sideways',marginPreset:'bad',
+      customMargin:999,fontFamily:'bogus',autoWrap:'yes',uniformFontSize:null,
+      bold:1,textAlign:'start',verticalAlign:'left',textColor:'red',
+      backgroundColor:'#oops',lineHeight:'infinite',letterSpacing:50,outline:20
+    })]]);
+    const app=boot(file,language,stored);
+    assert.equal(app.el('editor').value,'');
+    assert.equal(app.el('paperSize').value,'A4');
+    assert.equal(app.el('mobilePageSplitSelect').value,'single');
+    app.type('Recovered sign');app.fit();
+    const saved=app.saved();
+    assert.equal(saved.text,'Recovered sign');
+    assert.equal(saved.pageSplit,'single');
+    assert.equal(saved.paperSize,'A4');
+    assert.equal(saved.orientation,'auto');
+    assert.equal(saved.marginPreset,'10');
+    assert.equal(saved.customMargin,40);
+    assert.equal(saved.lineHeight,1.05);
+    assert.equal(saved.letterSpacing,0.2);
+    assert.equal(saved.outline,0);
+    assert.equal(saved.backgroundColor,'#ffffff');
+    assert.equal(saved.autoWrap,true);
+    assert.equal(saved.bold,true);
+    assert.equal(app.el('printButton').disabled,false);
+    const badJson=boot(file,language,new Map([['max-text-print:v1','{truncated']]));
+    assert.equal(badJson.el('editor').value,'');
+    badJson.type('Ready');badJson.fit();
+    assert.equal(badJson.el('printButton').disabled,false);
+    const valid=boot(file,language,new Map([['max-text-print:v1',JSON.stringify({text:'Keep this text',orientation:'landscape',marginPreset:'5',bold:false})]]));
+    assert.equal(valid.el('editor').value,'Keep this text');
+    assert.equal(valid.el('paperSize').value,'A4');
+    valid.type('Keep this text updated');
+    assert.equal(valid.saved().orientation,'landscape');
+    assert.equal(valid.saved().bold,false);
+  });
+  test(`${label}: mobile split selector and settings disclosure keep the same print state`,()=>{
+    const app=boot(file,language);
+    const split=app.el('mobilePageSplitSelect'),toggle=app.el('mobileSettingsToggle'),section=app.el('settingsSection');
+    assert.equal(split.value,'single');
+    assert.equal(toggle.getAttribute('aria-expanded'),'false');
+    toggle.click();
+    assert.equal(toggle.getAttribute('aria-expanded'),'true');
+    assert.equal(section.classList.contains('is-open'),true);
+    assert.equal(app.el('verticalWritingNote').hidden,true);
+    app.el('writingMode').value='vertical-rl';app.el('writingMode').dispatch('change');
+    assert.equal(app.el('verticalWritingNote').hidden,false);
+    app.el('writingMode').value='horizontal-tb';app.el('writingMode').dispatch('change');
+    assert.equal(app.el('verticalWritingNote').hidden,true);
+    app.type('A\nB');
+    split.value='line';split.dispatch('change');app.fit();
+    assert.equal(app.saved().pageSplit,'line');
+    assert.equal(app.el('pageNavStatus').textContent,'1 / 2');
+    assert.equal(app.el('mobilePrintButton').disabled,false);
+    app.setting('pageSplitGroup','char');
+    assert.equal(split.value,'char');
+    app.setting('orientationGroup','landscape');
+    assert.ok(app.el('mobileSettingsSummary').textContent.includes('A4'));
+    app.el('mobileResetSettingsButton').click();
+    assert.equal(app.saved().orientation,'auto');
+    assert.equal(split.value,'single');
+    app.el('appToastAction').click();
+    assert.equal(app.saved().orientation,'landscape');
+    assert.equal(split.value,'char');
+    toggle.click();
+    assert.equal(toggle.getAttribute('aria-expanded'),'false');
+    app.el('languageButton').click();
+    assert.equal(app.el('mobileSettingsToggle').getAttribute('aria-expanded'),'false');
+    assert.equal(app.el('mobileExtraSettingsToggle').getAttribute('aria-expanded'),'false');
+    app.el('mobileSettingsToggle').click();
+    app.el('mobileExtraSettingsToggle').click();
+    assert.equal(app.el('mobileExtraSettingsToggle').getAttribute('aria-expanded'),'true');
+    assert.equal(app.el('settingsSection').classList.contains('extra-open'),true);
+    app.el('mobileExtraSettingsToggle').click();
+    assert.equal(app.el('mobileExtraSettingsToggle').getAttribute('aria-expanded'),'false');
+    assert.equal(app.el('mobileSettingsSummary').textContent.includes('A4'),true);
+  });
   test(`${label}: immediate Clear Undo restores persisted text and preview`,()=>{
     const app=setup();assert.equal(app.el('editor').value,'');assert.equal(app.saved().text,'');assert.equal(app.focused,app.el('editor'));
     app.el('appToastAction').click();app.fit();assert.equal(app.el('editor').value,language==='ja'?'以前の掲示':'Previous sign');assert.equal(app.saved().text,app.el('editor').value);assert.equal(app.el('printButton').disabled,false);
@@ -75,14 +166,14 @@ for(const target of targets)for(const language of ['ja','en']){
   test(`${label}: Help blocks page arrows without intercepting dialog keys; close restores navigation`,()=>{
     const app=boot(file,language);app.type('One\n二\nThree');app.setting('pageSplitGroup','line');app.fit();assert.equal(app.el('pageNavStatus').textContent,'1 / 3');app.el('helpButton').click();
     for(const key of ['ArrowRight','ArrowLeft'])assert.equal(app.press(key,app.el('closeHelpButton')).defaultPrevented,false);
-    assert.equal(app.el('pageNavStatus').textContent,'1 / 3');app.el('helpOkButton').click();assert.equal(app.press('ArrowRight').defaultPrevented,true);assert.equal(app.el('pageNavStatus').textContent,'2 / 3');
+    assert.equal(app.el('pageNavStatus').textContent,'1 / 3');app.el('closeHelpButton').click();assert.equal(app.press('ArrowRight').defaultPrevented,true);assert.equal(app.el('pageNavStatus').textContent,'2 / 3');
     for(const id of ['editor','customMargin','fontFamily'])assert.equal(app.press('ArrowRight',app.el(id)).defaultPrevented,false);
     assert.equal(app.press('ArrowRight',app.document.body,{ctrlKey:true}).defaultPrevented,false);assert.equal(app.el('pageNavStatus').textContent,'2 / 3');app.press('ArrowLeft');assert.equal(app.el('pageNavStatus').textContent,'1 / 3');
   });
-  test(`${label}: both Help close buttons and the backdrop preserve input across repeated openings`,()=>{
+  test(`${label}: header Help close and backdrop preserve input across repeated openings`,()=>{
     const app=boot(file,language);app.type('Keep this sign');app.setting('pageSplitGroup','line');app.fit();
     const before=JSON.stringify(app.saved()),dialog=app.el('helpDialog');
-    for(const close of [()=>app.el('closeHelpButton').click(),()=>app.el('helpOkButton').click(),()=>dialog.dispatch('click',{clientX:0,clientY:0})]){
+    for(const close of [()=>app.el('closeHelpButton').click(),()=>dialog.dispatch('click',{clientX:0,clientY:0})]){
       app.el('helpButton').click();assert.equal(dialog.open,true);
       dialog.dispatch('click',{clientX:20,clientY:20});assert.equal(dialog.open,true,'inside clicks keep Help open');
       close();assert.equal(dialog.open,false);assert.equal(app.el('editor').value,'Keep this sign');assert.equal(JSON.stringify(app.saved()),before);
@@ -183,9 +274,9 @@ for(const target of targets){
   });
   test(`${target}: Help keeps its existing inner scroll shell and print overflow override`,()=>{
     assert.match(screenStyles,/dialog\{max-height:calc\(100dvh - 20px\);margin:auto 10px 10px;/);
-    assert.match(screenStyles,/\.dialog-body\{overflow:auto;max-height:calc\(100dvh - 155px\)\}/);
+    assert.match(screenStyles,/\.dialog-body\{overflow:auto;max-height:calc\(100dvh - 105px\)\}/);
     assert.match(html,/<div class="dialog-head">[\s\S]*?id="closeHelpButton"/);
-    assert.match(html,/<div class="dialog-foot"><button[^>]*id="helpOkButton"/);
+    assert.doesNotMatch(html,/id="helpOkButton"/,'redundant bottom Help button removed');
     assert.match(styles,/@media print\s*\{\s*html,body\{[^}]*overflow:visible!important/);
   });
   test(`${target}: local-processing badge preserves its decorative shield`,()=>{

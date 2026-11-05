@@ -3,7 +3,7 @@
   "name": "Max Text Print",
   "nameJa": "Max Text Print",
   "slug": "max-text-print",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Fit horizontal or vertical text to A3, A4, A5 or Letter paper, with wrapping and common font sizing controls.",
   "descriptionJa": "A3・A4・A5・Letterへ横書き・縦書きの文字を最大サイズで配置。折り返しや全ページの文字サイズ統一を選んで印刷できます。",
   "defaultLanguage": "auto",

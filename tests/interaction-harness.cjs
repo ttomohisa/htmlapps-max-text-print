@@ -16,7 +16,7 @@ function boot(file, language='en', stored=new Map()) {
   const frames=[];
   class Element {
     constructor(tag='div', attributes='') {
-      this.clientWidth=100;this.clientHeight=100;this.scrollWidth=100;this.scrollHeight=100;this.tagName=tag.toUpperCase();this.listeners=new Map();this.children=[];this.style={};this.value='';this.textContent='';this.hidden=false;this.disabled=false;this.open=false;
+      this.clientWidth=100;this.clientHeight=100;this.scrollWidth=100;this.scrollHeight=100;this.tagName=tag.toUpperCase();this.listeners=new Map();this.children=[];this.style={setProperty:(name,value)=>{this.style[name]=String(value);}};this.value='';this.textContent='';this.hidden=false;this.disabled=false;this.open=false;
       this.attrs=new Map([...attributes.matchAll(/([\w-]+)="([^"]*)"/g)].map(m=>[m[1],m[2]]));
       this.dataset=Object.fromEntries([...this.attrs].filter(([k])=>k.startsWith('data-')).map(([k,v])=>[k.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()),v]));
       const classes=new Set((this.attrs.get('class')||'').split(/\s+/));
