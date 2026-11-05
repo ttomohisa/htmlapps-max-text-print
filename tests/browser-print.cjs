@@ -80,6 +80,9 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
  check(mobileRects.print.left>=0&&mobileRects.print.right<=390&&mobileRects.print.bottom<=844,'mobile Print action within viewport',mobileRects.print);
  check(!(await page.locator('#printChecklist').evaluate(el=>el.open)),'mobile preprint checklist collapsed by default');
  check(await page.locator('#fitChip').isVisible(),'fitted paper size visible');
+ const editorHeight=await page.locator('#editor').evaluate(el=>el.getBoundingClientRect().height);
+ check(editorHeight<=96,'mobile editor reduced so preview appears sooner',editorHeight);
+ check(await page.locator('#mobilePageSplitSelect option').count()===3,'mobile split selector has three options');
  check(await page.locator('.print-hint svg').count()===0,'PDF guidance has no ambiguous info icon');
  await page.locator('#mobilePageSplitSelect').selectOption('char');await mobileReady();
  check(await page.locator('.paper').count()===4,'mobile page split select generates four pages');
@@ -109,6 +112,20 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
  await page.locator('#mobileSettingsToggle').click();
  await page.evaluate(()=>window.scrollTo(0,0));
  await page.screenshot({path:path.join(out,'screenshot-mobile-ja.png'),fullPage:true});
+ // Regress the reported extra blank sheet in a narrow mobile print layout.
+ await page.locator('#mobileSettingsToggle').click();
+ await page.locator('#fontFamily').selectOption('mono');await mobileReady();
+ await page.locator('#mobileExtraSettingsToggle').click();
+ await page.locator('#lineHeight').evaluate(el=>{el.value='1.29';el.dispatchEvent(new Event('input',{bubbles:true}));});await mobileReady();
+ await page.locator('#letterSpacing').evaluate(el=>{el.value='0.20';el.dispatchEvent(new Event('input',{bubbles:true}));});await mobileReady();
+ check(await page.locator('.paper').count()===1,'reported settings keep one mobile preview page');
+ await page.emulateMedia({media:'print'});
+ const mobilePrintPdf=await page.pdf({path:path.join(out,'mobile-A4-mono-line129-spacing020.pdf'),preferCSSPageSize:true,printBackground:true});
+ const mobilePrintDocument=await PDFDocument.load(mobilePrintPdf);
+ check(mobilePrintDocument.getPageCount()===1,'reported mobile print settings generate exactly one page',mobilePrintDocument.getPageCount());
+ await page.emulateMedia({media:'screen'});
+ await page.locator('#mobileResetSettingsButton').click();await mobileReady();
+ await page.locator('#mobileSettingsToggle').click();
  for(const {width,height} of [{width:393,height:252},{width:844,height:390}]){
   await page.setViewportSize({width,height});
   check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`mobile landscape no horizontal overflow ${width}x${height}`);
@@ -154,6 +171,33 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
   check(doc.getPageCount()===2,`PDF page count ${paper}/${orientation}/${writing}`,doc.getPageCount());
   for(const p of doc.getPages()){const {width,height}=p.getSize();check(Math.abs(width-expected[0]*72/25.4)<1.2&&Math.abs(height-expected[1]*72/25.4)<1.2,`PDF paper ${paper}/${orientation}/${writing}`,{width,height});}
  }
+ // A single A4 sheet must never produce a blank second page at the reported settings.
+ await page.locator('#pageSplitGroup [data-value="single"]').click();
+ await setting('paperSize','A4');
+ await page.locator('#orientationGroup [data-value="auto"]').click();
+ await setting('writingMode','horizontal-tb');
+ await setting('fontFamily','mono');
+ await page.locator('#marginGroup [data-value="10"]').click();
+ await page.locator('#autoWrapToggle').check();
+ await page.locator('#boldToggle').check();
+ await page.locator('#lineHeight').evaluate(el=>{el.value='1.29';el.dispatchEvent(new Event('input',{bubbles:true}));});
+ await page.locator('#letterSpacing').evaluate(el=>{el.value='0.20';el.dispatchEvent(new Event('input',{bubbles:true}));});
+ await page.locator('#editor').fill('本日休業');await ready();
+ check(await page.locator('.paper').count()===1,'reported settings create one preview page');
+ await page.emulateMedia({media:'print'});
+ const exactPdf=await page.pdf({path:path.join(out,'one-page-A4-mono-line129-spacing020.pdf'),preferCSSPageSize:true,printBackground:true});
+ const exactDocument=await PDFDocument.load(exactPdf);
+ check(exactDocument.getPageCount()===1,'reported settings print one page without blank sheet',exactDocument.getPageCount());
+ const sizes=await page.locator('.paper').evaluate(el=>{
+   const r=el.getBoundingClientRect();
+   return {width:r.width,height:r.height,physicalWidth:210*96/25.4,physicalHeight:297*96/25.4};
+ });
+ check(sizes.width<sizes.physicalWidth&&sizes.height<sizes.physicalHeight,'printed page reserves rounding tolerance',sizes);
+ await page.emulateMedia({media:'screen'});
+ await page.locator('#pageSplitGroup [data-value="line"]').click();
+ await page.locator('#uniformFontToggle').check();await ready();
+ await page.locator('#lineHeight').evaluate(el=>{el.value='1.05';el.dispatchEvent(new Event('input',{bubbles:true}));});
+ await page.locator('#letterSpacing').evaluate(el=>{el.value='0';el.dispatchEvent(new Event('input',{bubbles:true}));});
  await page.locator('#editor').fill(Array.from({length:200},(_,i)=>`Page ${i+1}`).join('\n'));await ready();
  check(await page.locator('.paper').count()===200,'200 pages rendered');
  const manySizes=await fonts();check(new Set(manySizes).size===1,'200 pages share common size');
