@@ -429,7 +429,7 @@
               <div class="field">
                 <label for="writingMode" data-i18n="writingMode">文字の方向</label>
                 <select id="writingMode"><option value="horizontal-tb" data-i18n="horizontalWriting">横書き</option><option value="vertical-rl" data-i18n="verticalWriting">縦書き（右から左）</option></select>
-                <div class="font-note" data-i18n="verticalWritingNote">縦書きの英数字は標準的な混在表示です。用紙の向きとは別に設定できます。</div>
+                <div class="font-note" id="verticalWritingNote" data-i18n="verticalWritingNote" hidden>縦書きの英数字は標準的な混在表示です。用紙の向きとは別に設定できます。</div>
               </div>
             </div>
             <div class="setting-group">
@@ -887,6 +887,7 @@
         return value==='start'?'flex-start':value==='end'?'flex-end':'center';
       }
       function updateSettingReadouts(){
+        $('#verticalWritingNote').hidden=state.writingMode!=='vertical-rl';
         $('#mobileSettingsSummary').textContent=t('mobileSettingsInfo',{paper:state.paperSize,orientation:t(state.orientation),margin:marginMm()});
         $('#marginSummary').textContent=`${marginMm()} mm`;
         $('#lineHeightValue').textContent=Number(state.lineHeight).toFixed(2);
