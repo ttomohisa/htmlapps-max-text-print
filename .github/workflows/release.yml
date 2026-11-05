@@ -1,0 +1,161 @@
+name: Publish GitHub Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: max-text-print-release
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+      publish: ${{ steps.version.outputs.publish }}
+    steps:
+      - name: Checkout exact main revision
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Check version and existing release
+        id: version
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version=$(node -p "JSON.parse(require('node:fs').readFileSync('app.config.json','utf8')).version")
+          if [[ ! "$version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "::error::Only stable SemVer versions can be released."
+            exit 1
+          fi
+          if ! grep -Eq "^## $version - " CHANGELOG.md; then
+            echo "::error::CHANGELOG.md lacks a release section for v$version."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          if gh release view "v$version" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "v$version is already published; nothing to change."
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "v$version has no published release."
+          fi
+
+  build:
+    needs: prepare
+    if: needs.prepare.outputs.publish == 'true'
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout the exact main commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Verify standalone builds and interaction tests
+        shell: pwsh
+        run: ./scripts/check-repository.ps1
+
+      - name: Install browser-only test dependencies
+        shell: pwsh
+        run: |
+          npm install --no-save --package-lock=false playwright@1.57.0 pdf-lib@1.17.1
+          npx playwright install chromium
+
+      - name: Verify browser layout and PDF output
+        shell: pwsh
+        run: node tests/browser-print.cjs
+
+      - name: Package versioned downloads and checksums
+        shell: pwsh
+        run: ./scripts/package-release.ps1 -CommitSha "${{ github.sha }}"
+
+      - name: Upload verified release candidate
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-candidate-${{ github.sha }}
+          path: release/
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    needs: [prepare, build]
+    if: needs.prepare.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download verified release candidate
+        uses: actions/download-artifact@v7
+        with:
+          name: release-candidate-${{ github.sha }}
+          path: release/
+
+      - name: Verify checksums, tag target and publish GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+          RELEASE_TAG: ${{ needs.prepare.outputs.tag }}
+        run: |
+          set -euo pipefail
+          cd release
+          prefix="htmlapps-max-text-print-$RELEASE_TAG"
+          sha256sum --check SHA256SUMS.txt
+          test -s RELEASE_NOTES.md
+          for file in "$prefix.html" "$prefix.self-extract.html" "$prefix.zip"; do
+            test -s "$file"
+          done
+
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $RELEASE_TAG is already published; leaving it untouched."
+            exit 0
+          fi
+
+          if tag_sha=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" --jq '.object.sha' 2>/dev/null); then
+            if [[ "$tag_sha" != "$GITHUB_SHA" ]]; then
+              echo "::error::Tag $RELEASE_TAG already points to a different commit ($tag_sha)."
+              exit 1
+            fi
+            echo "Tag $RELEASE_TAG already points to this verified main commit."
+          else
+            gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" \
+              -f ref="refs/tags/$RELEASE_TAG" -f sha="$GITHUB_SHA" >/dev/null
+            echo "Created tag $RELEASE_TAG at $GITHUB_SHA."
+          fi
+
+          gh release create "$RELEASE_TAG" \
+            "$prefix.html" \
+            "$prefix.self-extract.html" \
+            "$prefix.zip" \
+            SHA256SUMS.txt \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --title "Max Text Print $RELEASE_TAG" \
+            --notes-file RELEASE_NOTES.md \
+            --latest
+
+          echo "Published https://github.com/$GITHUB_REPOSITORY/releases/tag/$RELEASE_TAG"
