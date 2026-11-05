@@ -34,6 +34,17 @@ for(const target of targets)for(const language of ['ja','en']){
     app.el('languageButton').click();check(app,language);
     check(boot(file,language,app.stored),language);
   });
+  test(`${label}: removed blank-line splitting is migrated to single-page mode`,()=>{
+    const stored=new Map([['max-text-print:v1',JSON.stringify({text:'First\\n\\nSecond',pageSplit:'blank'})]]);
+    const app=boot(file,language,stored);
+    assert.equal(app.el('mobilePageSplitSelect').value,'single');
+    assert.equal(app.el('pageSplitGroup').querySelectorAll('button').length,3);
+    assert.equal(app.el('mobilePageSplitSelect').options.length,3);
+    app.fit();
+    assert.equal(app.el('pagesContainer').children.length,1);
+    app.type('Updated');app.fit();
+    assert.equal(app.saved().pageSplit,'single');
+  });
   test(`${label}: malformed stored settings recover without losing valid defaults`,()=>{
     const stored=new Map([['max-text-print:v1',JSON.stringify({
       text:{unexpected:true},language:'unknown',pageSplit:'oops',paperSize:'A0',
