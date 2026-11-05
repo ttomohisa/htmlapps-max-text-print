@@ -4,6 +4,7 @@
 
 - Reduce Japanese and English Help to three practical steps plus essential printing, storage, and privacy notes.
 - Validate persisted state on startup to recover from malformed or outdated browser settings without breaking the editor.
+- Localize accessible custom-margin labels, increase compact header tap targets, and show vertical-writing guidance only when that mode is selected.
 
 - Replace the smartphone four-tab layout with one editor-to-preview flow and a single fixed Print action.
 - Collapse print settings behind a compact paper/orientation/margin summary on mobile; keep all original controls and reset/Undo behaviors.
