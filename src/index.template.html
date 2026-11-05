@@ -155,46 +155,86 @@
     .dialog-body h3:first-child{margin-top:0}
     .dialog-body ul{padding-left:20px;margin:7px 0}
     .dialog-foot{padding:0 20px 18px;display:flex;justify-content:flex-end}
-    .mobile-bottom{display:none}
+    .mobile-bottom,.mobile-intro,.mobile-settings-toggle,.mobile-page-split-select,.mobile-reset-settings{display:none}
+    .desktop-intro{display:inline}
+    .print-summary details summary{cursor:pointer;font-weight:750;font-size:13px;color:var(--ink)}
+    .print-check-content{padding-top:7px}
     .version-note{font-size:11px;color:var(--muted)}
     @media (max-width: 980px){
-      .page-intro{align-items:stretch;flex-direction:column;gap:10px;padding-top:18px}
+      .topbar{min-height:58px}
+      .topbar-inner{min-height:58px;padding:8px 16px}
+      .brandmark{width:34px;height:34px}
+      .brandname{font-size:15px}
+      .brandtag,.version-badge{display:none}
+      .top-actions{gap:14px}
+      .page-intro{display:block;padding:18px 16px 0}
+      .page-intro h1{font-size:22px;line-height:1.35;letter-spacing:-.02em}
+      .page-intro p{font-size:13px;line-height:1.55;margin-top:5px}
+      .desktop-intro{display:none}
+      .mobile-intro{display:inline}
       .local-badge{display:none}
-      .shell{grid-template-columns:1fr;padding:14px 14px 92px}
+      .shell{display:flex;flex-direction:column;gap:0;padding:16px 16px calc(108px + env(safe-area-inset-bottom))}
       .left-stack{display:contents}
-      .preview-card{position:static}
-      .paper-stage{height:62vh;min-height:430px}
-      .desktop-print{display:none!important}
-      .mobile-bottom{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));z-index:50;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 28px rgba(23,46,38,.18);padding:6px}
-      .mobile-bottom button{border:0;background:transparent;border-radius:11px;min-height:54px;padding:5px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;color:#68746f;font-weight:680}
-      .mobile-bottom button svg{width:20px;height:20px}
-      .mobile-bottom button[aria-current="page"]{background:var(--brand-soft);color:var(--brand)}
-      .mobile-bottom button.mobile-print{background:var(--brand);color:#fff}
-      [data-mobile-page]{display:none}
-      [data-mobile-page].mobile-active{display:block}
-      .preview-footer{padding-bottom:12px}
-      .page-nav-bar{padding-inline:10px}
+      .card{border:0;border-radius:0;box-shadow:none;background:transparent}
+      #inputSection{order:1;width:100%}
+      #settingsSection{order:2;width:100%;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:17px 0 22px}
+      #previewSection{order:3;width:100%;display:flex;flex-direction:column}
+      .card-head{padding:0 0 9px}
+      .card-body{padding:0}
+      .step-badge,.card-sub{display:none}
+      .step-title{font-size:14px;font-weight:740}
+      .editor{min-height:132px;resize:vertical;border-radius:12px;padding:13px 14px;background:#fff;font-size:16px;line-height:1.5}
+      .editor-tools{margin-top:9px}
+      .quiet-button{min-height:38px;padding:8px 11px}
+      .page-split-block{border:0;margin-top:18px;padding-top:0}
+      .page-split-block .setting-label{font-size:13px;margin-bottom:8px}
+      .page-split-segmented,.page-split-note{display:none}
+      .mobile-page-split-select{display:block;width:100%;height:46px;border:1px solid var(--line-strong);border-radius:11px;background:#fff;padding:0 12px;font-size:14px}
+      .mobile-settings-toggle{display:flex;width:100%;min-height:62px;padding:10px 1px;align-items:center;gap:12px;border:0;background:transparent;text-align:left;cursor:pointer}
+      .mobile-settings-toggle .settings-toggle-copy{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+      .mobile-settings-toggle strong{font-size:14px;font-weight:740}
+      .mobile-settings-toggle small{font-size:12px;font-weight:500;color:var(--muted);overflow-wrap:anywhere}
+      .mobile-settings-toggle svg{width:20px;height:20px;flex:none;color:var(--muted);transition:transform .16s}
+      #settingsSection.is-open .mobile-settings-toggle svg{transform:rotate(180deg)}
+      #settingsSection .card-head{display:none}
+      #settingsSection .card-body{display:none;padding:2px 1px 18px}
+      #settingsSection.is-open .card-body{display:block}
+      .mobile-reset-settings{display:block;margin:0 0 11px auto;border:0;background:transparent;color:var(--muted);padding:8px 2px;font-size:12px}
+      .grid-2,.color-pair{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .field{min-width:0}
+      .preview-card{position:static;overflow:visible}
+      .preview-toolbar{order:1;padding:0 0 12px;border:0;background:transparent}
+      .preview-heading{font-size:15px}
+      .fit-chip{margin-left:auto;font-size:11px;padding:5px 8px}
+      .desktop-print,.preview-actions{display:none!important}
+      .paper-stage{order:2;height:clamp(260px,46dvh,430px);min-height:0;border:1px solid var(--line);border-radius:12px;background:#e9eeec;overflow:hidden}
+      .paper{box-shadow:0 8px 24px rgba(22,43,35,.12)}
+      .page-nav-bar{order:3;padding:10px 0 0;justify-content:center;border:0;background:transparent}
+      .page-nav-button{width:42px;height:42px}
+      .page-jump input,.page-jump button{min-height:42px}
+      .page-nav-bar .page-print-summary{width:100%;margin:0;text-align:center}
+      .print-summary{order:4;padding:9px 1px 0;border:0;background:transparent}
+      .print-summary details summary{font-size:12px;font-weight:650;color:var(--muted);padding:7px 0}
+      .print-check-content{font-size:12px;padding-top:5px}
+      .print-summary .warning-box{margin-top:8px}
+      .preview-footer{order:5;display:block;border:0;padding:10px 1px 0;background:transparent;font-size:12px}
+      .preview-status{white-space:normal;overflow:visible}
+      .print-hint{margin-top:7px;line-height:1.5}
+      .mobile-bottom{position:fixed;display:block;left:0;right:0;bottom:0;z-index:50;padding:9px 16px calc(9px + env(safe-area-inset-bottom));background:rgba(255,255,255,.98);border-top:1px solid var(--line);box-shadow:0 -4px 16px rgba(22,43,35,.06)}
+      .mobile-bottom .mobile-print{width:100%;min-height:50px;display:flex;align-items:center;justify-content:center;gap:9px;padding:10px 16px;border:0;border-radius:11px;background:var(--brand);color:#fff;font-size:15px;font-weight:750}
+      .mobile-bottom .mobile-print svg{width:19px;height:19px;flex:none}
+      .mobile-bottom .mobile-print:disabled{background:#b7c4bf;color:#fff;opacity:1}
+      .app:has(textarea:focus,input:focus,select:focus) .mobile-bottom{display:none}
+      .toast{bottom:calc(82px + env(safe-area-inset-bottom));width:min(420px,calc(100vw - 24px));max-width:calc(100vw - 24px);justify-content:space-between}
     }
     @media (max-width: 560px){
-      .topbar-inner{min-height:58px;padding-block:8px}
-      .brandmark{width:34px;height:34px;border-radius:25%}
-      .brandmark svg{width:100%;height:100%}
-      .brandname{font-size:15px}
-      .brandtag{display:none}
-      .top-actions{gap:11px}
-      .page-intro{padding-top:16px;padding-bottom:0}
       .page-intro h1{font-size:21px}
-      .card-head{padding:15px 14px 0}.card-body{padding:14px}
-      .grid-2,.color-pair{grid-template-columns:1fr}
-      .paper-stage{height:calc(100vh - 215px);min-height:400px}
-      .preview-toolbar{padding:10px 12px}
-      .fit-chip{margin-left:auto}
-      .preview-actions{display:none}
-      .preview-footer{align-items:flex-start;flex-direction:column}
-      .page-split-segmented{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .page-nav-bar{flex-wrap:wrap;justify-content:center;gap:6px}
-      .page-print-summary{width:100%;margin-left:0;text-align:center}
+      .page-split-block{margin-top:15px}
+      .shell{padding-top:14px}
+      .paper-stage{height:clamp(240px,42dvh,345px)}
+      .page-nav-bar{gap:6px}
       .segmented button{padding:9px 4px}
+      .preview-footer{padding-bottom:0}
       dialog{max-height:calc(100dvh - 20px);margin:auto 10px 10px;border-radius:18px 18px 12px 12px}
       .dialog-body{overflow:auto;max-height:calc(100dvh - 155px)}
     }
@@ -252,8 +292,8 @@
 
     <section class="page-intro" aria-labelledby="heroTitle">
       <div>
-        <h1 id="heroTitle" data-i18n="introTitle">用紙に収まる最大サイズで文字を印刷</h1>
-        <p data-i18n="introLead">入力した文字を1枚または複数の用紙に分け、各ページを収まる最大サイズへ自動調整して印刷します。</p>
+        <h1 id="heroTitle"><span class="desktop-intro" data-i18n="introTitle">用紙に収まる最大サイズで文字を印刷</span><span class="mobile-intro" data-i18n="mobileIntroTitle">大きな文字で印刷する</span></h1>
+        <p><span class="desktop-intro" data-i18n="introLead">入力した文字を1枚または複数の用紙に分け、各ページを収まる最大サイズへ自動調整して印刷します。</span><span class="mobile-intro" data-i18n="mobileIntroLead">文字を入力すると、用紙に収まる最大サイズへ調整します。</span></p>
       </div>
       <div class="local-badge">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.8 8 7 10 4.2-2 7-5.4 7-10V6z"/><path d="m9 12 2 2 4-5"/></svg>
@@ -263,7 +303,7 @@
 
     <main class="shell">
       <div class="left-stack">
-        <section class="card mobile-active" data-mobile-page="input" id="inputSection">
+        <section class="card" id="inputSection">
           <div class="card-head">
             <div>
               <div class="step-title"><span class="step-badge">1</span><span data-i18n="textTitle">文字を入力</span></div>
@@ -281,20 +321,30 @@
               </div>
             </div>
             <div class="page-split-block">
-              <div class="setting-label"><span data-i18n="pageSplit">ページ分割</span><span class="setting-help" id="pageCountSummary">0ページ</span></div>
+              <div class="setting-label"><span id="mobilePageSplitLabel" data-i18n="pageSplit">ページ分割</span><span class="setting-help" id="pageCountSummary">0ページ</span></div>
               <div class="segmented page-split-segmented" id="pageSplitGroup">
                 <button type="button" data-value="single" aria-pressed="true" data-i18n="splitSingle">1ページにまとめる</button>
                 <button type="button" data-value="blank" aria-pressed="false" data-i18n="splitBlank">空行ごと</button>
                 <button type="button" data-value="line" aria-pressed="false" data-i18n="splitLine">1行ごと</button>
                 <button type="button" data-value="char" aria-pressed="false" data-i18n="splitChar">1文字ごと</button>
               </div>
+              <select class="mobile-page-split-select" id="mobilePageSplitSelect" aria-labelledby="mobilePageSplitLabel">
+                <option value="single" data-i18n="splitSingle">1ページにまとめる</option>
+                <option value="blank" data-i18n="splitBlank">空行ごと</option>
+                <option value="line" data-i18n="splitLine">1行ごと</option>
+                <option value="char" data-i18n="splitChar">1文字ごと</option>
+              </select>
               <div class="page-split-note" data-i18n="pageSplitHelp">分割した各ページを用紙に合わせます。文字サイズの統一も選べます。</div>
               <div class="warning-box" id="pageLimitWarning"></div>
             </div>
           </div>
         </section>
 
-        <section class="card" data-mobile-page="settings" id="settingsSection">
+        <section class="card" id="settingsSection">
+          <button class="mobile-settings-toggle" id="mobileSettingsToggle" type="button" aria-expanded="false" aria-controls="settingsBody">
+            <span class="settings-toggle-copy"><strong data-i18n="mobileSettingsToggle">用紙・文字の設定</strong><small id="mobileSettingsSummary">A4 · 自動 · 余白 10 mm</small></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
           <div class="card-head">
             <div>
               <div class="step-title"><span class="step-badge">2</span><span data-i18n="settingsTitle">印刷設定</span></div>
@@ -302,7 +352,8 @@
             </div>
             <button type="button" class="advanced-reset settings-reset" id="resetSettingsButton" data-i18n="resetSettings">初期値に戻す</button>
           </div>
-          <div class="card-body">
+          <div class="card-body" id="settingsBody">
+            <button class="mobile-reset-settings" id="mobileResetSettingsButton" type="button" data-i18n="resetSettings">初期値に戻す</button>
             <div class="setting-group">
               <div class="field">
                 <label for="paperSize" data-i18n="paperSize">用紙サイズ</label>
@@ -428,10 +479,10 @@
         </section>
       </div>
 
-      <section class="card preview-card" data-mobile-page="preview" id="previewSection">
+      <section class="card preview-card" id="previewSection">
         <div class="preview-toolbar">
           <div class="preview-heading" data-i18n="preview">印刷プレビュー</div>
-          <div class="fit-chip"><span id="orientationChip">縦</span><strong id="fontSizeChip">— pt</strong></div>
+          <div class="fit-chip" id="fitChip" hidden><span id="orientationChip">縦</span><strong id="fontSizeChip">— pt</strong></div>
           <div class="preview-actions desktop-print">
             <button class="primary-button" type="button" id="printButton">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 8V3h10v5"/><rect x="5" y="14" width="14" height="7" rx="1"/><path d="M5 17H3V9h18v8h-2"/><path d="M17 12h.01"/></svg>
@@ -457,10 +508,14 @@
           <div class="page-jump-error" id="pageJumpError" role="status"></div>
         </div>
         <div class="print-summary" aria-live="polite">
-          <strong data-i18n="beforePrinting">印刷前の確認</strong>
-          <div id="printJobSummary"></div>
-          <div id="printSettingsSummary"></div>
-          <div class="font-note" data-i18n="printControlNote">印刷画面でも用紙・向き・倍率100%・ヘッダー/フッターOFFを確認してください。アプリから完全には指定できません。</div>
+          <details id="printChecklist" open>
+            <summary data-i18n="beforePrinting">印刷前の確認</summary>
+            <div class="print-check-content">
+              <div id="printJobSummary"></div>
+              <div id="printSettingsSummary"></div>
+              <div class="font-note" data-i18n="printControlNote">印刷画面でも用紙・向き・倍率100%・ヘッダー/フッターOFFを確認してください。アプリから完全には指定できません。</div>
+            </div>
+          </details>
           <div class="warning-box" id="printEdgeWarning" data-i18n="zeroMarginWarning"></div>
           <div class="warning-box" id="printBackgroundWarning" data-i18n="backgroundNote"></div>
         </div>
@@ -478,20 +533,12 @@
       </section>
     </main>
 
-    <nav class="mobile-bottom" aria-label="Mobile navigation">
-      <button type="button" data-mobile-target="input" aria-current="page">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span data-i18n="mobileText">文字</span>
-      </button>
-      <button type="button" data-mobile-target="settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span data-i18n="mobileSettings">設定</span>
-      </button>
-      <button type="button" data-mobile-target="preview">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v5h4"/></svg><span data-i18n="mobilePreview">確認</span>
-      </button>
+    <div class="mobile-bottom">
       <button type="button" class="mobile-print" id="mobilePrintButton" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 8V3h10v5"/><rect x="5" y="14" width="14" height="7" rx="1"/><path d="M5 17H3V9h18v8h-2"/></svg><span data-i18n="print">印刷する</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 8V3h10v5"/><rect x="5" y="14" width="14" height="7" rx="1"/><path d="M5 17H3V9h18v8h-2"/></svg>
+        <span data-i18n="print">印刷する</span>
       </button>
-    </nav>
+    </div>
 
     <div id="measureBox" aria-hidden="true"></div>
 
@@ -512,6 +559,7 @@
           <h3>基本操作</h3>
           <ul>
             <li>文字を入力すると、選んだA3・A4・A5・Letterの安全領域に収まる最大文字サイズを自動計算します。</li>
+            <li>スマホでは文字入力の下に印刷プレビューを表示します。用紙や書体を変えるときは「用紙・文字の設定」を開きます。「印刷する」は画面の下にあります。</li>
             <li>自動折り返しをOFFにすると入力した改行だけを使います。「全ページの文字サイズを揃える」で共通の最大サイズにできます。</li>
             <li>縦書きは右から左へ列を並べます。英数字は標準的な混在表示になり、用紙の向きとは別に選べます。</li>
             <li>「ページ分割」で、すべてを1ページにまとめるほか、空行ごと・1行ごと・1文字ごとに分けて一括印刷できます。既定では各ページを個別に最大化します。</li>
@@ -538,6 +586,7 @@
           <h3>Basics</h3>
           <ul>
             <li>As you type, the app fits text inside the safe area of A3, A4, A5, or Letter paper.</li>
+            <li>On phones, the print preview appears below the editor. Open “Paper and text settings” to change the paper or typeface, then use the Print button at the bottom.</li>
             <li>Turn automatic wrapping OFF to use only explicit line breaks. Choose common sizing to use the largest size that fits every page.</li>
             <li>Vertical writing runs in columns from right to left with standard mixed Latin orientation, independently of paper orientation.</li>
             <li>Page splitting can keep everything on one page or create pages by blank line, line, or character. Each page is fitted independently by default.</li>
@@ -607,7 +656,7 @@
         ja:{
           writingMode:'文字の方向',horizontalWriting:'横書き',verticalWriting:'縦書き（右から左）',verticalWritingNote:'縦書きの英数字は標準的な混在表示です。用紙の向きとは別に設定できます。',beforePrinting:'印刷前の確認',printJob:'{count}ページ · {paper} · {orientation} · 余白 {margin} mm',wrapOn:'折り返しON',wrapOff:'折り返しOFF',commonSize:'文字サイズを統一',independentSize:'ページごとに最大化',printControlNote:'印刷画面でも用紙・向き・倍率100%・ヘッダー/フッターOFFを確認してください。アプリから完全には指定できません。',
           paperSize:'用紙サイズ',autoWrap:'自動折り返し',autoWrapHelp:'OFFにすると、入力した改行だけで折り返します。',uniformFontSize:'全ページの文字サイズを揃える',uniformFontHelp:'すべてのページに収まる最大の共通サイズを使います。',
-          tagline:'用紙に収まる最大サイズで、そのまま印刷',brandMeta:'最大文字サイズに自動調整 · 用紙いっぱいに印刷 · ページ分割対応',introTitle:'用紙に収まる最大サイズで文字を印刷',introLead:'入力した文字を1枚または複数の用紙に分け、各ページを収まる最大サイズへ自動調整して印刷します。',localOnly:'完全ローカル処理',help:'使い方と注意事項',close:'閉じる',
+          tagline:'用紙に収まる最大サイズで、そのまま印刷',brandMeta:'最大文字サイズに自動調整 · 用紙いっぱいに印刷 · ページ分割対応',introTitle:'用紙に収まる最大サイズで文字を印刷',introLead:'入力した文字を1枚または複数の用紙に分け、各ページを収まる最大サイズへ自動調整して印刷します。',mobileIntroTitle:'大きな文字で印刷する',mobileIntroLead:'文字を入力すると、用紙に収まる最大サイズへ調整します。',mobileSettingsToggle:'用紙・文字の設定',mobileSettingsInfo:'{paper} · {orientation} · 余白 {margin} mm',localOnly:'完全ローカル処理',help:'使い方と注意事項',close:'閉じる',
           textTitle:'文字を入力',textSub:'入力した文字を、選んだページ分割ごとに最大サイズへ自動調整します。',textLabel:'印刷する文字',
           placeholder:'例：本日休業',chars:'文字',lines:'行',sample:'サンプル',clear:'クリア',pageSplit:'ページ分割',splitSingle:'1ページにまとめる',splitBlank:'空行ごと',splitLine:'1行ごと',splitChar:'1文字ごと',pageSplitHelp:'分割した各ページを用紙に合わせます。文字サイズの統一も選べます。',pageCount:'{count}ページ',pageCountOne:'1ページ',pageLimitWarning:'{count}ページになります。一度に作成できるのは{max}ページまでです。分割を減らしてください。',pageNumber:'ページ番号',goPage:'移動',invalidPage:'1〜{count}の整数を入力してください。',prevPage:'前のページ',nextPage:'次のページ',printPagesSummary:'{count}ページをまとめて印刷します',settingsTitle:'印刷設定',
           settingsSub:'通常はそのままでOK。向きや余白を変えると文字サイズも再計算します。',resetSettings:'初期値に戻す',settingsResetDone:'印刷設定を初期値に戻しました',orientation:'用紙の向き',
@@ -627,7 +676,7 @@
         en:{
           writingMode:'Writing direction',horizontalWriting:'Horizontal writing',verticalWriting:'Vertical writing (right to left)',verticalWritingNote:'Latin text uses standard mixed orientation in vertical writing. Paper orientation is a separate setting.',beforePrinting:'Before printing',printJob:'{count} pages · {paper} · {orientation} · {margin} mm margin',wrapOn:'Wrapping ON',wrapOff:'Wrapping OFF',commonSize:'Common font size',independentSize:'Maximize each page',printControlNote:'In the print dialog, check paper, orientation, 100% scale, and headers/footers OFF. The app cannot fully control these settings.',
           paperSize:'Paper size',autoWrap:'Automatic wrapping',autoWrapHelp:'When OFF, only your explicit line breaks are used.',uniformFontSize:'Use the same font size on all pages',uniformFontHelp:'Use the largest common size that fits every page.',
-          tagline:'Fit the largest text on paper, then print',brandMeta:'Auto-fit text to max size · Full-page printing · Page splitting',introTitle:'Print text at the largest size that fits your paper',introLead:'Split text across one or more sheets, fit each page to the largest safe size, then print directly from the browser.',localOnly:'Fully local processing',help:'How to use & notes',close:'Close',
+          tagline:'Fit the largest text on paper, then print',brandMeta:'Auto-fit text to max size · Full-page printing · Page splitting',introTitle:'Print text at the largest size that fits your paper',introLead:'Split text across one or more sheets, fit each page to the largest safe size, then print directly from the browser.',mobileIntroTitle:'Print large text',mobileIntroLead:'Type your text and it will fit the largest size on the paper.',mobileSettingsToggle:'Paper and text settings',mobileSettingsInfo:'{paper} · {orientation} · {margin} mm margin',localOnly:'Fully local processing',help:'How to use & notes',close:'Close',
           textTitle:'Enter text',textSub:'Text is split using your selected page mode, then each page is fitted to its largest safe size.',textLabel:'Text to print',
           placeholder:'Example: CLOSED TODAY',chars:'chars',lines:'lines',sample:'Sample',clear:'Clear',pageSplit:'Page splitting',splitSingle:'Keep on one page',splitBlank:'Blank lines',splitLine:'Each line',splitChar:'Each character',pageSplitHelp:'Fit each generated page to the paper, with optional common sizing.',pageCount:'{count} pages',pageCountOne:'1 page',pageLimitWarning:'This creates {count} pages. Up to {max} pages can be generated at once. Reduce the split.',pageNumber:'Page number',goPage:'Go',invalidPage:'Enter a whole number from 1 to {count}.',prevPage:'Previous page',nextPage:'Next page',printPagesSummary:'Print all {count} pages',settingsTitle:'Print settings',
           settingsSub:'The defaults usually work. Orientation and margins immediately recalculate the fitted size.',resetSettings:'Reset to defaults',settingsResetDone:'Print settings reset to defaults',orientation:'Orientation',
@@ -707,6 +756,7 @@
       function syncControlsFromState(){
         editor.value=state.text||'';
         setPressed('pageSplitGroup',state.pageSplit);
+        $('#mobilePageSplitSelect').value=state.pageSplit;
         setPressed('orientationGroup',state.orientation);
         setPressed('marginGroup',state.marginPreset);
         $('#paperSize').value=state.paperSize;
@@ -785,6 +835,7 @@
         return value==='start'?'flex-start':value==='end'?'flex-end':'center';
       }
       function updateSettingReadouts(){
+        $('#mobileSettingsSummary').textContent=t('mobileSettingsInfo',{paper:state.paperSize,orientation:t(state.orientation),margin:marginMm()});
         $('#marginSummary').textContent=`${marginMm()} mm`;
         $('#lineHeightValue').textContent=Number(state.lineHeight).toFixed(2);
         $('#letterSpacingValue').textContent=`${Number(state.letterSpacing).toFixed(2)} em`;
@@ -947,6 +998,7 @@
       }
       function updateFitLabels(){
         updatePrintSummary();
+        $('#fitChip').hidden=pageTexts.length===0;
         const ori=t(currentOrientation==='portrait'?'portraitShort':'landscapeShort');
         const fit=activeFit();
         $('#orientationChip').textContent=ori;
@@ -1111,8 +1163,13 @@
         },duration:5000});
         clearUndo=undo;
       });
-      $$('#pageSplitGroup button').forEach(b=>b.addEventListener('click',()=>updateState(()=>{
+      $('#pageSplitGroup button').forEach(b=>b.addEventListener('click',()=>updateState(()=>{
         state.pageSplit=b.dataset.value;setPressed('pageSplitGroup',state.pageSplit);
+        $('#mobilePageSplitSelect').value=state.pageSplit;
+      },{resetPage:true})));
+      $('#mobilePageSplitSelect').addEventListener('change',()=>updateState(()=>{
+        state.pageSplit=$('#mobilePageSplitSelect').value;
+        setPressed('pageSplitGroup',state.pageSplit);
       },{resetPage:true})));
       $$('#orientationGroup button').forEach(b=>b.addEventListener('click',()=>updateState(()=>{state.orientation=b.dataset.value;setPressed('orientationGroup',state.orientation)})));
       $$('#marginGroup button').forEach(b=>b.addEventListener('click',()=>updateState(()=>{
@@ -1151,11 +1208,13 @@
           showToast(t('undone'));
         },duration:5000});
       }
-      $('#resetSettingsButton').addEventListener('click',()=>{
+      function resetAllPrintSettings(){
         const before=captureSettings(printSettingKeys);
         applySettings(Object.fromEntries(printSettingKeys.map(key=>[key,defaultState[key]])));
         showResetUndo(t('settingsResetDone'),before);
-      });
+      }
+      $('#resetSettingsButton').addEventListener('click',resetAllPrintSettings);
+      $('#mobileResetSettingsButton').addEventListener('click',resetAllPrintSettings);
       $('#resetAdvancedButton').addEventListener('click',()=>{
         const keys=['lineHeight','letterSpacing','outline'];
         const before=captureSettings(keys);
@@ -1184,13 +1243,20 @@
         if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom) helpDialog.close();
       });
 
-      $$('[data-mobile-target]').forEach(btn=>btn.addEventListener('click',()=>{
-        const target=btn.dataset.mobileTarget;
-        $$('[data-mobile-page]').forEach(p=>p.classList.toggle('mobile-active',p.dataset.mobilePage===target));
-        $$('[data-mobile-target]').forEach(b=>b.setAttribute('aria-current',b===btn?'page':'false'));
-        if(target==='preview') requestAnimationFrame(updatePreviewScale);
-        window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
-      }));
+      const mobileSettingsToggle=$('#mobileSettingsToggle');
+      const mobileSettingsSection=$('#settingsSection');
+      mobileSettingsToggle.addEventListener('click',()=>{
+        const expanded=!mobileSettingsSection.classList.contains('is-open');
+        mobileSettingsSection.classList.toggle('is-open',expanded);
+        mobileSettingsToggle.setAttribute('aria-expanded',String(expanded));
+        requestAnimationFrame(updatePreviewScale);
+      });
+      // Keep pre-print instructions visible on desktop and optional on phones.
+      const compactLayout=matchMedia('(max-width: 980px)');
+      const printChecklist=$('#printChecklist');
+      const syncChecklist=()=>{printChecklist.open=!compactLayout.matches;};
+      syncChecklist();
+      compactLayout.addEventListener?.('change',syncChecklist);
 
       document.addEventListener('keydown',event=>{
         if(pageTexts.length<=1 || event.altKey || event.ctrlKey || event.metaKey || $('dialog[open]')) return;
