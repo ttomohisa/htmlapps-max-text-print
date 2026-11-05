@@ -36,10 +36,19 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
     check(await page.locator('#settingsBody').isHidden(),`mobile settings collapsed ${language}`);
     await page.locator('#mobileSettingsToggle').click();
     check(await page.locator('#settingsBody').isVisible(),`mobile settings expanded ${language}`);
+    check(await page.locator('#extraSettingsBody').isHidden(),`mobile optional settings collapsed ${language}`);
+    await page.locator('#mobileExtraSettingsToggle').click();
+    check(await page.locator('#extraSettingsBody').isVisible(),`mobile optional settings expanded ${language}`);
+    check(await page.locator('#autoWrapToggle').isVisible(),`mobile wrapping option reachable ${language}`);
+    await page.locator('#mobileExtraSettingsToggle').click();
+    check(await page.locator('#extraSettingsBody').isHidden(),`mobile optional settings can reclose ${language}`);
     await page.locator('#mobileSettingsToggle').click();
    }
    check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`no horizontal page overflow ${language}/${width}`);
-   await page.locator('#helpButton').click();await page.keyboard.press('Escape');
+   await page.locator('#helpButton').click();
+   check(await page.locator('#closeHelpButton').isVisible(),`Help header close reachable ${language}/${width}`);
+   check(await page.locator('#helpOkButton').count()===0,`Help footer close removed ${language}/${width}`);
+   await page.keyboard.press('Escape');
    check(!(await page.locator('#helpDialog').evaluate(el=>el.open)),`Help Esc ${language}/${width}`);
   }
  }
@@ -63,10 +72,17 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
  check(mobileRects.print.left>=0&&mobileRects.print.right<=390&&mobileRects.print.bottom<=844,'mobile Print action within viewport',mobileRects.print);
  check(!(await page.locator('#printChecklist').evaluate(el=>el.open)),'mobile preprint checklist collapsed by default');
  check(await page.locator('#fitChip').isVisible(),'fitted paper size visible');
+ check(await page.locator('.print-hint svg').count()===0,'PDF guidance has no ambiguous info icon');
  await page.locator('#mobilePageSplitSelect').selectOption('char');await mobileReady();
  check(await page.locator('.paper').count()===4,'mobile page split select generates four pages');
  check(await page.locator('#mobilePrintButton').isEnabled(),'mobile Print enabled for valid input');
  await page.locator('#mobileSettingsToggle').click();
+ check(await page.locator('#mobileExtraSettingsToggle').isVisible(),'mobile optional settings control visible');
+ check(await page.locator('#extraSettingsBody').isHidden(),'mobile extra options initially collapsed');
+ await page.locator('#mobileExtraSettingsToggle').click();
+ await page.locator('#textAlign').selectOption('left');await mobileReady();
+ check(await page.locator('#textAlign').inputValue()==='left','mobile alignment options remain functional');
+ await page.locator('#mobileExtraSettingsToggle').click();
  await page.locator('#paperSize').selectOption('A5');await mobileReady();
  check((await page.locator('#mobileSettingsSummary').innerText()).includes('A5'),'mobile settings summary updated');
  await page.locator('#marginGroup [data-value="0"]').click();await mobileReady();
