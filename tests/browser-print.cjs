@@ -193,7 +193,37 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
    return {width:r.width,height:r.height,physicalWidth:210*96/25.4,physicalHeight:297*96/25.4};
  });
  check(sizes.width<sizes.physicalWidth&&sizes.height<sizes.physicalHeight,'printed page reserves rounding tolerance',sizes);
+ // Browser text-align:center includes trailing letter-spacing in its advance width.
+ // Subtract half that extra spacing from the Range center to estimate ink centering.
+ const opticalCenter=()=>page.evaluate(()=>{
+   const paper=document.querySelector('.paper.is-preview-active');
+   const text=paper.querySelector('.paper-text');
+   const range=document.createRange();range.selectNodeContents(text);
+   const r=range.getBoundingClientRect(),p=paper.getBoundingClientRect(),cs=getComputedStyle(text);
+   const spacing=parseFloat(cs.letterSpacing)||0, vertical=cs.writingMode.startsWith('vertical');
+   const center=vertical?(r.top+r.bottom-p.top-p.bottom)/2:(r.left+r.right-p.left-p.right)/2;
+   return {axis:vertical?'vertical':'horizontal',rangeCenter:center,spacing,
+     inkCenterOffset:center-spacing/2,inlineStart:parseFloat(cs.paddingInlineStart),inlineEnd:parseFloat(cs.paddingInlineEnd)};
+ });
+ const horizontalCenter=await opticalCenter();
+ check(Math.abs(horizontalCenter.inkCenterOffset)<2,'positive letter spacing keeps visible glyphs centered',horizontalCenter);
+ check(Math.abs(horizontalCenter.inlineStart-horizontalCenter.inlineEnd-horizontalCenter.spacing)<.5,'balanced inline padding accounts for letter spacing',horizontalCenter);
  await page.emulateMedia({media:'screen'});
+ await page.locator('#letterSpacing').evaluate(el=>{el.value='-0.08';el.dispatchEvent(new Event('input',{bubbles:true}));});await ready();
+ await page.emulateMedia({media:'print'});
+ const negativeCenter=await opticalCenter();
+ check(Math.abs(negativeCenter.inkCenterOffset)<2,'negative letter spacing also centers visible glyphs',negativeCenter);
+ await page.emulateMedia({media:'screen'});
+ await page.locator('#letterSpacing').evaluate(el=>{el.value='0.20';el.dispatchEvent(new Event('input',{bubbles:true}));});await ready();
+ await setting('writingMode','vertical-rl');
+ await page.emulateMedia({media:'print'});
+ const verticalCenter=await opticalCenter();
+ check(Math.abs(verticalCenter.inkCenterOffset)<2,'vertical centered text compensates trailing letter spacing',verticalCenter);
+ const verticalCenteredPdf=await page.pdf({path:path.join(out,'one-page-A4-vertical-centered-spacing020.pdf'),preferCSSPageSize:true,printBackground:true});
+ const verticalCenteredDocument=await PDFDocument.load(verticalCenteredPdf);
+ check(verticalCenteredDocument.getPageCount()===1,'vertical letter spacing still prints one page',verticalCenteredDocument.getPageCount());
+ await page.emulateMedia({media:'screen'});
+ await setting('writingMode','horizontal-tb');
  await page.locator('#pageSplitGroup [data-value="line"]').click();
  await page.locator('#uniformFontToggle').check();await ready();
  await page.locator('#lineHeight').evaluate(el=>{el.value='1.05';el.dispatchEvent(new Event('input',{bubbles:true}));});
