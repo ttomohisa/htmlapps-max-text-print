@@ -44,6 +44,7 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
   }
  }
  // Mobile uses a continuous editor -> settings -> preview flow rather than tabs.
+ if(await page.locator('html').getAttribute('lang')!=='ja') await page.locator('#languageButton').click();
  await page.setViewportSize({width:390,height:844});
  await page.locator('#editor').fill('本日休業');await ready();
  const mobileRects=await page.evaluate(()=>{
@@ -62,6 +63,8 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
  check((await page.locator('#mobileSettingsSummary').innerText()).includes('A5'),'mobile settings summary updated');
  await page.locator('#marginGroup [data-value="0"]').click();await ready();
  check(await page.locator('#printEdgeWarning').isVisible(),'0 mm edge warning visible when checklist closed');
+ // Restore defaults so subsequent PDF geometry checks use their original safe margin.
+ await page.locator('#marginGroup [data-value="10"]').click();await ready();
  await page.locator('#mobileSettingsToggle').click();
  await page.locator('#mobilePageSplitSelect').selectOption('single');await ready();
  await page.screenshot({path:path.join(out,'screenshot-mobile-ja.png'),fullPage:true});
