@@ -34,6 +34,35 @@ for(const target of targets)for(const language of ['ja','en']){
     app.el('languageButton').click();check(app,language);
     check(boot(file,language,app.stored),language);
   });
+  test(`${label}: mobile split selector and settings disclosure keep the same print state`,()=>{
+    const app=boot(file,language);
+    const split=app.el('mobilePageSplitSelect'),toggle=app.el('mobileSettingsToggle'),section=app.el('settingsSection');
+    assert.equal(split.value,'single');
+    assert.equal(toggle.getAttribute('aria-expanded'),'false');
+    toggle.click();
+    assert.equal(toggle.getAttribute('aria-expanded'),'true');
+    assert.equal(section.classList.contains('is-open'),true);
+    app.type('A\\nB');
+    split.value='line';split.dispatch('change');app.fit();
+    assert.equal(app.saved().pageSplit,'line');
+    assert.equal(app.el('pageNavStatus').textContent,'1 / 2');
+    assert.equal(app.el('mobilePrintButton').disabled,false);
+    app.setting('pageSplitGroup','char');
+    assert.equal(split.value,'char');
+    app.setting('orientationGroup','landscape');
+    assert.ok(app.el('mobileSettingsSummary').textContent.includes('A4'));
+    app.el('mobileResetSettingsButton').click();
+    assert.equal(app.saved().orientation,'auto');
+    assert.equal(split.value,'single');
+    app.el('appToastAction').click();
+    assert.equal(app.saved().orientation,'landscape');
+    assert.equal(split.value,'char');
+    toggle.click();
+    assert.equal(toggle.getAttribute('aria-expanded'),'false');
+    app.el('languageButton').click();
+    assert.equal(app.el('mobileSettingsToggle').getAttribute('aria-expanded'),'false');
+    assert.equal(app.el('mobileSettingsSummary').textContent.includes('A4'),true);
+  });
   test(`${label}: immediate Clear Undo restores persisted text and preview`,()=>{
     const app=setup();assert.equal(app.el('editor').value,'');assert.equal(app.saved().text,'');assert.equal(app.focused,app.el('editor'));
     app.el('appToastAction').click();app.fit();assert.equal(app.el('editor').value,language==='ja'?'以前の掲示':'Previous sign');assert.equal(app.saved().text,app.el('editor').value);assert.equal(app.el('printButton').disabled,false);
