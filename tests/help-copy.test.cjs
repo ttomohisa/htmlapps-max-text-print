@@ -30,7 +30,7 @@ test('help contains user guidance rather than implementation or layout audit pro
     ]){
       const match=help[1].match(new RegExp('<div data-help-lang="'+lang+'"[^>]*>([\\s\\S]*?)<\\/div>'));
       assert.ok(match,`${file}: ${lang} help present`);
-      const copy=match[1].replace(/<[^>]+>/g,'').replace(/\\s+/g,' ').trim();
+      const copy=match[1].replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
       assert.ok(copy.length<=maxLength,`${file}: ${lang} Help is concise (${copy.length} characters)`);
       assert.equal((match[1].match(/<li>/g)||[]).length,3,`${file}: ${lang} has only three setup steps`);
       for(const phrase of required)assert.ok(copy.includes(phrase),`${file}: ${lang} preserves ${phrase}`);
