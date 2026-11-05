@@ -33,7 +33,7 @@ GitHub Pages delivers the initial HTML. After it loads, text fitting, page split
 - **Choose practical print settings** — Portrait / landscape / Auto, 10 mm / 5 mm / 0 mm / custom margins, local typefaces, bold, alignment, text/background colors, line height, letter spacing, and outline.
 - **Keep settings without an account** — Text and print settings are stored locally when browser storage is available. Reset actions can be undone from the toast immediately after use.
 - **Fully local processing** — No runtime CDN, API, analytics, telemetry, or remote font is used. Runtime connections are blocked with `connect-src 'none'`.
-- **Single HTML and bilingual UI** — Japanese / English are included in the same HTML, with a smartphone layout for Text / Settings / Preview / Print.
+- **Single HTML and bilingual UI** — Japanese / English are included in the same HTML, with a single-flow phone layout: editor, optional settings, preview, and a fixed Print button.
 
 ## Quick start
 
@@ -48,7 +48,7 @@ Just [open the demo](https://ttomohisa.github.io/htmlapps-max-text-print/). No i
 3. Copy the generated `dist/index.html` wherever you need it.
 4. Open that single file later without an internet connection or local web server.
 
-The build has no runtime package to download in v1.1.0. It also generates `dist/index.self-extract.html`, a smaller gzip self-extracting variant for browsers that support `DecompressionStream`. Generated `dist/` files are intentionally not committed; GitHub Pages and CI rebuild them from source.
+The build has no runtime package to download in v1.2.0. It also generates `dist/index.self-extract.html`, a smaller gzip self-extracting variant for browsers that support `DecompressionStream`. Generated `dist/` files are intentionally not committed; GitHub Pages and CI rebuild them from source.
 
 ## Usage
 
@@ -62,6 +62,8 @@ The build has no runtime package to download in v1.1.0. It also generates `dist/
 4. Adjust orientation, margin, typeface, color, or advanced settings if needed.
 5. Choose **Print**. All generated pages are sent to one native print dialog.
 6. Select a printer, or choose **Save as PDF** when you need a PDF file.
+
+On phones, page splitting and the print preview follow the text editor on the same screen. Expand **Paper and text settings** only when needed, and use the fixed **Print** button at the bottom. The detailed preprint checklist is collapsed on phones, but warnings for 0 mm margins and colored backgrounds stay visible. The local-processing badge is hidden on phones without changing how data is handled.
 
 Page navigation changes only the preview; every generated page is still printed in its original order. Print is disabled while recalculating, for empty input, or above the 200-page limit. Changing text or print settings before the dialog opens cancels the pending request; choose Print again after recalculation.
 
@@ -111,7 +113,7 @@ Each build verifies the standalone HTML, runtime-network restriction, embedded f
 .
 ├─ src/index.template.html       # Application source
 ├─ app.config.json               # App metadata and build settings
-├─ dependencies.json             # Embedded runtime dependencies (none in v1.1.0)
+├─ dependencies.json             # Embedded runtime dependencies (none in v1.2.0)
 ├─ dependencies.lock.json        # Pinned dependency lock
 ├─ build-standalone.bat          # Windows build entry point
 ├─ build-standalone.ps1          # Standalone HTML builder
@@ -162,7 +164,7 @@ For use with the network completely disconnected, open `dist/index.html` locally
 
 ## Dependencies
 
-Max Text Print v1.1.0 has no third-party runtime dependencies. It uses browser-native APIs and locally installed system fonts. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Max Text Print v1.2.0 has no third-party runtime dependencies. It uses browser-native APIs and locally installed system fonts. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Contributing
 
