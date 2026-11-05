@@ -2,6 +2,8 @@
 
 ## 1.2.0 - 2026-11-05
 
+- Add post-merge release automation with version-tag creation, GitHub Release, downloadable standalone HTML and ZIP assets, and SHA-256 checksums; PRs validate release packages without publishing them.
+
 - Correct visible text centering with nonzero letter spacing, including horizontal and vertical writing. Match the fit measurement, print preview, and PDF output.
 
 - Start mobile text entry at 88px height, with vertical resizing, to show the print preview sooner.
