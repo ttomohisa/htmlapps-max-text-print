@@ -8,6 +8,8 @@
 - Put the paper preview before the optional preprint checklist on mobile, while keeping edge/background warnings visible.
 - Simplify smartphone labels and remove the local-processing badge and version chip from the compact header. Keep desktop behavior and privacy guarantees unchanged.
 - スマホ版の入力・プレビュー・印刷を1画面に整理。設定の開閉、ページ分割切替、注意表示を改善し、既存の印刷・保存・Undoは維持。
+- Group mobile settings into Paper and Text, with layout, colors, and advanced controls behind an optional disclosure; keep desktop controls unchanged.
+- Remove the duplicate footer Help close control, remove the unclear information icon before the PDF hint, and make the Bold row easier to tap.
 
 
 ## 1.1.0 - 2026-10-25
