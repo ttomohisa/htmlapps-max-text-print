@@ -1170,7 +1170,7 @@
       $('#mobilePageSplitSelect').addEventListener('change',()=>updateState(()=>{
         state.pageSplit=$('#mobilePageSplitSelect').value;
         setPressed('pageSplitGroup',state.pageSplit);
-      },{resetPage:true})));
+      },{resetPage:true}));
       $$('#orientationGroup button').forEach(b=>b.addEventListener('click',()=>updateState(()=>{state.orientation=b.dataset.value;setPressed('orientationGroup',state.orientation)})));
       $$('#marginGroup button').forEach(b=>b.addEventListener('click',()=>updateState(()=>{
         state.marginPreset=b.dataset.value;setPressed('marginGroup',state.marginPreset);$('#customMarginRow').hidden=state.marginPreset!=='custom';
