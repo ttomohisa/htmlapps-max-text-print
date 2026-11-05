@@ -277,7 +277,7 @@
 </svg>
           </div>
           <div class="brandcopy">
-            <div class="brandname"><span id="brandName">Max Text Print</span><span class="version-badge" id="versionBadge">v1.1.0</span></div>
+            <div class="brandname"><span id="brandName">Max Text Print</span><span class="version-badge" id="versionBadge">v1.2.0</span></div>
             <div class="brandtag" data-i18n="brandMeta">最大文字サイズに自動調整 · 用紙いっぱいに印刷 · ページ分割対応</div>
           </div>
         </div>
@@ -1163,7 +1163,7 @@
         },duration:5000});
         clearUndo=undo;
       });
-      $('#pageSplitGroup button').forEach(b=>b.addEventListener('click',()=>updateState(()=>{
+      $$('#pageSplitGroup button').forEach(b=>b.addEventListener('click',()=>updateState(()=>{
         state.pageSplit=b.dataset.value;setPressed('pageSplitGroup',state.pageSplit);
         $('#mobilePageSplitSelect').value=state.pageSplit;
       },{resetPage:true})));
