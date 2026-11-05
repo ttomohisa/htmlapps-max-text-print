@@ -897,7 +897,16 @@
       function styleTextNode(el,fontPt){
         // Font glyph bounds can extend beyond line boxes, especially with tight leading.
         // Apply the same proportional gutter to measurement and actual paper text.
-        el.style.padding=`calc(0.2em + ${Math.max(0,Number(state.outline)||0)+1}px)`;
+        const gutter=Math.max(0,Number(state.outline)||0)+1;
+        el.style.padding=`calc(0.2em + ${gutter}px)`;
+        // Centered text includes trailing letter-spacing in its advance width.
+        // Shift the inline content area by half that spacing so the visible glyphs
+        // remain centered. Use the same logical padding for fit measurement and print.
+        const inlineCentered=state.writingMode==='vertical-rl'
+          ? state.verticalAlign==='center' : state.textAlign==='center';
+        const halfSpacing=inlineCentered?(Number(state.letterSpacing)||0)/2:0;
+        el.style.paddingInlineStart=`calc(0.2em + ${gutter}px + ${halfSpacing}em)`;
+        el.style.paddingInlineEnd=`calc(0.2em + ${gutter}px - ${halfSpacing}em)`;
         el.style.writingMode=state.writingMode;
         el.style.textOrientation='mixed';
         el.style.whiteSpace=state.autoWrap?'pre-wrap':'pre';
