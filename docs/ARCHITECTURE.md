@@ -30,7 +30,7 @@ The app creates one `.paper` DOM element for each generated page.
 - `@page` is set to the exact selected-paper dimensions in millimeters with zero browser page margin.
 - Page breaks are inserted between generated papers. In print media the paper flow boxes reserve 1 CSS pixel in width and height to avoid accidental second sheets from print-engine rounding, while `@page` remains the exact selected size. Print also cancels the screen root minimum viewport height.
 
-Using the same paper DOM elements for preview and printing keeps line wrapping and fitted sizes as consistent as the browser allows.
+Using the same paper DOM elements for preview and printing keeps line wrapping and fitted sizes as consistent as the browser allows. For centered lines with letter spacing, the browser includes a trailing inter-character advance in line centering, shifting the visible ink by half the spacing. The shared text styling balances logical inline-start and inline-end padding by half the configured letter spacing; the same correction runs in off-screen fitting, on-screen preview, and printed pages, for both horizontal and vertical writing.
 
 ## Persistence
 
