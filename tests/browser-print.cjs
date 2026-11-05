@@ -44,7 +44,14 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
   }
  }
  // Mobile uses a continuous editor -> settings -> preview flow rather than tabs.
- if(await page.locator('html').getAttribute('lang')!=='ja') await page.locator('#languageButton').click();
+ // Use a separate browser context so viewport and print-setting changes cannot
+ // influence the desktop PDF geometry regression suite.
+ {
+ const mobileErrors=[];
+ const mobilePage=await browser.newPage({viewport:{width:390,height:844},locale:'ja-JP'});
+ mobilePage.on('pageerror',e=>mobileErrors.push(e.message));
+ const page=mobilePage;
+ await page.goto(source);
  await page.setViewportSize({width:390,height:844});
  await page.locator('#editor').fill('本日休業');await ready();
  const mobileRects=await page.evaluate(()=>{
@@ -73,6 +80,9 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
   check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`mobile landscape no horizontal overflow ${width}x${height}`);
   const bottom=await page.locator('#mobilePrintButton').evaluate(el=>el.getBoundingClientRect().bottom);
   check(bottom<=height,`mobile Print stays inside viewport ${width}x${height}`,bottom);
+ }
+ check(mobileErrors.length===0,'mobile no JavaScript errors',mobileErrors);
+ await mobilePage.close();
  }
  await page.setViewportSize({width:1360,height:900});
  for(const paper of ['A3','A4','A5','Letter'])for(const orientation of ['portrait','landscape'])for(const writing of ['horizontal-tb','vertical-rl'])for(const wrap of [true,false]){
