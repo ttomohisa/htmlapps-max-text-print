@@ -142,6 +142,8 @@ powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-
 
 実ブラウザー・PDF回帰は `tests/browser-print.cjs` にあり、CIで固定バージョンの開発検証用Playwright / pdf-libを使います。アプリの実行時依存には含まれません。
 
+PRではリリース候補のHTML・ZIP・SHA-256を生成して検証します。新しいバージョンをリポジトリ所有者が `main` にマージした後、[リリース手順](docs/RELEASING.md) に従い、そのコミットのビルド・テストが成功した場合にタグとGitHub Releaseを自動作成します。PRが未マージの間は公開しません。
+
 ## プライバシーと通信防止
 
 生成HTMLには `connect-src 'none'` を含むContent Security Policyがあります。Max Text Printは実行時API、CDN、アクセス解析、テレメトリ、外部フォントを使用しません。
