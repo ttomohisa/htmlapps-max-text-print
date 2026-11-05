@@ -2,6 +2,11 @@
 
 ## 1.2.0 - 2026-11-05
 
+- Start mobile text entry at 88px height, with vertical resizing, to show the print preview sooner.
+- Retire blank-line splitting from the UI, mapping saved selections to single-page mode.
+- Prevent an extra print sheet with a 1px print-only paper sizing tolerance and no viewport minimum height.
+- Test the reported one-page A4 monospace/line-height 1.29/letter-spacing 0.20 em configuration in Chromium PDF output.
+
 - Reduce Japanese and English Help to three practical steps plus essential printing, storage, and privacy notes.
 - Validate persisted state on startup to recover from malformed or outdated browser settings without breaking the editor.
 - Localize accessible custom-margin labels, increase compact header tap targets, and show vertical-writing guidance only when that mode is selected.
