@@ -67,7 +67,7 @@ On phones, page splitting and the print preview follow the text editor on the sa
 
 Page navigation changes only the preview; every generated page is still printed in its original order. Print is disabled while recalculating, for empty input, or above the 200-page limit. Changing text or print settings before the dialog opens cancels the pending request; choose Print again after recalculation.
 
-Help keeps the background page still while open. Scroll inside Help to read longer content, then close it with the top-right close button, Escape, or the backdrop to resume normal page scrolling.
+Help now presents three steps plus essential printing, storage, and privacy notes. It keeps the background still while open, and closes via the top-right button, Escape, or the backdrop.
 
 ### Page splitting and orientation
 
