@@ -26,7 +26,7 @@ GitHub Pages delivers the initial HTML. After it loads, text fitting, page split
 
 
 - **Fit text to paper automatically** — Enter text and the app finds the largest font size that stays inside the selected safe margin.
-- **Split one input into multiple sheets** — Keep everything on one page, split at blank lines, put each line on its own page, or print each character on its own page.
+- **Split one input into multiple sheets** — Keep everything on one page, put each line on its own page, or print each character on its own page.
 - **Fit every page independently** — Short and long page contents each get their own maximum font size.
 - **Preview before printing** — Enter a page number and choose Go or press Enter, or use Previous / Next and the Left / Right arrow keys.
 - **Print all pages in one job** — The native browser/OS print dialog receives every generated page together.
@@ -55,7 +55,6 @@ The build has no runtime package to download in v1.2.0. It also generates `dist/
 1. Enter or paste the text you want to print.
 2. If needed, choose **Page splitting**:
    - **Keep on one page** — fit the complete input on one sheet.
-   - **Blank lines** — use blank lines as page separators.
    - **Each line** — print each non-empty line on its own sheet.
    - **Each character** — print each non-whitespace grapheme on its own sheet.
 3. Enter a whole page number from 1 to the total count, then choose **Go** or press **Enter** to jump directly. You can also use Previous / Next. When focus is not in a form field and Help is closed, `←` / `→` also moves through the preview.
@@ -63,7 +62,7 @@ The build has no runtime package to download in v1.2.0. It also generates `dist/
 5. Choose **Print**. All generated pages are sent to one native print dialog.
 6. Select a printer, or choose **Save as PDF** when you need a PDF file.
 
-On phones, page splitting and the print preview follow the text editor on the same screen. Expand **Paper and text settings** to access the **Paper** and **Text** groups; alignment, colors, wrapping, and less common options are under **Layout, colors and more**. Use the fixed **Print** button at the bottom. The detailed preprint checklist is collapsed on phones, but warnings for 0 mm margins and colored backgrounds stay visible. The local-processing badge is hidden on phones without changing how data is handled.
+On phones, the text box starts shorter so the print preview appears sooner, and it can be resized vertically. Page splitting and the print preview follow the text editor on the same screen. Expand **Paper and text settings** to access the **Paper** and **Text** groups; alignment, colors, wrapping, and less common options are under **Layout, colors and more**. Use the fixed **Print** button at the bottom. The detailed preprint checklist is collapsed on phones, but warnings for 0 mm margins and colored backgrounds stay visible. The local-processing badge is hidden on phones without changing how data is handled.
 
 Page navigation changes only the preview; every generated page is still printed in its original order. Print is disabled while recalculating, for empty input, or above the 200-page limit. Changing text or print settings before the dialog opens cancels the pending request; choose Print again after recalculation.
 
