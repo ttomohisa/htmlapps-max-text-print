@@ -51,9 +51,10 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
  const mobilePage=await browser.newPage({viewport:{width:390,height:844},locale:'ja-JP'});
  mobilePage.on('pageerror',e=>mobileErrors.push(e.message));
  const page=mobilePage;
+ const mobileReady=()=>page.waitForFunction(()=>!document.querySelector('#mobilePrintButton').disabled);
  await page.goto(source);
  await page.setViewportSize({width:390,height:844});
- await page.locator('#editor').fill('本日休業');await ready();
+ await page.locator('#editor').fill('本日休業');await mobileReady();
  const mobileRects=await page.evaluate(()=>{
   const rect=id=>{const r=document.querySelector(id).getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right};};
   return {editor:rect('#editor'),settings:rect('#settingsSection'),preview:rect('#previewSection'),print:rect('#mobilePrintButton')};
@@ -62,18 +63,22 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
  check(mobileRects.print.left>=0&&mobileRects.print.right<=390&&mobileRects.print.bottom<=844,'mobile Print action within viewport',mobileRects.print);
  check(!(await page.locator('#printChecklist').evaluate(el=>el.open)),'mobile preprint checklist collapsed by default');
  check(await page.locator('#fitChip').isVisible(),'fitted paper size visible');
- await page.locator('#mobilePageSplitSelect').selectOption('char');await ready();
+ await page.locator('#mobilePageSplitSelect').selectOption('char');await mobileReady();
  check(await page.locator('.paper').count()===4,'mobile page split select generates four pages');
  check(await page.locator('#mobilePrintButton').isEnabled(),'mobile Print enabled for valid input');
  await page.locator('#mobileSettingsToggle').click();
- await page.locator('#paperSize').selectOption('A5');await ready();
+ await page.locator('#paperSize').selectOption('A5');await mobileReady();
  check((await page.locator('#mobileSettingsSummary').innerText()).includes('A5'),'mobile settings summary updated');
- await page.locator('#marginGroup [data-value="0"]').click();await ready();
+ await page.locator('#marginGroup [data-value="0"]').click();await mobileReady();
  check(await page.locator('#printEdgeWarning').isVisible(),'0 mm edge warning visible when checklist closed');
  // Restore defaults so subsequent PDF geometry checks use their original safe margin.
- await page.locator('#marginGroup [data-value="10"]').click();await ready();
+ await page.locator('#marginGroup [data-value="10"]').click();await mobileReady();
  await page.locator('#mobileSettingsToggle').click();
- await page.locator('#mobilePageSplitSelect').selectOption('single');await ready();
+ await page.locator('#mobilePageSplitSelect').selectOption('single');await mobileReady();
+ await page.locator('#mobileSettingsToggle').click();
+ await page.locator('#paperSize').selectOption('A4');await mobileReady();
+ await page.locator('#mobileSettingsToggle').click();
+ await page.evaluate(()=>window.scrollTo(0,0));
  await page.screenshot({path:path.join(out,'screenshot-mobile-ja.png'),fullPage:true});
  for(const {width,height} of [{width:393,height:252},{width:844,height:390}]){
   await page.setViewportSize({width,height});
