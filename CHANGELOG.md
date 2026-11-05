@@ -2,6 +2,8 @@
 
 ## 1.2.0 - 2026-11-05
 
+- Correct visible text centering with nonzero letter spacing, including horizontal and vertical writing. Match the fit measurement, print preview, and PDF output.
+
 - Start mobile text entry at 88px height, with vertical resizing, to show the print preview sooner.
 - Retire blank-line splitting from the UI, mapping saved selections to single-page mode.
 - Prevent an extra print sheet with a 1px print-only paper sizing tolerance and no viewport minimum height.
