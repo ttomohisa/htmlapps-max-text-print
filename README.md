@@ -142,6 +142,8 @@ No npm runtime package is currently required by the app. The dependency-update w
 
 Browser/PDF regressions are in `tests/browser-print.cjs` and run in CI with pinned dev-only Playwright and pdf-lib packages. They do not become runtime dependencies.
 
+Releases are prepared and checked as downloadable HTML, ZIP, and SHA-256 files during PR validation. After the repository owner merges a new version into `main`, [the release workflow](docs/RELEASING.md) builds and tests that exact commit, then creates its version tag and publishes the GitHub Release. An open PR never publishes a tag or release.
+
 ## Privacy and runtime network protection
 
 The generated HTML includes a Content Security Policy with `connect-src 'none'`. Max Text Print does not use runtime APIs, CDNs, analytics, telemetry, or remote fonts.
