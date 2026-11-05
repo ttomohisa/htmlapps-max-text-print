@@ -58,7 +58,7 @@
 - クリアは直後のUndoトーストで復元可能。入力・貼り付け・IME変換を開始したらクリアのUndoを無効化し、古い復元操作で新しい入力を上書きしない。設定や言語の変更だけではクリアのUndoを無効化しない。トーストの期限切れ・置き換え後や、繰り返しクリア前の操作は復元しない。
 - スマホでは入力、ページ分割、必要なときだけ開く「用紙・文字の設定」、印刷プレビューを1画面で縦に表示する。画面を切り替えるタブは置かない。
 - スマホのページ分割は1つのセレクト欄とし、PCの4つの分割ボタンと同じ状態を操作する。日英の表示切替と設定リセット後も両方の値を同期する。
-- スマホ設定は既定で閉じた開閉式の領域とし、用紙・向き・余白の要約を常時表示する。スマホでも印刷設定全体を初期値に戻せる。
+- スマホ設定は既定で閉じた開閉式の領域とし、用紙・向き・余白の要約を常時表示する。展開後は「用紙」（サイズ・向き・余白）と「文字」（文字方向・書体・太字）を先に表示し、配置・色・折り返し・サイズ統一・詳細調整は「配置・色・その他の設定」から開く。スマホでも印刷設定全体を初期値に戻せる。設定を隠しても保存状態は維持する。
 - スマホ下部には単一の「印刷する」ボタンを固定し、空入力・再計算中・不適合・ページ上限超過時は無効化する。入力欄にフォーカスしているときは固定ボタンを隠してキーボードとの重なりを避ける。
 - スマホでは「完全ローカル処理」バッジとヘッダーのバージョン表示を隠す。PC版とヘルプのプライバシー説明は維持する。
 - PCでは入力・設定とプレビューを同時表示する。
@@ -90,8 +90,8 @@
 - 複数ページの前後移動ボタンは十分なタップ領域を持つ。
 - `prefers-reduced-motion`を尊重。
 - ヘルプは右上の`?`ダイアログ。
-- ヘルプのモーダル表示中だけルート要素とbodyの背景スクロールを止める。ヘルプ内のスクロールと上下の閉じるボタンを維持し、閉じるボタン・Esc・背景クリックで閉じると通常のスクロールへ戻る。印刷時のoverflowは従来どおり維持する。
-- While Help is modal, lock background scrolling on both the root element and body. Preserve the existing inner scrolling and both close buttons; closing by a button, Escape, or the backdrop restores ordinary page scrolling. Keep print overflow behavior unchanged.
+- ヘルプのモーダル表示中だけルート要素とbodyの背景スクロールを止める。下部の重複した「閉じる」を削除し、上部の×、Esc、背景クリックで閉じると通常のスクロールへ戻る。ヘルプ内のスクロールと印刷時のoverflowは維持する。
+- While Help is modal, lock background scrolling on both the root element and body. Preserve inner scrolling and the single header close control; Escape and backdrop cancellation remain available. Keep print overflow behavior unchanged.
 - Light only。絵文字を主要UIアイコンに使わない。
 
 ## 8. Acceptance criteria
@@ -101,6 +101,8 @@
 - スマホのページ分割セレクトで各モードが動き、PC側の分割ボタン、保存、リセット、Undoと同期する。
 - 設定を開閉しても入力内容やプレビューを失わず、画面下の印刷ボタンは有効な入力のときだけ有効になる。
 - 余白0 mmや背景色の警告はスマホで印刷前の詳細説明を閉じていても見える。
+- スマホで詳細設定を開閉しても用紙・書体などの保存状態とUndoが維持される。太字の行全体がタップで切り替わり、折り返し等の設定へ追加の開閉でアクセスできる。
+- PDF保存の説明に意味の曖昧な情報アイコンを置かない。
 
 - 空入力では印刷ボタンがdisabled。
 - 1ページモードで「本日休業」が標準余白10 mmの1ページに最大サイズで収まる。
@@ -111,8 +113,8 @@
 - 1文字ごとモードでZWJ絵文字を途中分割しない。
 - 複数ページでもすべて同じ用紙向きになる。
 - 前後ボタンと左右キーでページを移動できる。ヘルプ表示中の左右キーでは背後のページが変わらず、閉じると通常のページ移動に戻る。
-- 日本語/英語、デスクトップ/狭い画面（393×252を含む）でヘルプを開き、背後をホイール操作してもページ位置が変わらない。ヘルプ内を最後まで読めて上下の閉じるボタンへ到達できる。各ボタン・Esc・背景クリックで閉じた後と再度開いた後に、背景スクロールの停止/復帰を確認する。
-- Verify Help in Japanese/English on desktop and narrow viewports, including 393×252: outside-wheel input does not move the background page, content and both close buttons remain reachable, and every dismissal/reopen restores the correct scrolling state. Source contracts supplement these browser checks; they do not prove native geometry, focus, scrolling, or printing.
+- 日本語/英語、デスクトップ/狭い画面（393×252を含む）でヘルプを開き、背後をホイール操作してもページ位置が変わらない。ヘルプ内を最後まで読めて上部×へ到達できる。上部×・Esc・背景クリックで閉じた後と再度開いた後に、背景スクロールの停止/復帰を確認する。
+- Verify Help in Japanese/English on desktop and narrow viewports, including 393×252: outside-wheel input does not move the background page, content and the header close button remain reachable, and every dismissal/reopen restores the correct scrolling state. Source contracts supplement these browser checks; they do not prove native geometry, focus, scrolling, or printing.
 - クリア直後はUndoで復元できる。新しい入力後や入力してから空に戻した後は以前の文字を復元せず、再読み込み後も新しい内容を保持する。
 - 日本語/英語で、繰り返しクリア・IME開始・サンプル挿入・Undo期限切れを検証する。
 - 印刷メディアでアプリUIが消え、生成ページだけが選択用紙サイズの連続ページとして出力される。
