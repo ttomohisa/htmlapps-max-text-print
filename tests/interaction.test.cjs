@@ -34,6 +34,44 @@ for(const target of targets)for(const language of ['ja','en']){
     app.el('languageButton').click();check(app,language);
     check(boot(file,language,app.stored),language);
   });
+  test(`${label}: malformed stored settings recover without losing valid defaults`,()=>{
+    const stored=new Map([['max-text-print:v1',JSON.stringify({
+      text:{unexpected:true},language:'unknown',pageSplit:'oops',paperSize:'A0',
+      writingMode:'diagonal',orientation:'sideways',marginPreset:'bad',
+      customMargin:999,fontFamily:'bogus',autoWrap:'yes',uniformFontSize:null,
+      bold:1,textAlign:'start',verticalAlign:'left',textColor:'red',
+      backgroundColor:'#oops',lineHeight:'infinite',letterSpacing:50,outline:20
+    })]]);
+    const app=boot(file,language,stored);
+    assert.equal(app.el('editor').value,'');
+    assert.equal(app.el('paperSize').value,'A4');
+    assert.equal(app.el('mobilePageSplitSelect').value,'single');
+    app.type('Recovered sign');app.fit();
+    const saved=app.saved();
+    assert.equal(saved.text,'Recovered sign');
+    assert.equal(saved.pageSplit,'single');
+    assert.equal(saved.paperSize,'A4');
+    assert.equal(saved.orientation,'auto');
+    assert.equal(saved.marginPreset,'10');
+    assert.equal(saved.customMargin,40);
+    assert.equal(saved.lineHeight,1.05);
+    assert.equal(saved.letterSpacing,0.2);
+    assert.equal(saved.outline,0);
+    assert.equal(saved.backgroundColor,'#ffffff');
+    assert.equal(saved.autoWrap,true);
+    assert.equal(saved.bold,true);
+    assert.equal(app.el('printButton').disabled,false);
+    const badJson=boot(file,language,new Map([['max-text-print:v1','{truncated']]));
+    assert.equal(badJson.el('editor').value,'');
+    badJson.type('Ready');badJson.fit();
+    assert.equal(badJson.el('printButton').disabled,false);
+    const valid=boot(file,language,new Map([['max-text-print:v1',JSON.stringify({text:'Keep this text',orientation:'landscape',marginPreset:'5',bold:false})]]));
+    assert.equal(valid.el('editor').value,'Keep this text');
+    assert.equal(valid.el('paperSize').value,'A4');
+    valid.type('Keep this text updated');
+    assert.equal(valid.saved().orientation,'landscape');
+    assert.equal(valid.saved().bold,false);
+  });
   test(`${label}: mobile split selector and settings disclosure keep the same print state`,()=>{
     const app=boot(file,language);
     const split=app.el('mobilePageSplitSelect'),toggle=app.el('mobileSettingsToggle'),section=app.el('settingsSection');
