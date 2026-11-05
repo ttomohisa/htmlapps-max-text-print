@@ -759,13 +759,43 @@
       function safeRead(){
         try{
           const raw=localStorage.getItem(storageKey); if(!raw) return;
-          const parsed=JSON.parse(raw); state={...defaultState,...parsed};
-          if(!['single','blank','line','char'].includes(state.pageSplit)) state.pageSplit='single';
-          if(typeof state.paperSize!=='string' || !Object.prototype.hasOwnProperty.call(paperSizes,state.paperSize)) state.paperSize='A4';
-          if(!['horizontal-tb','vertical-rl'].includes(state.writingMode)) state.writingMode='horizontal-tb';
-          if(typeof state.autoWrap!=='boolean') state.autoWrap=true;
-          if(typeof state.uniformFontSize!=='boolean') state.uniformFontSize=false;
-        }catch{}
+          const parsed=JSON.parse(raw);
+          if(!parsed || typeof parsed!=='object' || Array.isArray(parsed)) return;
+          // Older or damaged browser storage must never prevent the editor from opening.
+          // Copy only known settings; keep valid saved text and choices unchanged.
+          state={...defaultState};
+          for(const key of Object.keys(defaultState)){
+            if(Object.prototype.hasOwnProperty.call(parsed,key)) state[key]=parsed[key];
+          }
+          if(typeof state.text!=='string') state.text='';
+          const allow=(key,values)=>{if(!values.includes(state[key])) state[key]=defaultState[key];};
+          allow('language',['auto','ja','en']);
+          allow('pageSplit',['single','blank','line','char']);
+          allow('paperSize',Object.keys(paperSizes));
+          allow('writingMode',['horizontal-tb','vertical-rl']);
+          allow('orientation',['auto','portrait','landscape']);
+          allow('marginPreset',['10','5','0','custom']);
+          allow('fontFamily',['sans','serif','rounded','mono','meiryo','yuGothic','yuMincho','bizGothic']);
+          allow('textAlign',['left','center','right']);
+          allow('verticalAlign',['start','center','end']);
+          for(const key of ['autoWrap','uniformFontSize','bold']){
+            if(typeof state[key]!=='boolean') state[key]=defaultState[key];
+          }
+          const bound=(key,min,max)=>{
+            const v=Number(state[key]);
+            state[key]=Number.isFinite(v)?Math.max(min,Math.min(max,v)):defaultState[key];
+          };
+          bound('customMargin',0,40);
+          bound('lineHeight',.85,1.5);
+          bound('letterSpacing',-.08,.2);
+          state.outline=Number(state.outline);
+          if(![0,.7,1.4].includes(state.outline)) state.outline=defaultState.outline;
+          for(const key of ['textColor','backgroundColor']){
+            if(typeof state[key]!=='string' || !/^#[0-9a-fA-F]{6}$/.test(state[key])) state[key]=defaultState[key];
+          }
+        }catch{
+          state={...defaultState};
+        }
       }
       function save(){
         try{localStorage.setItem(storageKey,JSON.stringify(state));}catch{}
