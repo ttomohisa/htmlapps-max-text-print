@@ -25,8 +25,8 @@ test('help contains user guidance rather than implementation or layout audit pro
     const help=html.match(/<!-- APP:HELP:BEGIN -->([\s\S]*?)<!-- APP:HELP:END -->/);
     assert.ok(help, `${file}: inline Help content is present`);
     for(const [lang,maxLength,required] of [
-      ['ja',450,['200ページ','PDFに保存','外部に送信しません','余白0 mm']],
-      ['en',740,['200 pages','Save as PDF','not sent to a server','0 mm margins']]
+      ['ja',330,['200ページ','PDFに保存','外部に送信しません','余白0 mm']],
+      ['en',640,['200 pages','Save as PDF','not sent to a server','0 mm margins']]
     ]){
       const match=help[1].match(new RegExp('<div data-help-lang="'+lang+'"[^>]*>([\\s\\S]*?)<\\/div>'));
       assert.ok(match,`${file}: ${lang} help present`);
