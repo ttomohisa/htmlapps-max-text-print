@@ -80,6 +80,11 @@ for(const target of targets)for(const language of ['ja','en']){
     toggle.click();
     assert.equal(toggle.getAttribute('aria-expanded'),'true');
     assert.equal(section.classList.contains('is-open'),true);
+    assert.equal(app.el('verticalWritingNote').hidden,true);
+    app.el('writingMode').value='vertical-rl';app.el('writingMode').dispatch('change');
+    assert.equal(app.el('verticalWritingNote').hidden,false);
+    app.el('writingMode').value='horizontal-tb';app.el('writingMode').dispatch('change');
+    assert.equal(app.el('verticalWritingNote').hidden,true);
     app.type('A\nB');
     split.value='line';split.dispatch('change');app.fit();
     assert.equal(app.saved().pageSplit,'line');
