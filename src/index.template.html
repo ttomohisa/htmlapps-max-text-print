@@ -155,7 +155,12 @@
     .dialog-body h3:first-child{margin-top:0}
     .dialog-body ul{padding-left:20px;margin:7px 0}
     .dialog-foot{padding:0 20px 18px;display:flex;justify-content:flex-end}
-    .mobile-bottom,.mobile-intro,.mobile-settings-toggle,.mobile-page-split-select,.mobile-reset-settings{display:none}
+    .mobile-bottom,.mobile-intro,.mobile-settings-toggle,.mobile-extra-settings-toggle,.mobile-page-split-select,.mobile-reset-settings{display:none}
+    .settings-category,.settings-extra{display:contents}
+    .settings-category h3{display:none}
+    .bold-copy{display:flex;flex-direction:column;gap:2px}
+    .bold-copy strong{font-size:12px;font-weight:680}
+    .bold-copy small{font-size:11px;color:var(--muted)}
     .desktop-intro{display:inline}
     .print-summary details summary{cursor:pointer;font-weight:750;font-size:13px;color:var(--ink)}
     .print-check-content{padding-top:7px}
@@ -199,7 +204,31 @@
       #settingsSection .card-head{display:none}
       #settingsSection .card-body{display:none;padding:2px 1px 18px}
       #settingsSection.is-open .card-body{display:block}
-      .mobile-reset-settings{display:block;margin:0 0 11px auto;border:0;background:transparent;color:var(--muted);padding:8px 2px;font-size:12px}
+      .mobile-reset-settings{display:block;margin:0 0 10px auto;border:0;background:transparent;color:var(--muted);min-height:42px;padding:10px 2px;font-size:12px}
+      #settingsBody .settings-category{display:block;min-width:0;padding:17px 0 21px;border-top:1px solid var(--line)}
+      #settingsBody .settings-category:first-child{border-top:0;padding-top:4px}
+      #settingsBody .settings-category h3{display:block;margin:0 0 15px;font-size:13px;font-weight:750;color:var(--ink)}
+      #settingsBody .settings-category .setting-group{border:0;padding:0;margin-top:17px}
+      #settingsBody .settings-category .setting-group:first-of-type{margin-top:0}
+      #settingsBody .settings-category .field label{font-size:13px}
+      #settingsBody .field select,#settingsBody .field input[type="number"]{height:46px;min-width:0;font-size:14px}
+      #settingsBody .segmented button{min-height:44px}
+      #settingsBody .toggle-row{min-height:48px;gap:12px}
+      #settingsBody .toggle-row input[type="checkbox"]:not(#boldToggle){width:20px;height:20px;accent-color:var(--brand)}
+      #settingsBody .setting-bold{cursor:pointer}
+      #settingsBody .switch{height:44px;display:flex;align-items:center}
+      #settingsBody .switch span{top:9px;bottom:9px}
+      #settingsBody .mobile-extra-settings-toggle{display:flex;width:100%;min-height:50px;gap:12px;align-items:center;justify-content:space-between;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--ink);font-size:13px;font-weight:700;text-align:left}
+      #settingsBody .mobile-extra-settings-toggle svg{height:18px;width:18px;flex:none;color:var(--muted);transition:transform .16s}
+      #settingsSection.extra-open .mobile-extra-settings-toggle svg{transform:rotate(180deg)}
+      #settingsBody .settings-extra{display:none;padding:4px 0 0}
+      #settingsSection.extra-open .settings-extra{display:block}
+      #settingsBody .settings-extra .settings-category:first-child{border-top:0}
+      #settingsBody .advanced{margin-top:17px}
+      #settingsBody .range-row{grid-template-columns:minmax(0,1fr) 58px}
+      #settingsBody .setting-group .font-note{font-size:11px;line-height:1.5}
+      #settingsBody .color-control{min-width:0}
+      #settingsBody .color-control span{overflow-wrap:anywhere}
       .grid-2,.color-pair{grid-template-columns:repeat(2,minmax(0,1fr))}
       .field{min-width:0}
       .preview-card{position:static;overflow:visible}
@@ -219,7 +248,7 @@
       .print-summary .warning-box{margin-top:8px}
       .preview-footer{order:5;display:block;border:0;padding:10px 1px 0;background:transparent;font-size:12px}
       .preview-status{white-space:normal;overflow:visible}
-      .print-hint{margin-top:7px;line-height:1.5}
+      .print-hint{margin-top:7px;line-height:1.6;min-width:0;overflow-wrap:anywhere}
       .mobile-bottom{position:fixed;display:block;left:0;right:0;bottom:0;z-index:50;padding:9px 16px calc(9px + env(safe-area-inset-bottom));background:rgba(255,255,255,.98);border-top:1px solid var(--line);box-shadow:0 -4px 16px rgba(22,43,35,.06)}
       .mobile-bottom .mobile-print{width:100%;min-height:50px;display:flex;align-items:center;justify-content:center;gap:9px;padding:10px 16px;border:0;border-radius:11px;background:var(--brand);color:#fff;font-size:15px;font-weight:750}
       .mobile-bottom .mobile-print svg{width:19px;height:19px;flex:none}
@@ -229,6 +258,7 @@
     }
     @media (max-width: 560px){
       .page-intro h1{font-size:21px}
+      #settingsBody .settings-category[data-group="text"] .grid-2{grid-template-columns:minmax(0,1fr)}
       .page-split-block{margin-top:15px}
       .shell{padding-top:14px}
       .paper-stage{height:clamp(240px,42dvh,345px)}
@@ -236,7 +266,7 @@
       .segmented button{padding:9px 4px}
       .preview-footer{padding-bottom:0}
       dialog{max-height:calc(100dvh - 20px);margin:auto 10px 10px;border-radius:18px 18px 12px 12px}
-      .dialog-body{overflow:auto;max-height:calc(100dvh - 155px)}
+      .dialog-body{overflow:auto;max-height:calc(100dvh - 105px)}
     }
     @media (prefers-reduced-motion: reduce){
       *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
@@ -354,22 +384,13 @@
           </div>
           <div class="card-body" id="settingsBody">
             <button class="mobile-reset-settings" id="mobileResetSettingsButton" type="button" data-i18n="resetSettings">初期値に戻す</button>
+            <div class="settings-category" data-group="paper">
+              <h3 data-i18n="settingsPaperGroup">用紙</h3>
             <div class="setting-group">
               <div class="field">
                 <label for="paperSize" data-i18n="paperSize">用紙サイズ</label>
                 <select id="paperSize"><option value="A4">A4</option><option value="A3">A3</option><option value="A5">A5</option><option value="Letter">Letter</option></select>
               </div>
-              <div class="field" style="margin-top:12px">
-                <label for="writingMode" data-i18n="writingMode">文字の方向</label>
-                <select id="writingMode"><option value="horizontal-tb" data-i18n="horizontalWriting">横書き</option><option value="vertical-rl" data-i18n="verticalWriting">縦書き（右から左）</option></select>
-                <div class="font-note" data-i18n="verticalWritingNote">縦書きの英数字は標準的な混在表示です。用紙の向きとは別に設定できます。</div>
-              </div>
-            </div>
-            <div class="setting-group">
-              <label class="toggle-row"><span data-i18n="autoWrap">自動折り返し</span><input id="autoWrapToggle" type="checkbox" checked data-i18n-aria-label="autoWrap"></label>
-              <div class="setting-help" data-i18n="autoWrapHelp">OFFにすると、入力した改行だけで折り返します。</div>
-              <label class="toggle-row"><span data-i18n="uniformFontSize">全ページの文字サイズを揃える</span><input id="uniformFontToggle" type="checkbox" data-i18n-aria-label="uniformFontSize"></label>
-              <div class="setting-help" data-i18n="uniformFontHelp">すべてのページに収まる最大の共通サイズを使います。</div>
             </div>
             <div class="setting-group">
               <div class="setting-label"><span data-i18n="orientation">用紙の向き</span><span class="setting-help" data-i18n="orientationHelp">自動は大きくなる方を選択</span></div>
@@ -395,6 +416,16 @@
               <div class="warning-box" id="zeroMarginWarning" data-i18n="zeroMarginWarning">余白なしはプリンターによって用紙端が欠ける場合があります。</div>
             </div>
 
+            </div>
+            <div class="settings-category" data-group="text">
+              <h3 data-i18n="settingsTextGroup">文字</h3>
+            <div class="setting-group">
+              <div class="field">
+                <label for="writingMode" data-i18n="writingMode">文字の方向</label>
+                <select id="writingMode"><option value="horizontal-tb" data-i18n="horizontalWriting">横書き</option><option value="vertical-rl" data-i18n="verticalWriting">縦書き（右から左）</option></select>
+                <div class="font-note" data-i18n="verticalWritingNote">縦書きの英数字は標準的な混在表示です。用紙の向きとは別に設定できます。</div>
+              </div>
+            </div>
             <div class="setting-group">
               <div class="grid-2">
                 <div class="field">
@@ -412,17 +443,25 @@
                   <div class="font-note" data-i18n="fontNote">端末にない書体は近い書体で表示されます。</div>
                 </div>
                 <div>
-                  <div class="toggle-row">
-                    <div>
-                      <div style="font-size:12px;font-weight:680" data-i18n="bold">太字</div>
-                      <div class="setting-help" data-i18n="boldHelp">張り紙ではON推奨</div>
-                    </div>
-                    <label class="switch"><input id="boldToggle" type="checkbox" checked aria-label="Bold"><span></span></label>
-                  </div>
+                  <label class="toggle-row setting-bold">
+                    <span class="bold-copy">
+                      <strong data-i18n="bold">太字</strong>
+                      <small data-i18n="boldHelp">張り紙ではON推奨</small>
+                    </span>
+                    <span class="switch"><input id="boldToggle" type="checkbox" checked><span></span></span>
+                  </label>
                 </div>
               </div>
             </div>
 
+            </div>
+            <button id="mobileExtraSettingsToggle" class="mobile-extra-settings-toggle" type="button" aria-expanded="false" aria-controls="extraSettingsBody">
+              <span data-i18n="settingsMore">配置・色・その他の設定</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="settings-extra" id="extraSettingsBody">
+            <div class="settings-category" data-group="placement">
+              <h3 data-i18n="settingsPlacementGroup">配置と色</h3>
             <div class="setting-group">
               <div class="setting-label"><span data-i18n="align">配置</span></div>
               <div class="grid-2">
@@ -453,6 +492,15 @@
               </div>
             </div>
 
+            </div>
+            <div class="settings-category" data-group="options">
+              <h3 data-i18n="settingsOptionsGroup">その他</h3>
+            <div class="setting-group">
+              <label class="toggle-row"><span data-i18n="autoWrap">自動折り返し</span><input id="autoWrapToggle" type="checkbox" checked data-i18n-aria-label="autoWrap"></label>
+              <div class="setting-help" data-i18n="autoWrapHelp">OFFにすると、入力した改行だけで折り返します。</div>
+              <label class="toggle-row"><span data-i18n="uniformFontSize">全ページの文字サイズを揃える</span><input id="uniformFontToggle" type="checkbox" data-i18n-aria-label="uniformFontSize"></label>
+              <div class="setting-help" data-i18n="uniformFontHelp">すべてのページに収まる最大の共通サイズを使います。</div>
+            </div>
             <details class="advanced">
               <summary data-i18n="advanced">詳細設定</summary>
               <div class="advanced-body">
@@ -475,6 +523,8 @@
                 </div>
               </div>
             </details>
+            </div>
+            </div>
           </div>
         </section>
       </div>
@@ -525,10 +575,7 @@
         </div>
         <div class="preview-footer">
           <div class="preview-status" id="previewStatus" aria-live="polite" data-i18n="ready">文字を入力してください</div>
-          <div class="print-hint">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>
-            <span data-i18n="pdfHint">PDFは印刷画面から「PDFに保存」を選べます。</span>
-          </div>
+          <div class="print-hint" data-i18n="pdfHint">PDFで保存する場合は、印刷画面で「PDFに保存」を選びます。</div>
         </div>
       </section>
     </main>
@@ -559,7 +606,7 @@
           <h3>基本操作</h3>
           <ul>
             <li>文字を入力すると、選んだA3・A4・A5・Letterの安全領域に収まる最大文字サイズを自動計算します。</li>
-            <li>スマホでは文字入力の下に印刷プレビューを表示します。用紙や書体を変えるときは「用紙・文字の設定」を開きます。「印刷する」は画面の下にあります。</li>
+            <li>スマホでは文字入力の下に印刷プレビューを表示します。用紙や書体は「用紙・文字の設定」から変更でき、配置・色・折り返しなどは「配置・色・その他の設定」を開いて調整します。「印刷する」は画面の下にあります。</li>
             <li>自動折り返しをOFFにすると入力した改行だけを使います。「全ページの文字サイズを揃える」で共通の最大サイズにできます。</li>
             <li>縦書きは右から左へ列を並べます。英数字は標準的な混在表示になり、用紙の向きとは別に選べます。</li>
             <li>「ページ分割」で、すべてを1ページにまとめるほか、空行ごと・1行ごと・1文字ごとに分けて一括印刷できます。既定では各ページを個別に最大化します。</li>
@@ -586,7 +633,7 @@
           <h3>Basics</h3>
           <ul>
             <li>As you type, the app fits text inside the safe area of A3, A4, A5, or Letter paper.</li>
-            <li>On phones, the print preview appears below the editor. Open “Paper and text settings” to change the paper or typeface, then use the Print button at the bottom.</li>
+            <li>On phones, the print preview follows the editor. Open “Paper and text settings” for paper and typeface choices; expand “Layout, colors and more” for alignment, colors and wrapping. Use Print at the bottom.</li>
             <li>Turn automatic wrapping OFF to use only explicit line breaks. Choose common sizing to use the largest size that fits every page.</li>
             <li>Vertical writing runs in columns from right to left with standard mixed Latin orientation, independently of paper orientation.</li>
             <li>Page splitting can keep everything on one page or create pages by blank line, line, or character. Each page is fitted independently by default.</li>
@@ -611,7 +658,6 @@
         </div>
         <!-- APP:HELP:END -->
       </div>
-      <div class="dialog-foot"><button class="secondary-button" type="button" id="helpOkButton" data-i18n="close">閉じる</button></div>
     </dialog>
   </div>
 
@@ -656,7 +702,7 @@
         ja:{
           writingMode:'文字の方向',horizontalWriting:'横書き',verticalWriting:'縦書き（右から左）',verticalWritingNote:'縦書きの英数字は標準的な混在表示です。用紙の向きとは別に設定できます。',beforePrinting:'印刷前の確認',printJob:'{count}ページ · {paper} · {orientation} · 余白 {margin} mm',wrapOn:'折り返しON',wrapOff:'折り返しOFF',commonSize:'文字サイズを統一',independentSize:'ページごとに最大化',printControlNote:'印刷画面でも用紙・向き・倍率100%・ヘッダー/フッターOFFを確認してください。アプリから完全には指定できません。',
           paperSize:'用紙サイズ',autoWrap:'自動折り返し',autoWrapHelp:'OFFにすると、入力した改行だけで折り返します。',uniformFontSize:'全ページの文字サイズを揃える',uniformFontHelp:'すべてのページに収まる最大の共通サイズを使います。',
-          tagline:'用紙に収まる最大サイズで、そのまま印刷',brandMeta:'最大文字サイズに自動調整 · 用紙いっぱいに印刷 · ページ分割対応',introTitle:'用紙に収まる最大サイズで文字を印刷',introLead:'入力した文字を1枚または複数の用紙に分け、各ページを収まる最大サイズへ自動調整して印刷します。',mobileIntroTitle:'大きな文字で印刷する',mobileIntroLead:'文字を入力すると、用紙に収まる最大サイズへ調整します。',mobileSettingsToggle:'用紙・文字の設定',mobileSettingsInfo:'{paper} · {orientation} · 余白 {margin} mm',localOnly:'完全ローカル処理',help:'使い方と注意事項',close:'閉じる',
+          tagline:'用紙に収まる最大サイズで、そのまま印刷',brandMeta:'最大文字サイズに自動調整 · 用紙いっぱいに印刷 · ページ分割対応',introTitle:'用紙に収まる最大サイズで文字を印刷',introLead:'入力した文字を1枚または複数の用紙に分け、各ページを収まる最大サイズへ自動調整して印刷します。',mobileIntroTitle:'大きな文字で印刷する',mobileIntroLead:'文字を入力すると、用紙に収まる最大サイズへ調整します。',mobileSettingsToggle:'用紙・文字の設定',settingsPaperGroup:'用紙',settingsTextGroup:'文字',settingsPlacementGroup:'配置と色',settingsOptionsGroup:'その他',settingsMore:'配置・色・その他の設定',mobileSettingsInfo:'{paper} · {orientation} · 余白 {margin} mm',localOnly:'完全ローカル処理',help:'使い方と注意事項',close:'閉じる',
           textTitle:'文字を入力',textSub:'入力した文字を、選んだページ分割ごとに最大サイズへ自動調整します。',textLabel:'印刷する文字',
           placeholder:'例：本日休業',chars:'文字',lines:'行',sample:'サンプル',clear:'クリア',pageSplit:'ページ分割',splitSingle:'1ページにまとめる',splitBlank:'空行ごと',splitLine:'1行ごと',splitChar:'1文字ごと',pageSplitHelp:'分割した各ページを用紙に合わせます。文字サイズの統一も選べます。',pageCount:'{count}ページ',pageCountOne:'1ページ',pageLimitWarning:'{count}ページになります。一度に作成できるのは{max}ページまでです。分割を減らしてください。',pageNumber:'ページ番号',goPage:'移動',invalidPage:'1〜{count}の整数を入力してください。',prevPage:'前のページ',nextPage:'次のページ',printPagesSummary:'{count}ページをまとめて印刷します',settingsTitle:'印刷設定',
           settingsSub:'通常はそのままでOK。向きや余白を変えると文字サイズも再計算します。',resetSettings:'初期値に戻す',settingsResetDone:'印刷設定を初期値に戻しました',orientation:'用紙の向き',
@@ -667,7 +713,7 @@
           colors:'色',textColor:'文字',backgroundColor:'背景',advanced:'詳細設定',resetAdvanced:'初期値に戻す',advancedResetDone:'詳細設定を初期値に戻しました',lineHeight:'行間',relative:'倍率',letterSpacing:'文字間隔',
           outline:'縁取り',outlineNone:'なし',outlineThin:'細い',outlineThick:'太い',preview:'印刷プレビュー',print:'印刷する',
           emptyPreview:'文字を入力すると、ここに印刷プレビューが表示されます。',ready:'文字を入力してください',
-          pdfHint:'PDFは印刷画面から「PDFに保存」を選べます。',mobileText:'文字',mobileSettings:'設定',mobilePreview:'確認',
+          pdfHint:'PDFで保存する場合は、印刷画面で「PDFに保存」を選びます。',mobileText:'文字',mobileSettings:'設定',mobilePreview:'確認',
           helpTitle:'使い方と注意事項',fit:'最大 {size} pt · {orientation} · 余白 {margin} mm',fitMulti:'{current}/{count}ページ · 最大 {size} pt · {orientation} · 余白 {margin} mm',portraitShort:'縦',landscapeShort:'横',
           tooMuch:'収められないページがあります。文字数を減らすか設定を調整してください。',tooManyPages:'{count}ページになります。一度に作成できるのは{max}ページまでです。',maximized:'用紙に収まる最大サイズへ自動調整済み',
           cleared:'クリアしました',undo:'元に戻す',undone:'元に戻しました',sampleLoaded:'サンプルを入力しました',
@@ -676,7 +722,7 @@
         en:{
           writingMode:'Writing direction',horizontalWriting:'Horizontal writing',verticalWriting:'Vertical writing (right to left)',verticalWritingNote:'Latin text uses standard mixed orientation in vertical writing. Paper orientation is a separate setting.',beforePrinting:'Before printing',printJob:'{count} pages · {paper} · {orientation} · {margin} mm margin',wrapOn:'Wrapping ON',wrapOff:'Wrapping OFF',commonSize:'Common font size',independentSize:'Maximize each page',printControlNote:'In the print dialog, check paper, orientation, 100% scale, and headers/footers OFF. The app cannot fully control these settings.',
           paperSize:'Paper size',autoWrap:'Automatic wrapping',autoWrapHelp:'When OFF, only your explicit line breaks are used.',uniformFontSize:'Use the same font size on all pages',uniformFontHelp:'Use the largest common size that fits every page.',
-          tagline:'Fit the largest text on paper, then print',brandMeta:'Auto-fit text to max size · Full-page printing · Page splitting',introTitle:'Print text at the largest size that fits your paper',introLead:'Split text across one or more sheets, fit each page to the largest safe size, then print directly from the browser.',mobileIntroTitle:'Print large text',mobileIntroLead:'Type your text and it will fit the largest size on the paper.',mobileSettingsToggle:'Paper and text settings',mobileSettingsInfo:'{paper} · {orientation} · {margin} mm margin',localOnly:'Fully local processing',help:'How to use & notes',close:'Close',
+          tagline:'Fit the largest text on paper, then print',brandMeta:'Auto-fit text to max size · Full-page printing · Page splitting',introTitle:'Print text at the largest size that fits your paper',introLead:'Split text across one or more sheets, fit each page to the largest safe size, then print directly from the browser.',mobileIntroTitle:'Print large text',mobileIntroLead:'Type your text and it will fit the largest size on the paper.',mobileSettingsToggle:'Paper and text settings',settingsPaperGroup:'Paper',settingsTextGroup:'Text',settingsPlacementGroup:'Layout and color',settingsOptionsGroup:'More options',settingsMore:'Layout, colors and more',mobileSettingsInfo:'{paper} · {orientation} · {margin} mm margin',localOnly:'Fully local processing',help:'How to use & notes',close:'Close',
           textTitle:'Enter text',textSub:'Text is split using your selected page mode, then each page is fitted to its largest safe size.',textLabel:'Text to print',
           placeholder:'Example: CLOSED TODAY',chars:'chars',lines:'lines',sample:'Sample',clear:'Clear',pageSplit:'Page splitting',splitSingle:'Keep on one page',splitBlank:'Blank lines',splitLine:'Each line',splitChar:'Each character',pageSplitHelp:'Fit each generated page to the paper, with optional common sizing.',pageCount:'{count} pages',pageCountOne:'1 page',pageLimitWarning:'This creates {count} pages. Up to {max} pages can be generated at once. Reduce the split.',pageNumber:'Page number',goPage:'Go',invalidPage:'Enter a whole number from 1 to {count}.',prevPage:'Previous page',nextPage:'Next page',printPagesSummary:'Print all {count} pages',settingsTitle:'Print settings',
           settingsSub:'The defaults usually work. Orientation and margins immediately recalculate the fitted size.',resetSettings:'Reset to defaults',settingsResetDone:'Print settings reset to defaults',orientation:'Orientation',
@@ -686,7 +732,7 @@
           align:'Alignment',horizontal:'Horizontal',vertical:'Vertical',left:'Left',center:'Center',right:'Right',top:'Top',middle:'Center',bottom:'Bottom',
           colors:'Colors',textColor:'Text',backgroundColor:'Background',advanced:'Advanced settings',resetAdvanced:'Reset to defaults',advancedResetDone:'Advanced settings reset to defaults',lineHeight:'Line height',relative:'ratio',letterSpacing:'Letter spacing',
           outline:'Outline',outlineNone:'None',outlineThin:'Thin',outlineThick:'Thick',preview:'Print preview',print:'Print',
-          emptyPreview:'Enter text to see the Print preview here.',ready:'Enter some text',pdfHint:'Need a PDF? Choose “Save as PDF” in the print dialog.',
+          emptyPreview:'Enter text to see the Print preview here.',ready:'Enter some text',pdfHint:'To save a PDF, select “Save as PDF” in the print dialog.',
           mobileText:'Text',mobileSettings:'Settings',mobilePreview:'Preview',helpTitle:'How to use & notes',
           fit:'Max {size} pt · {orientation} · {margin} mm margin',fitMulti:'Page {current}/{count} · Max {size} pt · {orientation} · {margin} mm margin',portraitShort:'Portrait',landscapeShort:'Landscape',
           tooMuch:'At least one page cannot fit. Reduce the text or adjust the settings.',tooManyPages:'This creates {count} pages. Up to {max} pages can be generated at once.',maximized:'Automatically fitted to the largest paper-safe size',
@@ -1237,7 +1283,6 @@
       const helpDialog=$('#helpDialog');
       $('#helpButton').addEventListener('click',()=>helpDialog.showModal());
       $('#closeHelpButton').addEventListener('click',()=>helpDialog.close());
-      $('#helpOkButton').addEventListener('click',()=>helpDialog.close());
       helpDialog.addEventListener('click',event=>{
         const r=helpDialog.getBoundingClientRect();
         if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom) helpDialog.close();
@@ -1245,6 +1290,13 @@
 
       const mobileSettingsToggle=$('#mobileSettingsToggle');
       const mobileSettingsSection=$('#settingsSection');
+      const mobileExtraSettingsToggle=$('#mobileExtraSettingsToggle');
+      mobileExtraSettingsToggle.addEventListener('click',()=>{
+        const expanded=!mobileSettingsSection.classList.contains('extra-open');
+        mobileSettingsSection.classList.toggle('extra-open',expanded);
+        mobileExtraSettingsToggle.setAttribute('aria-expanded',String(expanded));
+        requestAnimationFrame(updatePreviewScale);
+      });
       mobileSettingsToggle.addEventListener('click',()=>{
         const expanded=!mobileSettingsSection.classList.contains('is-open');
         mobileSettingsSection.classList.toggle('is-open',expanded);
