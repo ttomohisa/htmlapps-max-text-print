@@ -61,6 +61,13 @@ for(const target of targets)for(const language of ['ja','en']){
     assert.equal(toggle.getAttribute('aria-expanded'),'false');
     app.el('languageButton').click();
     assert.equal(app.el('mobileSettingsToggle').getAttribute('aria-expanded'),'false');
+    assert.equal(app.el('mobileExtraSettingsToggle').getAttribute('aria-expanded'),'false');
+    app.el('mobileSettingsToggle').click();
+    app.el('mobileExtraSettingsToggle').click();
+    assert.equal(app.el('mobileExtraSettingsToggle').getAttribute('aria-expanded'),'true');
+    assert.equal(app.el('settingsSection').classList.contains('extra-open'),true);
+    app.el('mobileExtraSettingsToggle').click();
+    assert.equal(app.el('mobileExtraSettingsToggle').getAttribute('aria-expanded'),'false');
     assert.equal(app.el('mobileSettingsSummary').textContent.includes('A4'),true);
   });
   test(`${label}: immediate Clear Undo restores persisted text and preview`,()=>{
@@ -104,14 +111,14 @@ for(const target of targets)for(const language of ['ja','en']){
   test(`${label}: Help blocks page arrows without intercepting dialog keys; close restores navigation`,()=>{
     const app=boot(file,language);app.type('One\n二\nThree');app.setting('pageSplitGroup','line');app.fit();assert.equal(app.el('pageNavStatus').textContent,'1 / 3');app.el('helpButton').click();
     for(const key of ['ArrowRight','ArrowLeft'])assert.equal(app.press(key,app.el('closeHelpButton')).defaultPrevented,false);
-    assert.equal(app.el('pageNavStatus').textContent,'1 / 3');app.el('helpOkButton').click();assert.equal(app.press('ArrowRight').defaultPrevented,true);assert.equal(app.el('pageNavStatus').textContent,'2 / 3');
+    assert.equal(app.el('pageNavStatus').textContent,'1 / 3');app.el('closeHelpButton').click();assert.equal(app.press('ArrowRight').defaultPrevented,true);assert.equal(app.el('pageNavStatus').textContent,'2 / 3');
     for(const id of ['editor','customMargin','fontFamily'])assert.equal(app.press('ArrowRight',app.el(id)).defaultPrevented,false);
     assert.equal(app.press('ArrowRight',app.document.body,{ctrlKey:true}).defaultPrevented,false);assert.equal(app.el('pageNavStatus').textContent,'2 / 3');app.press('ArrowLeft');assert.equal(app.el('pageNavStatus').textContent,'1 / 3');
   });
-  test(`${label}: both Help close buttons and the backdrop preserve input across repeated openings`,()=>{
+  test(`${label}: header Help close and backdrop preserve input across repeated openings`,()=>{
     const app=boot(file,language);app.type('Keep this sign');app.setting('pageSplitGroup','line');app.fit();
     const before=JSON.stringify(app.saved()),dialog=app.el('helpDialog');
-    for(const close of [()=>app.el('closeHelpButton').click(),()=>app.el('helpOkButton').click(),()=>dialog.dispatch('click',{clientX:0,clientY:0})]){
+    for(const close of [()=>app.el('closeHelpButton').click(),()=>dialog.dispatch('click',{clientX:0,clientY:0})]){
       app.el('helpButton').click();assert.equal(dialog.open,true);
       dialog.dispatch('click',{clientX:20,clientY:20});assert.equal(dialog.open,true,'inside clicks keep Help open');
       close();assert.equal(dialog.open,false);assert.equal(app.el('editor').value,'Keep this sign');assert.equal(JSON.stringify(app.saved()),before);
@@ -212,9 +219,9 @@ for(const target of targets){
   });
   test(`${target}: Help keeps its existing inner scroll shell and print overflow override`,()=>{
     assert.match(screenStyles,/dialog\{max-height:calc\(100dvh - 20px\);margin:auto 10px 10px;/);
-    assert.match(screenStyles,/\.dialog-body\{overflow:auto;max-height:calc\(100dvh - 155px\)\}/);
+    assert.match(screenStyles,/\.dialog-body\{overflow:auto;max-height:calc\(100dvh - 105px\)\}/);
     assert.match(html,/<div class="dialog-head">[\s\S]*?id="closeHelpButton"/);
-    assert.match(html,/<div class="dialog-foot"><button[^>]*id="helpOkButton"/);
+    assert.doesNotMatch(html,/id="helpOkButton"/,'redundant bottom Help button removed');
     assert.match(styles,/@media print\s*\{\s*html,body\{[^}]*overflow:visible!important/);
   });
   test(`${target}: local-processing badge preserves its decorative shield`,()=>{
