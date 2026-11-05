@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0 - 2026-11-05
+
+- Replace the smartphone four-tab layout with one editor-to-preview flow and a single fixed Print action.
+- Collapse print settings behind a compact paper/orientation/margin summary on mobile; keep all original controls and reset/Undo behaviors.
+- Use a mobile page-splitting select synchronized with desktop presets and persisted settings.
+- Put the paper preview before the optional preprint checklist on mobile, while keeping edge/background warnings visible.
+- Simplify smartphone labels and remove the local-processing badge and version chip from the compact header. Keep desktop behavior and privacy guarantees unchanged.
+- スマホ版の入力・プレビュー・印刷を1画面に整理。設定の開閉、ページ分割切替、注意表示を改善し、既存の印刷・保存・Undoは維持。
+
+
 ## 1.1.0 - 2026-10-25
 
 - Add automatic-wrapping ON/OFF and optional common maximum font size across all pages.
