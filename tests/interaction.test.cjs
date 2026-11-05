@@ -42,7 +42,7 @@ for(const target of targets)for(const language of ['ja','en']){
     toggle.click();
     assert.equal(toggle.getAttribute('aria-expanded'),'true');
     assert.equal(section.classList.contains('is-open'),true);
-    app.type('A\\nB');
+    app.type('A\nB');
     split.value='line';split.dispatch('change');app.fit();
     assert.equal(app.saved().pageSplit,'line');
     assert.equal(app.el('pageNavStatus').textContent,'1 / 2');
