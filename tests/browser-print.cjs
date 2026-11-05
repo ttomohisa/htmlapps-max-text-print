@@ -31,6 +31,14 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
   for(const width of [1360,320]){
    await page.setViewportSize({width,height:900});
    if(width===320){
+    const targets=await page.evaluate(()=>{
+      const size=id=>{const r=document.querySelector(id).getBoundingClientRect();return {width:r.width,height:r.height};};
+      return {help:size('#helpButton'),language:size('#languageButton')};
+    });
+    for(const [id,rect] of Object.entries(targets)){
+      check(rect.width>=44&&rect.height>=44,`mobile ${id} meets 44px tap size ${language}`,rect);
+    }
+    check(await page.locator('#customMargin').getAttribute('aria-label')===(language==='ja'?'余白を指定（mm）':'Custom margin (mm)'),`localized custom margin label ${language}`);
     check(await page.locator('.local-badge').isHidden(),`mobile local badge hidden ${language}`);
     check(await page.locator('#mobileSettingsToggle').isVisible(),`mobile settings disclosure visible ${language}`);
     check(await page.locator('#settingsBody').isHidden(),`mobile settings collapsed ${language}`);
