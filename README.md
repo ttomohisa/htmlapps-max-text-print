@@ -63,11 +63,11 @@ The build has no runtime package to download in v1.2.0. It also generates `dist/
 5. Choose **Print**. All generated pages are sent to one native print dialog.
 6. Select a printer, or choose **Save as PDF** when you need a PDF file.
 
-On phones, page splitting and the print preview follow the text editor on the same screen. Expand **Paper and text settings** only when needed, and use the fixed **Print** button at the bottom. The detailed preprint checklist is collapsed on phones, but warnings for 0 mm margins and colored backgrounds stay visible. The local-processing badge is hidden on phones without changing how data is handled.
+On phones, page splitting and the print preview follow the text editor on the same screen. Expand **Paper and text settings** to access the **Paper** and **Text** groups; alignment, colors, wrapping, and less common options are under **Layout, colors and more**. Use the fixed **Print** button at the bottom. The detailed preprint checklist is collapsed on phones, but warnings for 0 mm margins and colored backgrounds stay visible. The local-processing badge is hidden on phones without changing how data is handled.
 
 Page navigation changes only the preview; every generated page is still printed in its original order. Print is disabled while recalculating, for empty input, or above the 200-page limit. Changing text or print settings before the dialog opens cancels the pending request; choose Print again after recalculation.
 
-Help keeps the background page still while open. Scroll inside Help to read longer content, then close it with either close button, Escape, or the backdrop to resume normal page scrolling.
+Help keeps the background page still while open. Scroll inside Help to read longer content, then close it with the top-right close button, Escape, or the backdrop to resume normal page scrolling.
 
 ### Page splitting and orientation
 
