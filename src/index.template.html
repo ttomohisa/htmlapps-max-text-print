@@ -153,7 +153,9 @@
     .dialog-body{padding:18px 20px 20px;line-height:1.7;color:#394640;font-size:14px}
     .dialog-body h3{font-size:14px;margin:18px 0 6px;color:var(--ink)}
     .dialog-body h3:first-child{margin-top:0}
-    .dialog-body ul{padding-left:20px;margin:7px 0}
+    .dialog-body ul,.dialog-body ol{padding-left:22px;margin:7px 0 12px}
+    .dialog-body li+li{margin-top:7px}
+    .dialog-body p{margin:8px 0 12px}
     .dialog-foot{padding:0 20px 18px;display:flex;justify-content:flex-end}
     .mobile-bottom,.mobile-intro,.mobile-settings-toggle,.mobile-extra-settings-toggle,.mobile-page-split-select,.mobile-reset-settings{display:none}
     .settings-category,.settings-extra{display:contents}
@@ -603,58 +605,30 @@
       <div class="dialog-body">
         <!-- APP:HELP:BEGIN -->
         <div data-help-lang="ja">
-          <h3>基本操作</h3>
-          <ul>
-            <li>文字を入力すると、選んだA3・A4・A5・Letterの安全領域に収まる最大文字サイズを自動計算します。</li>
-            <li>スマホでは文字入力の下に印刷プレビューを表示します。用紙や書体は「用紙・文字の設定」から変更でき、配置・色・折り返しなどは「配置・色・その他の設定」を開いて調整します。「印刷する」は画面の下にあります。</li>
-            <li>自動折り返しをOFFにすると入力した改行だけを使います。「全ページの文字サイズを揃える」で共通の最大サイズにできます。</li>
-            <li>縦書きは右から左へ列を並べます。英数字は標準的な混在表示になり、用紙の向きとは別に選べます。</li>
-            <li>「ページ分割」で、すべてを1ページにまとめるほか、空行ごと・1行ごと・1文字ごとに分けて一括印刷できます。既定では各ページを個別に最大化します。</li>
-            <li>1ページにまとめる場合はEnterで入れた改行を維持し、自動折り返しONでは長い行を用紙に合わせて折り返します。</li>
-            <li>「自動」の用紙向きでは全ページを縦・横の両方で評価し、印刷物全体として文字を大きくできる方へ統一します。</li>
-            <li>書体は端末内のフォントから選べます。端末にない書体は近い書体へフォールバックします。</li>
-            <li>印刷設定は入力文字と同様にこのブラウザへ自動保存されます。「印刷設定」の「初期値に戻す」で設定全体を既定値へ戻せます。</li>
-            <li>詳細設定の「初期値に戻す」は、行間・文字間隔・縁取りだけを既定値へ戻します。どちらのリセットも直後のトーストから元に戻せます。</li>
-            <li>「クリア」は直後のトーストから元に戻せます。文字の入力・貼り付け・日本語変換を始めると、新しい入力を保護するためクリアのUndoは終了します。</li>
-            <li>複数ページ時はページ番号を入力して「移動」またはEnterで直接確認できます。1〜総ページ数の整数を指定してください。左右ボタン、または入力欄やヘルプを操作していないときの左右キーも使えます。「印刷する」では全ページをまとめて印刷します。</li>
-            <li>一度に作成できるのは200ページまでです。再計算中や空入力・上限超過時は印刷できません。印刷画面が開く前に文字や印刷設定を変更した場合は、再計算後にもう一度「印刷する」を選んでください。PDFが必要な場合は、印刷先で「PDFに保存」を選んでください。</li>
-          </ul>
-          <h3>印刷時の注意</h3>
-          <ul>
-            <li>印刷ダイアログの倍率や余白はブラウザ・OS・プリンター側の設定に影響されます。想定どおりでない場合は倍率100%を確認してください。</li>
-            <li>余白0 mmはプリンターの印刷不能領域により端が欠けることがあります。通常は10 mmを推奨します。</li>
-            <li>背景色を使う場合、ブラウザの「背景のグラフィック」等の設定を有効にする必要がある場合があります。</li>
-            <li>書体は端末に入っているフォントを使います。同じ文章でも端末が変わると最適文字サイズが少し変わる場合があります。</li>
-          </ul>
-          <h3>プライバシー</h3>
-          <p>入力文字と設定はこのブラウザ内だけで処理されます。外部サーバーへ送信しません。ブラウザでローカルストレージが利用できる場合、作業内容を同じブラウザ内へ自動保存します。</p>
+          <h3>使い方</h3>
+          <ol>
+            <li>文字を入力すると、用紙に収まる最大サイズでプレビューされます。</li>
+            <li>必要なら「ページ分割」や「用紙・文字の設定」を変更します。一度に200ページまで作成できます。</li>
+            <li>仕上がりを確認して「印刷する」を押します。PDFで残す場合は、印刷先で「PDFに保存」を選びます。</li>
+          </ol>
+          <h3>印刷前の注意</h3>
+          <p>印刷画面で用紙・向き・倍率100%・ヘッダー／フッターなしを確認してください。アプリから印刷設定を完全には指定できません。</p>
+          <p>余白0 mmは用紙の端が欠ける場合があります。背景色は印刷画面で「背景のグラフィック」を有効にする必要がある場合があります。端末のフォントによって文字の大きさも変わります。</p>
+          <h3>保存とプライバシー</h3>
+          <p>入力文字と設定はブラウザ内で処理し、外部に送信しません。作業内容は同じブラウザに自動保存されるため、共有端末ではご注意ください。クリアや設定の初期化は、直後なら「元に戻す」で取り消せます。</p>
         </div>
         <div data-help-lang="en" hidden>
-          <h3>Basics</h3>
-          <ul>
-            <li>As you type, the app fits text inside the safe area of A3, A4, A5, or Letter paper.</li>
-            <li>On phones, the print preview follows the editor. Open “Paper and text settings” for paper and typeface choices; expand “Layout, colors and more” for alignment, colors and wrapping. Use Print at the bottom.</li>
-            <li>Turn automatic wrapping OFF to use only explicit line breaks. Choose common sizing to use the largest size that fits every page.</li>
-            <li>Vertical writing runs in columns from right to left with standard mixed Latin orientation, independently of paper orientation.</li>
-            <li>Page splitting can keep everything on one page or create pages by blank line, line, or character. Each page is fitted independently by default.</li>
-            <li>In single-page mode, manual line breaks are preserved; long lines wrap when automatic wrapping is ON.</li>
-            <li>Auto orientation evaluates all pages in both portrait and landscape and uses one orientation for the whole print job.</li>
-            <li>You can choose from local typefaces. If a selected typeface is unavailable, the browser uses a similar local fallback.</li>
-            <li>Print settings are autosaved in this browser. “Reset to defaults” in Print settings restores all print settings.</li>
-            <li>Reset to defaults in Advanced settings restores only line height, letter spacing, and outline. Both resets can be undone from the toast immediately afterward.</li>
-            <li>Clear can be undone from its toast immediately afterward. Starting to type, paste, or compose text ends Clear Undo so it cannot replace your new input.</li>
-            <li>Enter a page number and choose Go or press Enter to jump directly. Use a whole number from 1 to the total page count. Previous/next buttons and arrow keys outside form fields (with Help closed) also work. Print sends all pages to the browser/OS print dialog in one job.</li>
-            <li>Up to 200 pages can be generated at once. Print is unavailable while recalculating, with empty text, or over the limit. If you edit text or print settings before the dialog opens, choose Print again after recalculation. Choose a PDF destination in the print dialog when you need a PDF.</li>
-          </ul>
-          <h3>Printing notes</h3>
-          <ul>
-            <li>Scale and margin behavior can still be affected by browser, OS, and printer settings. If output differs, check that scale is 100%.</li>
-            <li>A 0 mm margin can be clipped by printers that cannot print to the physical edge. 10 mm is recommended for normal use.</li>
-            <li>Colored backgrounds may require enabling “Background graphics” or a similar option in the print dialog.</li>
-            <li>The app uses fonts installed on the current device. The fitted size can vary slightly on another device.</li>
-          </ul>
-          <h3>Privacy</h3>
-          <p>Text and settings are processed only in this browser and are not sent to an external server. When local storage is available, your work is autosaved in the same browser.</p>
+          <h3>How to use</h3>
+          <ol>
+            <li>Type your text. The preview automatically fits it to the largest size on the paper.</li>
+            <li>Adjust Page splitting or Paper and text settings if needed. You can generate up to 200 pages at once.</li>
+            <li>Check the preview and select Print. To keep a PDF, choose “Save as PDF” in the print dialog.</li>
+          </ol>
+          <h3>Before printing</h3>
+          <p>Check paper size, orientation, 100% scale, and headers/footers off in the print dialog. The app cannot fully control those settings.</p>
+          <p>0 mm margins may clip at the edges. Colored backgrounds may require “Background graphics” to be enabled. Fitted text size can vary with fonts installed on the device.</p>
+          <h3>Storage and privacy</h3>
+          <p>Text and settings stay in your browser and are not sent to a server. They are autosaved in this browser, so take care on shared devices. Clear and settings resets can be undone immediately afterward.</p>
         </div>
         <!-- APP:HELP:END -->
       </div>
