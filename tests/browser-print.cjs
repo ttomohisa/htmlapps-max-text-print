@@ -30,11 +30,46 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
   check(await page.locator('#lineHeight').getAttribute('aria-label')===(language==='ja'?'行間':'Line height'),`slider name ${language}`);
   for(const width of [1360,320]){
    await page.setViewportSize({width,height:900});
-   if(width===320){await page.locator('[data-mobile-target="settings"]').click();}
+   if(width===320){
+    check(await page.locator('.local-badge').isHidden(),`mobile local badge hidden ${language}`);
+    check(await page.locator('#mobileSettingsToggle').isVisible(),`mobile settings disclosure visible ${language}`);
+    check(await page.locator('#settingsBody').isHidden(),`mobile settings collapsed ${language}`);
+    await page.locator('#mobileSettingsToggle').click();
+    check(await page.locator('#settingsBody').isVisible(),`mobile settings expanded ${language}`);
+    await page.locator('#mobileSettingsToggle').click();
+   }
    check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`no horizontal page overflow ${language}/${width}`);
    await page.locator('#helpButton').click();await page.keyboard.press('Escape');
    check(!(await page.locator('#helpDialog').evaluate(el=>el.open)),`Help Esc ${language}/${width}`);
   }
+ }
+ // Mobile uses a continuous editor -> settings -> preview flow rather than tabs.
+ await page.setViewportSize({width:390,height:844});
+ await page.locator('#editor').fill('本日休業');await ready();
+ const mobileRects=await page.evaluate(()=>{
+  const rect=id=>{const r=document.querySelector(id).getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right};};
+  return {editor:rect('#editor'),settings:rect('#settingsSection'),preview:rect('#previewSection'),print:rect('#mobilePrintButton')};
+ });
+ check(mobileRects.editor.bottom<=mobileRects.settings.top&&mobileRects.settings.bottom<=mobileRects.preview.top,'mobile order: editor, settings, preview',mobileRects);
+ check(mobileRects.print.left>=0&&mobileRects.print.right<=390&&mobileRects.print.bottom<=844,'mobile Print action within viewport',mobileRects.print);
+ check(!(await page.locator('#printChecklist').evaluate(el=>el.open)),'mobile preprint checklist collapsed by default');
+ check(await page.locator('#fitChip').isVisible(),'fitted paper size visible');
+ await page.locator('#mobilePageSplitSelect').selectOption('char');await ready();
+ check(await page.locator('.paper').count()===4,'mobile page split select generates four pages');
+ check(await page.locator('#mobilePrintButton').isEnabled(),'mobile Print enabled for valid input');
+ await page.locator('#mobileSettingsToggle').click();
+ await page.locator('#paperSize').selectOption('A5');await ready();
+ check((await page.locator('#mobileSettingsSummary').innerText()).includes('A5'),'mobile settings summary updated');
+ await page.locator('#marginGroup [data-value="0"]').click();await ready();
+ check(await page.locator('#printEdgeWarning').isVisible(),'0 mm edge warning visible when checklist closed');
+ await page.locator('#mobileSettingsToggle').click();
+ await page.locator('#mobilePageSplitSelect').selectOption('single');await ready();
+ await page.screenshot({path:path.join(out,'screenshot-mobile-ja.png'),fullPage:true});
+ for(const {width,height} of [{width:393,height:252},{width:844,height:390}]){
+  await page.setViewportSize({width,height});
+  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`mobile landscape no horizontal overflow ${width}x${height}`);
+  const bottom=await page.locator('#mobilePrintButton').evaluate(el=>el.getBoundingClientRect().bottom);
+  check(bottom<=height,`mobile Print stays inside viewport ${width}x${height}`,bottom);
  }
  await page.setViewportSize({width:1360,height:900});
  for(const paper of ['A3','A4','A5','Letter'])for(const orientation of ['portrait','landscape'])for(const writing of ['horizontal-tb','vertical-rl'])for(const wrap of [true,false]){
@@ -88,7 +123,7 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
   const local=await browser.newPage();const localErrors=[];local.on('pageerror',e=>localErrors.push(e.message));
   await local.goto(pathToFileURL(path.join(root,variant)).href);await local.locator('#editor').fill('Local file');
   await local.waitForFunction(()=>!document.querySelector('#printButton').disabled);
-  check((await local.locator('#versionBadge').innerText())==='v1.1.0'&&!localErrors.length,`file opening ${variant}`,localErrors);await local.close();
+  check((await local.locator('#versionBadge').innerText())==='v1.2.0'&&!localErrors.length,`file opening ${variant}`,localErrors);await local.close();
  }
  check(requests.filter(url=>/^https?:/.test(url)&&url!==source).length===0,'no runtime network requests',requests);
  check(errors.length===0,'no console errors',errors);
