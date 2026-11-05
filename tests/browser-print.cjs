@@ -116,6 +116,10 @@ const check=(ok,label,details)=>{results.push({label,ok,details});if(!ok)failure
  await page.locator('#mobileSettingsToggle').click();
  await page.locator('#fontFamily').selectOption('mono');await mobileReady();
  await page.locator('#mobileExtraSettingsToggle').click();
+ // Earlier UI checks deliberately choose Left. Restore the user's actual
+ // Center/Center selections before measuring the one-sheet PDF regression.
+ await page.locator('#textAlign').selectOption('center');await mobileReady();
+ await page.locator('#verticalAlign').selectOption('center');await mobileReady();
  await page.locator('#lineHeight').evaluate(el=>{el.value='1.29';el.dispatchEvent(new Event('input',{bubbles:true}));});await mobileReady();
  await page.locator('#letterSpacing').evaluate(el=>{el.value='0.20';el.dispatchEvent(new Event('input',{bubbles:true}));});await mobileReady();
  check(await page.locator('.paper').count()===1,'reported settings keep one mobile preview page');
