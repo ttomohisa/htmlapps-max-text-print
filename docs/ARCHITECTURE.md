@@ -9,11 +9,10 @@ Max Text Print is a dependency-free single-page application whose editable sourc
 Before fitting, the input is converted into one or more page strings according to the selected mode:
 
 - Keep on one page: the complete input stays together.
-- Blank lines: one or more blank lines separate page blocks.
 - Each line: every non-empty line becomes one page.
 - Each character: every non-whitespace grapheme becomes one page. `Intl.Segmenter` is used when available, with Unicode code-point splitting as a fallback.
 
-A maximum of 200 generated pages is enforced before printing.
+A maximum of 200 generated pages is enforced before printing. Older saved selections of the removed blank-line mode are migrated to the single-page option.
 
 ## Fitting algorithm
 
@@ -29,7 +28,7 @@ The app creates one `.paper` DOM element for each generated page.
 - On print media, all generated `.paper` elements are displayed at unscaled selected-paper geometry in sequence.
 - Each paper uses millimeter dimensions and the selected safe margin inside the paper itself.
 - `@page` is set to the exact selected-paper dimensions in millimeters with zero browser page margin.
-- Page breaks are inserted between generated papers.
+- Page breaks are inserted between generated papers. In print media the paper flow boxes reserve 1 CSS pixel in width and height to avoid accidental second sheets from print-engine rounding, while `@page` remains the exact selected size. Print also cancels the screen root minimum viewport height.
 
 Using the same paper DOM elements for preview and printing keeps line wrapping and fitted sizes as consistent as the browser allows.
 
@@ -66,4 +65,4 @@ The preprint summary describes the entire job, not only the preview page. It dis
 
 ## Responsive workflow
 
-Desktop retains the side-by-side editor/settings and paper preview. At 980px and below, mobile uses one continuous flow: text editor, a single page-splitting select, collapsible paper/text settings, paper preview, page navigation, and a fixed Print action. Both split controls share the same persisted state; changing one updates the other. A compact settings summary reflects paper size, selected orientation setting, and safe margin. Its mobile disclosure presents Paper and Text groups first; Layout/Colors and wrapping/common-size/advanced settings are kept behind a second optional disclosure. Desktop shows all groups without the extra disclosure. The Bold control is a full-row label on mobile. During input focus the fixed Print action is hidden to prevent keyboard overlap. This responsive layout changes the presentation only; fit calculations, page DOM, native printing, page limits, settings persistence, and Undo keep the same implementation.
+Desktop retains the side-by-side editor/settings and paper preview. At 980px and below, mobile starts with an 88px vertically resizable text box and uses one continuous flow: text editor, a single page-splitting select, collapsible paper/text settings, paper preview, page navigation, and a fixed Print action. Both split controls share the same persisted state; changing one updates the other. A compact settings summary reflects paper size, selected orientation setting, and safe margin. Its mobile disclosure presents Paper and Text groups first; Layout/Colors and wrapping/common-size/advanced settings are kept behind a second optional disclosure. Desktop shows all groups without the extra disclosure. The Bold control is a full-row label on mobile. During input focus the fixed Print action is hidden to prevent keyboard overlap. This responsive layout changes the presentation only; fit calculations, page DOM, native printing, page limits, settings persistence, and Undo keep the same implementation.
