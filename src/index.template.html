@@ -224,7 +224,7 @@
       .mobile-bottom .mobile-print{width:100%;min-height:50px;display:flex;align-items:center;justify-content:center;gap:9px;padding:10px 16px;border:0;border-radius:11px;background:var(--brand);color:#fff;font-size:15px;font-weight:750}
       .mobile-bottom .mobile-print svg{width:19px;height:19px;flex:none}
       .mobile-bottom .mobile-print:disabled{background:#b7c4bf;color:#fff;opacity:1}
-      .app:has(textarea:focus,input:focus,select:focus) .mobile-bottom{display:none}
+      body.keyboard-visible .mobile-bottom{display:none}
       .toast{bottom:calc(82px + env(safe-area-inset-bottom));width:min(420px,calc(100vw - 24px));max-width:calc(100vw - 24px);justify-content:space-between}
     }
     @media (max-width: 560px){
@@ -1257,6 +1257,25 @@
       const syncChecklist=()=>{printChecklist.open=!compactLayout.matches;};
       syncChecklist();
       compactLayout.addEventListener?.('change',syncChecklist);
+      // Hide the fixed Print action only while the on-screen keyboard actually
+      // reduces the visual viewport; focus alone must not strand the action.
+      if(window.visualViewport){
+        let viewportWidth=window.innerWidth;
+        let expandedHeight=window.visualViewport.height;
+        const syncKeyboard=()=>{
+          const width=window.innerWidth,height=window.visualViewport.height;
+          if(width!==viewportWidth){viewportWidth=width;expandedHeight=height;}
+          const active=document.activeElement;
+          const editing=active?.matches?.('input,textarea,select')===true;
+          if(!editing) expandedHeight=Math.max(expandedHeight,height);
+          document.body.classList.toggle('keyboard-visible',editing && expandedHeight-height>140);
+        };
+        window.visualViewport.addEventListener('resize',syncKeyboard);
+        document.addEventListener('focusin',syncKeyboard);
+        document.addEventListener('focusout',()=>requestAnimationFrame(syncKeyboard));
+        window.addEventListener('resize',syncKeyboard);
+        syncKeyboard();
+      }
 
       document.addEventListener('keydown',event=>{
         if(pageTexts.length<=1 || event.altKey || event.ctrlKey || event.metaKey || $('dialog[open]')) return;
