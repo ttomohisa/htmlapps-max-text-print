@@ -2,6 +2,9 @@
 
 ## 1.2.0 - 2026-11-05
 
+- Reduce Japanese and English Help to three practical steps plus essential printing, storage, and privacy notes.
+- Validate persisted state on startup to recover from malformed or outdated browser settings without breaking the editor.
+
 - Replace the smartphone four-tab layout with one editor-to-preview flow and a single fixed Print action.
 - Collapse print settings behind a compact paper/orientation/margin summary on mobile; keep all original controls and reset/Undo behaviors.
 - Use a mobile page-splitting select synchronized with desktop presets and persisted settings.
