@@ -34,12 +34,13 @@
     .brandmark svg{width:100%;height:100%;display:block}
     .brandcopy{min-width:0}
     .brandname{margin:0;font-size:17px;font-weight:760;line-height:1.2;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .version-badge{display:inline-flex;align-items:center;margin-left:7px;padding:1px 6px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--surface-2);font-size:10px;font-weight:650;vertical-align:2px}
+    .version-badge{display:inline-flex;align-items:center;margin-left:7px;padding:1px 6px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--surface-2);font-size:11px;font-weight:650;vertical-align:2px}
     .brandtag{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .top-actions{margin-left:auto;display:flex;align-items:center;gap:12px}
     .lang-button{min-width:0;padding:5px 1px;border:0;background:transparent;color:var(--muted);font-size:12px;font-weight:750;letter-spacing:.02em;cursor:pointer}
     .lang-button:hover{color:var(--ink)}
-    .icon-button{display:inline-grid;place-items:center;width:38px;height:38px;padding:0;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);cursor:pointer}
+    .dialog-close{display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:9px;background:transparent;cursor:pointer}
+.app-footer{padding:24px 16px 40px;color:var(--muted);text-align:left;font-size:12px}
     .icon-button:hover{border-color:var(--line-strong);background:var(--surface-2)}
     .icon-button svg{width:20px;height:20px;display:block}
     .header-icon-button{width:auto;height:auto;padding:5px 1px;border:0;border-radius:0;background:transparent;color:var(--muted)}
@@ -47,7 +48,7 @@
     .page-intro{width:min(1180px,100%);margin:0 auto;padding:22px clamp(14px,2.8vw,30px) 0;display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
     .page-intro h1{margin:0;font-size:clamp(21px,3vw,26px);line-height:1.3;letter-spacing:-.025em}
     .page-intro p{margin:5px 0 0;max-width:760px;color:var(--muted);font-size:13px;line-height:1.55}
-    .local-badge{display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;margin-top:3px;padding:7px 10px;border:1px solid color-mix(in srgb,var(--brand) 24%,var(--line));border-radius:999px;color:var(--brand);background:var(--brand-soft);font-size:12px;font-weight:700;white-space:nowrap}
+    .local-badge{display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;margin-top:3px;padding:7px 0;border:0;border-radius:0;color:var(--brand);background:transparent;font-size:12px;font-weight:500;white-space:nowrap}
     .local-badge svg{width:15px;height:15px;display:block}
     .shell{max-width:1180px;margin:0 auto;padding:18px clamp(14px,2.8vw,30px) 22px;display:grid;grid-template-columns:minmax(340px,470px) minmax(520px,1fr);gap:18px;align-items:start}
     .left-stack{display:grid;gap:16px}
@@ -183,6 +184,7 @@
       .desktop-intro{display:none}
       .mobile-intro{display:inline}
       .local-badge{display:none}
+      .app-footer{display:none}
       .shell{display:flex;flex-direction:column;gap:0;padding:16px 16px calc(108px + env(safe-area-inset-bottom))}
       .left-stack{display:contents}
       .card{border:0;border-radius:0;box-shadow:none;background:transparent}
@@ -280,7 +282,7 @@
     @media print{
       html,body{margin:0!important;padding:0!important;background:#fff!important;width:auto!important;height:auto!important;overflow:visible!important}
       .app{height:auto!important;min-height:0!important}
-      .topbar,.page-intro,.left-stack,.preview-toolbar,.page-nav-bar,.preview-footer,.print-summary,.mobile-bottom,.toast,dialog{display:none!important}
+      .topbar,.page-intro,.left-stack,.preview-toolbar,.page-nav-bar,.preview-footer,.print-summary,.mobile-bottom,.toast,dialog,.app-footer{display:none!important}
       .shell{display:block!important;max-width:none!important;margin:0!important;padding:0!important}
       .preview-card{display:block!important;position:static!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
       .paper-stage{display:block!important;position:static!important;height:auto!important;min-height:0!important;background:#fff!important;border:0!important;border-radius:0!important;overflow:visible!important}
@@ -587,6 +589,8 @@
       </section>
     </main>
 
+    <footer class="app-footer"><span>Max Text Print</span> · MIT License · <span data-i18n="footerNote">文字の印刷はブラウザー内で完結</span></footer>
+
     <div class="mobile-bottom">
       <button type="button" class="mobile-print" id="mobilePrintButton" disabled>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 8V3h10v5"/><rect x="5" y="14" width="14" height="7" rx="1"/><path d="M5 17H3V9h18v8h-2"/></svg>
@@ -603,8 +607,8 @@
     <dialog id="helpDialog">
       <div class="dialog-head">
         <h2 data-i18n="helpTitle">使い方と注意事項</h2>
-        <button class="icon-button" id="closeHelpButton" type="button" data-i18n-aria-label="close">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        <button class="dialog-close" id="closeHelpButton" type="button" data-i18n-aria-label="close">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12"/><path d="M18 6 6 18"/></svg>
         </button>
       </div>
       <div class="dialog-body">
@@ -679,7 +683,7 @@
         ja:{
           writingMode:'文字の方向',horizontalWriting:'横書き',verticalWriting:'縦書き（右から左）',verticalWritingNote:'縦書きの英数字は標準的な混在表示です。用紙の向きとは別に設定できます。',beforePrinting:'印刷前の確認',printJob:'{count}ページ · {paper} · {orientation} · 余白 {margin} mm',wrapOn:'折り返しON',wrapOff:'折り返しOFF',commonSize:'文字サイズを統一',independentSize:'ページごとに最大化',printControlNote:'印刷画面でも用紙・向き・倍率100%・ヘッダー/フッターOFFを確認してください。アプリから完全には指定できません。',
           paperSize:'用紙サイズ',autoWrap:'自動折り返し',autoWrapHelp:'OFFにすると、入力した改行だけで折り返します。',uniformFontSize:'全ページの文字サイズを揃える',uniformFontHelp:'すべてのページに収まる最大の共通サイズを使います。',
-          tagline:'用紙に収まる最大サイズで、そのまま印刷',brandMeta:'最大文字サイズに自動調整 · 用紙いっぱいに印刷 · ページ分割対応',introTitle:'用紙に収まる最大サイズで文字を印刷',introLead:'入力した文字を1枚または複数の用紙に分け、各ページを収まる最大サイズへ自動調整して印刷します。',mobileIntroTitle:'大きな文字で印刷する',mobileIntroLead:'文字を入力すると、用紙に収まる最大サイズへ調整します。',mobileSettingsToggle:'用紙・文字の設定',settingsPaperGroup:'用紙',settingsTextGroup:'文字',settingsPlacementGroup:'配置と色',settingsOptionsGroup:'その他',settingsMore:'配置・色・その他の設定',mobileSettingsInfo:'{paper} · {orientation} · 余白 {margin} mm',localOnly:'完全ローカル処理',help:'使い方と注意事項',close:'閉じる',
+          tagline:'用紙に収まる最大サイズで、そのまま印刷',brandMeta:'最大文字サイズに自動調整 · 用紙いっぱいに印刷 · ページ分割対応',introTitle:'用紙に収まる最大サイズで文字を印刷',introLead:'入力した文字を1枚または複数の用紙に分け、各ページを収まる最大サイズへ自動調整して印刷します。',mobileIntroTitle:'大きな文字で印刷する',mobileIntroLead:'文字を入力すると、用紙に収まる最大サイズへ調整します。',mobileSettingsToggle:'用紙・文字の設定',settingsPaperGroup:'用紙',settingsTextGroup:'文字',settingsPlacementGroup:'配置と色',settingsOptionsGroup:'その他',settingsMore:'配置・色・その他の設定',mobileSettingsInfo:'{paper} · {orientation} · 余白 {margin} mm',localOnly:'完全ローカル処理',footerNote:'文字の印刷はブラウザー内で完結',help:'使い方と注意事項',close:'閉じる',
           textTitle:'文字を入力',textSub:'入力した文字を、選んだページ分割ごとに最大サイズへ自動調整します。',textLabel:'印刷する文字',
           placeholder:'例：本日休業',chars:'文字',lines:'行',sample:'サンプル',clear:'クリア',pageSplit:'ページ分割',splitSingle:'1ページにまとめる',splitLine:'1行ごと',splitChar:'1文字ごと',pageSplitHelp:'分割した各ページを用紙に合わせます。文字サイズの統一も選べます。',pageCount:'{count}ページ',pageCountOne:'1ページ',pageLimitWarning:'{count}ページになります。一度に作成できるのは{max}ページまでです。分割を減らしてください。',pageNumber:'ページ番号',goPage:'移動',invalidPage:'1〜{count}の整数を入力してください。',prevPage:'前のページ',nextPage:'次のページ',printPagesSummary:'{count}ページをまとめて印刷します',settingsTitle:'印刷設定',
           settingsSub:'通常はそのままでOK。向きや余白を変えると文字サイズも再計算します。',resetSettings:'初期値に戻す',settingsResetDone:'印刷設定を初期値に戻しました',orientation:'用紙の向き',
@@ -699,7 +703,7 @@
         en:{
           writingMode:'Writing direction',horizontalWriting:'Horizontal writing',verticalWriting:'Vertical writing (right to left)',verticalWritingNote:'Latin text uses standard mixed orientation in vertical writing. Paper orientation is a separate setting.',beforePrinting:'Before printing',printJob:'{count} pages · {paper} · {orientation} · {margin} mm margin',wrapOn:'Wrapping ON',wrapOff:'Wrapping OFF',commonSize:'Common font size',independentSize:'Maximize each page',printControlNote:'In the print dialog, check paper, orientation, 100% scale, and headers/footers OFF. The app cannot fully control these settings.',
           paperSize:'Paper size',autoWrap:'Automatic wrapping',autoWrapHelp:'When OFF, only your explicit line breaks are used.',uniformFontSize:'Use the same font size on all pages',uniformFontHelp:'Use the largest common size that fits every page.',
-          tagline:'Fit the largest text on paper, then print',brandMeta:'Auto-fit text to max size · Full-page printing · Page splitting',introTitle:'Print text at the largest size that fits your paper',introLead:'Split text across one or more sheets, fit each page to the largest safe size, then print directly from the browser.',mobileIntroTitle:'Print large text',mobileIntroLead:'Type your text and it will fit the largest size on the paper.',mobileSettingsToggle:'Paper and text settings',settingsPaperGroup:'Paper',settingsTextGroup:'Text',settingsPlacementGroup:'Layout and color',settingsOptionsGroup:'More options',settingsMore:'Layout, colors and more',mobileSettingsInfo:'{paper} · {orientation} · {margin} mm margin',localOnly:'Fully local processing',help:'How to use & notes',close:'Close',
+          tagline:'Fit the largest text on paper, then print',brandMeta:'Auto-fit text to max size · Full-page printing · Page splitting',introTitle:'Print text at the largest size that fits your paper',introLead:'Split text across one or more sheets, fit each page to the largest safe size, then print directly from the browser.',mobileIntroTitle:'Print large text',mobileIntroLead:'Type your text and it will fit the largest size on the paper.',mobileSettingsToggle:'Paper and text settings',settingsPaperGroup:'Paper',settingsTextGroup:'Text',settingsPlacementGroup:'Layout and color',settingsOptionsGroup:'More options',settingsMore:'Layout, colors and more',mobileSettingsInfo:'{paper} · {orientation} · {margin} mm margin',localOnly:'Fully local processing',footerNote:'Text printing stays in the browser',help:'How to use & notes',close:'Close',
           textTitle:'Enter text',textSub:'Text is split using your selected page mode, then each page is fitted to its largest safe size.',textLabel:'Text to print',
           placeholder:'Example: CLOSED TODAY',chars:'chars',lines:'lines',sample:'Sample',clear:'Clear',pageSplit:'Page splitting',splitSingle:'Keep on one page',splitLine:'Each line',splitChar:'Each character',pageSplitHelp:'Fit each generated page to the paper, with optional common sizing.',pageCount:'{count} pages',pageCountOne:'1 page',pageLimitWarning:'This creates {count} pages. Up to {max} pages can be generated at once. Reduce the split.',pageNumber:'Page number',goPage:'Go',invalidPage:'Enter a whole number from 1 to {count}.',prevPage:'Previous page',nextPage:'Next page',printPagesSummary:'Print all {count} pages',settingsTitle:'Print settings',
           settingsSub:'The defaults usually work. Orientation and margins immediately recalculate the fitted size.',resetSettings:'Reset to defaults',settingsResetDone:'Print settings reset to defaults',orientation:'Orientation',
